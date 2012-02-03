@@ -1,45 +1,19 @@
 ---
 layout: page
-title: Hello World!
+title: Interfacing Erlang Applications to Embedded Linux
 ---
 {% include JB/setup %}
 
-Read [Jekyll Quick Start](http://jekyllbootstrap.com/usage/jekyll-quick-start.html)
+The Nerves project will provide an easy-to-use API in Erlang to common 
+I/O interfaces on embedded Linux platforms.
 
-Complete usage and documentation available at: [Jekyll Bootstrap](http://jekyllbootstrap.com)
+This is a work in progress. However, if you are interested in running an
+Erlang node on a low power ARM-based board and don't mind dealing with a
+few rough edges, this project could help.
 
-## Update Author Attributes
+## Getting Started
 
-In `_config.yml` remember to specify your own data:
-    
-    title : My Blog =)
-    
-    author :
-      name : Name Lastname
-      email : blah@email.test
-      github : username
-      twitter : username
-
-The theme should reference these variables whenever needed.
-    
-## Sample Posts
-
-This blog contains sample posts which help stage pages and blog data.
-When you don't need the samples anymore just delete the `_posts/core-samples` folder.
-
-    $ rm -rf _posts/core-samples
-
-Here's a sample "posts list".
-
-<ul class="posts">
-  {% for post in site.posts %}
-    <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
-  {% endfor %}
-</ul>
-
-## To-Do
-
-This theme is still unfinished. If you'd like to be added as a contributor, [please fork](http://github.com/plusjade/jekyll-bootstrap)!
-We need to clean up the themes, make theme usage guides with theme-specific markup examples.
-
-
+This project is being developed on the
+[http://beagleboard.org/bone](BeagleBone). While much Erlang code should
+work on other embedded Linux boards, this is the board that we are
+using.
