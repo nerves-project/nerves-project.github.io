@@ -14,6 +14,6 @@ few rough edges, this project could help.
 ## Getting Started
 
 This project is being developed on the
-[BeagleBone](http://beagleboard.org/bone]. While much Erlang code should
+[BeagleBone](http://beagleboard.org/bone). While much Erlang code should
 work on other embedded Linux boards, this is the board that we are
 using.
