@@ -19,8 +19,7 @@ vary depending on OS. On Linux, run `sudo dd if=bbone-erlang-x.y.img
 of=/dev/sdX bs=128k` where sdX is the MicroSD device. Some help can be
 found for Windows on the [BeagleBone wiki](http://circuitco.com/support/index.php?title=BeagleBone#Image_Files).
 4. Insert the MicroSD card into the BeagleBone and boot.
-5. Log into the board via the console. Log in as `root` with no
-password.
+5. Log into the board via the console. Log in as `root` with password `root`.
 
 ## Board Notes
 
