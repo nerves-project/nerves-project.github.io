@@ -22,9 +22,9 @@ and release handling tools.
 
 ## What is the Nerves Project?
 
-The Nerves project provides an easy-to-use API in Erlang for common
-I/O interfaces and hard real-time processes on embedded Linux
-platforms.
+The Nerves project provides an embedded Linux-based environment for
+running Erlang and an easy-to-use API to access common
+I/O interfaces.
 
 If you are interested in running an Erlang node on a low power
 ARM-based board this project can get you started.
@@ -32,4 +32,13 @@ ARM-based board this project can get you started.
 We are initially developing on the
 [BeagleBone](http://beagleboard.org/bone), which provides both low
 cost and high functionality.
+
+## Current Features
+
+1. Ready to use MicroSD card image to quickly get started using Erlang on the BeagleBone
+2. Easy kernel and system package configuration using Buildroot
+3. Configurable and subsettable compilation of Erlang/OTP to minimize system footprint
+4. HiPE support (Experimental)
+5. Configurable system installation of popular Erlang libraries such as Mochiweb
+5. Open source development for all components
 
