@@ -3,7 +3,6 @@
 permalink: /:categories/:year/:month/:day/:title 
 
 exclude: [".rbenv-version", "README.md", "Rakefile"]
-auto: true
 pygments: true
 
 # Themes are encouraged to use these universal variables 
