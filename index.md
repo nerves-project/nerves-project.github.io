@@ -1,44 +1,55 @@
 ---
-layout: page
-title: Erlang/OTP on the BeagleBone
+layout: default
+title: Nerves-Project
+category: home
 ---
-{% include JB/setup %}
 
-## What is Erlang?
+# Cross-compiled Erlang for Embedded Devices
 
-[Erlang](http://www.erlang.org/) is a programming language used to
-build massively scalable soft real-time systems with requirements on
-high availability (5-9's). Some of its uses are in telecoms, banking,
-e-commerce, computer telephony and instant messaging. Erlang's runtime
-system has built-in support for concurrency, distribution and fault
-tolerance.
+Write your firmware using Erlang/OTP and popular Erlang build
+tools like [Rebar](https://github.com/basho/rebar) and [Relx](http://relx.org/) in
+a cross-compiled environment for targeting small to medium sized
+embedded devices. Releases are packaged into bootable all-in-one firmware
+images. [Buildroot](http://buildroot.net/) provides the base images and simplifies
+cross-compilation of external C/C++ libraries needed for your application.
 
-## What is OTP?
+The Nerves project sets up your environment and provides the base images so that you
+can do this:
 
-OTP is a set of Erlang libraries and design principles providing
-middle-ware to develop these systems. It includes its own distributed
-database, applications to interface towards other languages, debugging
-and release handling tools.
+![Alt Diagram of Nerves](images/nerves-summary.png)
 
-## What is the Nerves Project?
+The current target is the [BeagleBone Black](http://beagleboard.org/Products/BeagleBone%20Black).
 
-The Nerves project provides an embedded Linux-based environment for
-running Erlang and an easy-to-use API to access common
-I/O interfaces.
+_Work is in progress to move components to GitHub and fill in missing parts. Stay tuned_
 
-If you are interested in running an Erlang node on a low power
-ARM-based board this project can get you started.
+## For C/C++ Embedded Software Developers
 
-We are initially developing on the
-[BeagleBone](http://beagleboard.org/bone), which provides both low
-cost and high functionality.
+[Erlang](http://www.erlang.org/) provides a higher level programming
+environment that has been used to build massively scalable soft
+real-time systems with requirements on high availability (5-9's).
+Erlang's runtime system has built-in support for concurrency, distribution
+and fault tolerance.
 
-## Current Features
+It is quite common to interface with C and C++ code in Erlang to
+handle performance critical or low level code or just to integrate
+with existing libraries. Erlang can even supervise your C and C++
+code so that crashes and failures can be handled and isolated
+from the rest of your code.
 
-1. Ready to use MicroSD card image to quickly get started using Erlang on the BeagleBone
-2. Easy kernel and system package configuration using Buildroot
-3. Configurable and subsettable compilation of Erlang/OTP to minimize system footprint
-4. HiPE support (Experimental)
-5. Configurable system installation of popular Erlang libraries such as Mochiweb
-5. Open source development for all components
+The Nerves Project uses the Linux kernel to provide the devices drivers
+needed for your embedded system. The kernel can be configured using
+Buildroot to trim down the size of your firmware image if necessary.
 
+Since so much of what the standard Linux userland provides can be
+accomplished via Erlang libraries, very few userland tools are
+actually needed. In fact, Nerves replaces _init_ with a small C
+program that boots the Erlang runtime directly and lets Erlang
+control initialization. The standard Erlang release tools ensure
+that only the Erlang libraries that you need are included.
+
+## For Erlang Developers
+
+If you are able to develop on device, [Erlang Embedded](http://www.erlang-embedded.com/)
+probably provides pre-built packages for your environment. If that's
+not an option, the Nerves Project provides a cross-compiled environment
+so that you don't have to give up Erlang.

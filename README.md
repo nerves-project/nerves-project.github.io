@@ -16,5 +16,3 @@ previous the page.
 
     git push
 
----
-The website uses code from [Jekyll Bootstrap](http://jekyllbootstrap.com).
