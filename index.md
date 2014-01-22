@@ -20,8 +20,6 @@ can do this:
 
 The current target is the [BeagleBone Black](http://beagleboard.org/Products/BeagleBone%20Black).
 
-_Work is in progress to move components to GitHub and fill in missing parts. Stay tuned_
-
 ## For C/C++ Embedded Software Developers
 
 [Erlang](http://www.erlang.org/) provides a higher level programming
