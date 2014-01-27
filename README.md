@@ -6,6 +6,9 @@ Use rvm to install a recent version of ruby. See
 [https://rvm.beginrescueend.com/](https://rvm.beginrescueend.com/).
 After this, run the following:
 
+    rvm use 2.0   # If you get the login shell error, go to the
+                  # terminal preferences and select run command as login
+                  # shell.
     gem install jekyll
     jekyll serve --watch
 

@@ -4,39 +4,65 @@ title: Nerves-Project
 category: docs
 ---
 
-## Getting Started
+# Documentation
 
-The first step is downloading and installing the [Nerves
-SDK](https://github.com/nerves-project/nerves-sdk) from GitHub. See the
-[README.md](https://github.com/nerves-project/nerves-sdk/blob/master/README.md)
-for instructions.
+The Nerves Project contains several subprojects and collects them all
+together into the [Nerves SDK](https://github.com/nerves-project/nerves-sdk).
+Top level documentation for each of the projects is maintained in the
+`README.md` files. This page provides an overview of the subprojects.
 
-Once the Nerves SDK has been installed, you can start your own Erlang projects
-and build them in the Nerves environment. Look at the [demonstration
-project](https://github.com/nerves-project/nerves-demo) for
-a simple example. The Getting Started screencast below walks through the SDK
-installation and the demo application build step by step.
+### [fwtool](https://github.com/nerves-project/fwtool)
 
-## Screencasts
+This project is a commandline application that combines the root file system,
+bootloaders, and other configuration produced by the Nerves SDK into a set
+of firmware images. The main one of these images (extension .img) is suitable
+for copying to an SDCard (ala `dd if=sdcard.img of=/dev/sdc bs=1M`). The
+second image (extension .fw) is a zip-compressed file that contains
+instructions for how to upgrade a running system. This is different from
+the in-place upgrades provided by Erlang/OTP in that this upgrade requires
+a reboot to take effect. However, this file can be used to upgrade the
+Linux kernel and system libraries as well as Erlang code.
 
-<iframe width="420" height="315" src="//www.youtube.com/embed/kWXrct6nnGg"
-frameborder="0" allowfullscreen></iframe>
+### [erlinit](https://github.com/nerves-project/erlinit)
 
-## Presentations
+Erlinit is a replacement for `/sbin/init` that launches an Erlang/OTP release
+on system boot. It provides the minimum system configuration needed to run
+Erlang and can be thought of as a simple Erlang/OTP release start script.
 
-<iframe src="http://www.slideshare.net/slideshow/embed_code/29000661"
-width="420" height="315" frameborder="0" marginwidth="0" marginheight="0"
-scrolling="no" style="border:1px solid #CCC;border-width:1px 1px
-0;margin-bottom:5px" allowfullscreen> </iframe> <div style="margin-bottom:5px">
-<strong> <a href="https://www.slideshare.net/fhunleth/erlangdc-2013"
-title="Using Erlang in an Embedded and Cross-Compiled World"
-target="_blank">Using Erlang in an Embedded and Cross-Compiled World</a>
-</strong> from <strong><a href="http://www.slideshare.net/fhunleth"
-target="_blank">Frank Hunleth</a></strong> </div>
+Keep in mind that while Nerves uses the Linux kernel, it uses very few of the
+standard Linux command line programs. This is usually not a problem since
+Erlang provides much of the missing functionality internally. For system
+initialization, the release creation tool `relx` generates a boot script that
+tells the Erlang VM how load and start the Erlang applications that initialize
+the system.
 
-## Support
+### [relsync](https://github.com/fhunleth/relsync)
 
-The [mailing list](https://groups.google.com/group/nerves-project)
-is the best place to go for any questions. If you'd like to contribute bug fixes
-or new features, please go ahead and fork the project and send me a pull
-request.
+The `relsync` tool is used in development to copy over code and data updates to
+the remote target. The tool only copies the files that have changed so updates
+are quick. `Relsync` will automatically reload changed beam files. Port
+executables, libraries, and other priv directory contents are copied, but
+`relsync` can't force their upgrade. For that, it is possible to pass a script
+that `relsync` will invoke on the target before and after the synchronization
+process.
+
+### [mmccopy](https://github.com/fhunleth/mmccopy)
+
+This tool is a replacement for `dd` for copying firmware images or other data
+directly to SDCards and Flash memory. It provides numerous features such as
+automatic SDCard device detection, efficient data copying, and progress
+reporting. Ultimately, it is needed on Nerves target hardware for updating
+images on device since Erlang does not allow file reads and writes to device
+files. See [Erlang Faq 9.12](http://www.erlang.org/faq/problems.html#id56464).
+
+## Nerves Project FAQ
+
+### What license does Nerves use?
+
+The Nerves SDK is covered by the [GPLv2 (or later)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+as a consequence of using [Buildroot](http://buildroot.net/). The licenses for
+all of the code built in the SDK can be found by running `make legal-info` in
+the `buildroot` subdirectory of the SDK.
+
+Each Nerves subproject contains its license as part of the project. In most
+cases the license is the [MIT License](http://opensource.org/licenses/MIT).

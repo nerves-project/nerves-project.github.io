@@ -47,7 +47,12 @@ that only the Erlang libraries that you need are included.
 
 ## For Erlang Developers
 
-If you are able to develop on device, [Erlang Embedded](http://www.erlang-embedded.com/)
-probably provides pre-built packages for your environment. If that's
-not an option, the Nerves Project provides a cross-compiled environment
-so that you don't have to give up Erlang.
+Nerves provides a cross-compiled environment that is focused on creating small,
+self-contained packages for easy distribution and use on target hardware. The
+alternative is to develop on device, and this route can be very convenient
+and easy. See [Erlang Embedded](http://www.erlang-embedded.com/)
+for pre-built packages for your environment. However, developing on device
+may not be an option if the target is not powerful enough, and it also doesn't
+provide the tools and infrastructure for packaging code for manufacture.
+The Nerves Project aims to provide this infrastructure so that Erlang and
+to make the cross-compiled environment a natural one for development.
