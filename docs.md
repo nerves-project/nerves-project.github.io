@@ -66,3 +66,25 @@ the `buildroot` subdirectory of the SDK.
 
 Each Nerves subproject contains its license as part of the project. In most
 cases the license is the [MIT License](http://opensource.org/licenses/MIT).
+
+### I need to make changes to Buildroot, but it takes so long to build.
+
+Buildroot does a lot, so it's not surprising that it takes so long to build.
+There are many ways to make it run faster, though.
+
+   1. Create a ~/dl directory for caching downloads. I have the Nerves Makefile
+      automatically look for this directory and setup Buildroot to use it.
+      Caching downloaded files can take reduce the pain of waiting for downloads
+      from slow websites.
+   2. Enable CCache. This caches object files so that recompiles can be done
+      lightning fast. Run `make menuconfig` and go to `Build options` and
+      `Enable compiler cache`. I don't select it automatically since it can use
+      a lot of disk space, but it's generally safe.
+   3. Run on a native Linux install. Running in a VM is ok, but I've had a
+      better experience natively booting Linux.
+   4. Build on an SSD. Doing this significantly improved my experience with
+      Buildroot.
+   5. If you're porting Nerves to a new platform, try using an external
+      toolchain rather than the default Buildroot toolchain. The default
+      toolchain builds gcc which takes a very long time. External toolchains
+      just need to be downloaded.
