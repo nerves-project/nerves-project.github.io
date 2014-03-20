@@ -88,3 +88,19 @@ There are many ways to make it run faster, though.
       toolchain rather than the default Buildroot toolchain. The default
       toolchain builds gcc which takes a very long time. External toolchains
       just need to be downloaded.
+
+### How do I power off and reboot the board and what happens?
+
+When the Erlang VM exits, the board is rebooted. This is done automatically
+since it is expected that applications are long running and that an exit is most
+likely a mistake. Of course, if you intentionally want to reboot the board, you
+can always invoke `init:stop/0`.
+
+The standard way of rebooting or powering off, though, is to send Unix signals
+to the init process. In Nerves, the init process is `erlinit`. It behaves
+similar to standard init implementations except that its behavior is not
+configurable. When it gets signalled, it sends SIGTERM to all OS processes and then
+sends SIGKILL to any that remain after a second. After processes are killed, a
+best effort attempt to sync and unmount filesystems is made before rebooting or
+shutting down for real. Sending `SIGUSR1` to `erlinit` (OS PID 1) halts the processor,
+`SIGTERM` reboots, and `SIGUSR2` powers off.
