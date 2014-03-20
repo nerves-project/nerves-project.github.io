@@ -103,4 +103,6 @@ configurable. When it gets signalled, it sends SIGTERM to all OS processes and t
 sends SIGKILL to any that remain after a second. After processes are killed, a
 best effort attempt to sync and unmount filesystems is made before rebooting or
 shutting down for real. Sending `SIGUSR1` to `erlinit` (OS PID 1) halts the processor,
-`SIGTERM` reboots, and `SIGUSR2` powers off.
+`SIGTERM` reboots, and `SIGUSR2` powers off.  The `poweroff`, `halt` and
+`reboot` command line utilities will send these signals, so if you run
+`os:cmd("poweroff")`, it will do the right thing.
