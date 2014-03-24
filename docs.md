@@ -67,6 +67,22 @@ the `buildroot` subdirectory of the SDK.
 Each Nerves subproject contains its license as part of the project. In most
 cases the license is the [MIT License](http://opensource.org/licenses/MIT).
 
+### I like Elixir. How can I switch the shell to iex?
+
+First, make sure the `iex` is included in your project's release. See the
+`relx.config` in the [nerves-elixir_trivial project](https://github.com/fhunleth/nerves-elixir-trivial)
+for an example. Double check your project's release directory to make sure that
+the beam files for iex are included.
+
+The second step is to update the `vm.args` to have the following options:
+
+    -noshell
+    -user Elixir.IEx.CLI
+    -extra --no-halt
+
+If you don't have a `vm.args`, create one and make sure that it gets included in
+your project's OTP release directory.
+
 ### I need to make changes to Buildroot, but it takes so long to build.
 
 Buildroot does a lot, so it's not surprising that it takes so long to build.
