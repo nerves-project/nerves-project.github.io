@@ -122,3 +122,13 @@ shutting down for real. Sending `SIGUSR1` to `erlinit` (OS PID 1) halts the proc
 `SIGTERM` reboots, and `SIGUSR2` powers off.  The `poweroff`, `halt` and
 `reboot` command line utilities will send these signals, so if you run
 `os:cmd("poweroff")`, it will do the right thing.
+
+### How does Nerves handle logging?
+
+Nerves doesn't specify how you should handle logging in your application, but
+many people use [Lager](https://github.com/basho/lager). The Nerves view of the
+world is that Erlang is at the center of the world, and that the Linux kernel
+and userspace hold supporting roles. A consequence of this is that you should
+configure Lager to do the logging rather than hand it off to its syslog backend.
+To log kernel messages and any other code that logs to syslog, see the
+[l2elog](https://github.com/fhunleth/l2elog) project.
