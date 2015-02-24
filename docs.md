@@ -67,6 +67,23 @@ the `buildroot` subdirectory of the SDK.
 Each Nerves subproject contains its license as part of the project. In most
 cases the license is the [MIT License](http://opensource.org/licenses/MIT).
 
+### Where did my Ethernet go?
+
+Nerves comes up very barebones. This is supposed to be a feature, but it can
+make getting started more difficult. If you have wired Ethernet on your
+platform, the steps are as follows: (Works on BeagleBone Black and Raspberry Pi
+Model B and B+)
+
+    os:cmd("/sbin/ip link set eth0 up").
+    os:cmd("/sbin/ip addr add 192.168.1.40/24 dev eth0").
+    os:cmd("/sbin/ip route add default via 192.168.1.1").
+
+If you're using Elixir, the corresponding commands are:
+
+    :os.cmd('/sbin/ip link set eth0 up')
+    :os.cmd('/sbin/ip addr add 192.168.1.40/24 dev eth0')
+    :os.cmd('/sbin/ip route add default via 192.168.1.1')
+
 ### I like Elixir. How can I switch the shell to iex?
 
 First, make sure the `iex` is included in your project's release. See the
