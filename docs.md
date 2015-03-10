@@ -149,3 +149,13 @@ and userspace hold supporting roles. A consequence of this is that you should
 configure Lager to do the logging rather than hand it off to its syslog backend.
 To log kernel messages and any other code that logs to syslog, see the
 [l2elog](https://github.com/fhunleth/l2elog) project.
+
+### Where did all of Elixir's pretty ANSI colors go?
+
+They just need to be enabled. When you run `iex` on your host, it will check if
+you're in an interactive session and enable the colors. Nerves skips the `iex`
+startup script so this check gets skipped. To enable the colors, add the
+following to your `sys.config`:
+
+    {elixir, [{ansi_enabled, true}]}
+
