@@ -18,8 +18,6 @@ can do this:
 
 ![Alt Diagram of Nerves](images/nerves-summary.png)
 
-The current target is the [BeagleBone Black](http://beagleboard.org/Products/BeagleBone%20Black).
-
 ## For C/C++ Embedded Software Developers
 
 [Erlang](http://www.erlang.org/) provides a higher level programming
