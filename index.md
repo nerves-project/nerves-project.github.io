@@ -7,7 +7,7 @@ category: home
 # Cross-compiled Erlang for Embedded Devices
 
 Write your firmware using Erlang/OTP and popular Erlang build
-tools like [Rebar](https://github.com/basho/rebar) and [Relx](http://relx.org/) in
+tools like [Rebar](https://github.com/basho/rebar) and [Relx](https://github.com/erlware/relx) in
 a cross-compiled environment for targeting small to medium sized
 embedded devices. Releases are packaged into bootable all-in-one firmware
 images. [Buildroot](http://buildroot.net/) provides the base images and simplifies
