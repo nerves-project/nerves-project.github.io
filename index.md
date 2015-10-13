@@ -1,12 +1,24 @@
 ---
 layout: default
-title: Nerves-Project
+title: nerves
 category: home
 ---
 
+# Craft embedded systems with [Elixir](http://elixir-lang.org/)
+
+__Nerves__ lets you build production-quality cross-compiled firmware in the stunningly productive [**Elixir**](http://elixir-lang.org/) programming language. Nerves combines a lean linux **foundation**, a comprehensive device **framework**, and easy-to-use **tooling** for building, managing, and updating firmware.  While nerves still quite young and under active development, it is already powering rock-solid shipping industrial products.
+
+
+Nerves is an open source project with a permissive (MIT) license.  It uses Buildroot to provide Linux, which is licensed under the GPL.
+
+
+# learn more
+
+
 # Cross-compiled Erlang for Embedded Devices
 
-Write your firmware using Erlang/OTP and popular Erlang build
+Write your firmware using Elixir, 
+ and popular Erlang build
 tools like [Rebar](https://github.com/basho/rebar) and [Relx](https://github.com/erlware/relx) in
 a cross-compiled environment for targeting small to medium sized
 embedded devices. Releases are packaged into bootable all-in-one firmware
