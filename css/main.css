@@ -1,9 +1,15 @@
 body {
   padding-top: 50px;
+  font-size: 11pt;
 }
 
 .nerves-main {
   padding: 40px 15px;
+}
+
+.box{
+  width: 300px;
+  display: inline-block;
 }
 
 /*
