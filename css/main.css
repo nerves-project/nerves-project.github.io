@@ -1,11 +1,37 @@
 body {
   padding-top: 50px;
+  font-size: 11pt;
+}
+
+.center {
+    align: center;
 }
 
 .nerves-main {
   padding: 40px 15px;
 }
 
+.feature-box-container {
+    display: flex;
+    align-items: top;
+    flex-wrap: wrap;
+}
+
+.feature-box {
+    align-self: flex-start;
+    padding: 10px;
+    width: 300px;
+    min-height: 160px;
+    margin: auto;
+}
+
+
+.platform-support-icons {
+    float: right;
+    width: 160px;
+    padding: 10px;
+    font-size: 10pt;
+}
 /*
  * Social buttons
  *

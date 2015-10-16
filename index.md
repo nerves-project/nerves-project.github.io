@@ -1,56 +1,55 @@
 ---
 layout: default
-title: Nerves-Project
+title: nerves
 category: home
 ---
 
-# Cross-compiled Erlang for Embedded Devices
+<center>
+# [nerves](http://nerves-project.org)
+### craft bulletproof firmware in the stunningly productive [**elixir**](http://elixir-lang.org/) language
+</center>
 
-Write your firmware using Erlang/OTP and popular Erlang build
-tools like [Rebar](https://github.com/basho/rebar) and [Relx](https://github.com/erlware/relx) in
-a cross-compiled environment for targeting small to medium sized
-embedded devices. Releases are packaged into bootable all-in-one firmware
-images. [Buildroot](http://buildroot.net/) provides the base images and simplifies
-cross-compilation of external C/C++ libraries needed for your application.
+<br/>
+<hr/>
 
-The Nerves project sets up your environment and provides the base images so that you
-can do this:
+<div class="feature-box-container">
+<div class="feature-box">
+<h4>platform</h4>
+Using a lean, custom cross-compiled linux, nerves boots directly to the battle hardened BEAM VM, starting your application in seconds.
+</div>
 
-![Alt Diagram of Nerves](images/nerves-summary.png)
+<div class="feature-box">
+<h4>framework</h4>
+Most devices need to get on a network, get discovered, update firmware, and deal with I/O of various kinds.  You're not on your own.
+</div>
 
-## For C/C++ Embedded Software Developers
+<div class="feature-box">
+<h4>tooling</h4>
+Cross-compliation can be a total drag.  We're making it smooth as silk. We are working to get you from "mix new" to running code on your device in minutes.  
+</div>
+</div>
 
-[Erlang](http://www.erlang.org/) provides a higher level programming
-environment that has been used to build massively scalable soft
-real-time systems with requirements on high availability (5-9's).
-Erlang's runtime system has built-in support for concurrency, distribution
-and fault tolerance.
+<hr/><br/>
 
-It is quite common to interface with C and C++ code in Erlang to
-handle performance critical or low level code or just to integrate
-with existing libraries. Erlang can even supervise your C and C++
-code so that crashes and failures can be handled and isolated
-from the rest of your code.
+<div class="platform-support-icons">
+<img height="80px" src="/images/beaglebone_icon.jpg"/>
+<img height="80px" src="/images/pi_logo.png"/>
+<br/><br/>
+We support prototyping on Raspberry Pi, Pi 2, and Beaglebone Black.
+</div>
 
-The Nerves Project uses the Linux kernel to provide the devices drivers
-needed for your embedded system. The kernel can be configured using
-Buildroot to trim down the size of your firmware image if necessary.
+Nerves is still quite young and under very heavy development, but it is already powering rock-solid shipping industrial products.   We are working diligently to have nerves ready for a wider audience by Q4 of 2015.  In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or 
+contact us on the [mailing list](https://groups.google.com/group/nerves-project).
 
-Since so much of what the standard Linux userland provides can be
-accomplished via Erlang libraries, very few userland tools are
-actually needed. In fact, Nerves replaces _init_ with a small C
-program that boots the Erlang runtime directly and lets Erlang
-control initialization. The standard Erlang release tools ensure
-that only the Erlang libraries that you need are included.
-
-## For Erlang Developers
-
-Nerves provides a cross-compiled environment that is focused on creating small,
-self-contained packages for easy distribution and use on target hardware. The
-alternative is to develop on device, and this route can be very convenient
-and easy. See [Erlang Embedded](http://www.erlang-embedded.com/)
-for pre-built packages for your environment. However, developing on device
-may not be an option if the target is not powerful enough, and it also doesn't
-provide the tools and infrastructure for packaging code for manufacture.
-The Nerves Project aims to provide this infrastructure so that Erlang and
-to make the cross-compiled environment a natural one for development.
+Nerves is fully open source with a permissive (MIT) license.  Nerves uses Buildroot to provide Linux, so some portions of the foundation are licensed under the GPL.
+  
+<ul class="bs-social-buttons">
+<li class="follow-btn">
+  <a href="https://twitter.com/NervesProject" class="twitter-follow-button" data-show-count="false">Follow @NervesProject</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</li>
+<li class="tweet-btn">
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://nerves-project.org" data-text="Cross-compiled Erlang for embedded" data-via="NervesProject">Tweet</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</li>
+</ul>
