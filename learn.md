@@ -13,9 +13,12 @@ category: learn
 >
 > Unfortuantely, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
 >
-> The documentation below reflects how to use the nerves-sdk (foundation) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.
+> The documentation below reflects how to use the nerves-sdk (foundation) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're very close.
 
-<br/>
+> In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or 
+> contact us on the [mailing list](https://groups.google.com/group/nerves-project).
+
+<hr/><br/>
 # Architectural Overview
 
 Write your firmware using Elixir or Erlang, and use popular build
@@ -84,19 +87,10 @@ frameborder="0" allowfullscreen>
 
 > This section is dated and does not reflect current componentry and tooling.  
 
-### [fwtool](https://github.com/nerves-project/fwtool)
+### [fwup](https://github.com/fhunleth/fwup)
 
-> Note: deprecated, replaced by fwup
 
-This project is a commandline application that combines the root file system,
-bootloaders, and other configuration produced by the Nerves SDK into a set
-of firmware images. The main one of these images (extension .img) is suitable
-for copying to an SDCard (ala `dd if=sdcard.img of=/dev/sdc bs=1M`). The
-second image (extension .fw) is a zip-compressed file that contains
-instructions for how to upgrade a running system. This is different from
-the in-place upgrades provided by Erlang/OTP in that this upgrade requires
-a reboot to take effect. However, this file can be used to upgrade the
-Linux kernel and system libraries as well as Erlang code.
+The fwup utility is a configurable image-based firmware update utility for embedded Linux-based systems. It has two modes of operation. The first mode creates compressed archives containing root file system images, bootloaders, and other image material. These can be distributed via websites, email or update servers. The second mode applies the firmware images in a robust and repeatable way. 
 
 ### [erlinit](https://github.com/nerves-project/erlinit)
 
@@ -123,7 +117,7 @@ process.
 
 ### [mmccopy](https://github.com/fhunleth/mmccopy)
 
-> Note: deprecated, replaced by fwup
+> Note: deprecated, functionality now included in fwup
 
 This tool is a replacement for `dd` for copying firmware images or other data
 directly to SDCards and Flash memory. It provides numerous features such as

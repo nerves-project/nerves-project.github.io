@@ -14,7 +14,7 @@ category: home
 
 <div class="feature-box-container">
 <div class="feature-box">
-<h4>foundation</h4>
+<h4>platform</h4>
 Using a lean, custom cross-compiled linux, nerves boots directly to the battle hardened BEAM VM, starting your application in seconds.
 </div>
 
