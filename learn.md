@@ -1,10 +1,37 @@
 ---
 layout: default
-title: Nerves-Project
-category: docs
+title: nerves
+category: learn
 ---
 
-# Documentation
+<center>
+# learn
+</center>
+<hr/>
+
+> In Septmber 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
+>
+> Unfortuantely, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
+>
+> The documentation below reflects how to use the nerves-sdk (foundation) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.
+
+
+## Getting Started 
+The first step is downloading and installing the [Nerves
+SDK](https://github.com/nerves-project/nerves-sdk) from GitHub. See the
+[README.md](https://github.com/nerves-project/nerves-sdk/blob/master/README.md)
+for instructions.
+
+Once the Nerves SDK has been installed, you can start your own Erlang projects
+and build them in the Nerves environment. Look at the [demonstration
+project](https://github.com/nerves-project/nerves-demo) for
+a simple example. The Getting Started screencast below walks through the SDK
+installation and the demo application build step by step.
+
+<iframe width="420" height="315" src="//www.youtube.com/embed/kWXrct6nnGg"
+frameborder="0" allowfullscreen></iframe>
+
+## Overview Documentation
 
 The Nerves Project contains several subprojects and collects them all
 together into the [Nerves SDK](https://github.com/nerves-project/nerves-sdk).

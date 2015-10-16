@@ -34,8 +34,8 @@
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             {% if page.category == 'home' %}<li class="active"><a href="/">home</a></li>{% else %}<li><a href="/">home</a></li>{% endif %}
-            {% if page.category == 'gettingstarted' %}<li class="active"><a href="/gettingstarted.html">getting started</a></li>{% else %}<li><a href="/gettingstarted.html">getting started</a></li>{% endif %}
-            {% if page.category == 'docs' %}<li class="active"><a href="/docs.html">docs</a></li>{% else %}<li><a href="/docs.html">docs</a></li>{% endif %}
+            {% if page.category == 'watch' %}<li class="active"><a href="/watch.html">watch</a></li>{% else %}<li><a href="/watch.html">watch</a></li>{% endif %}
+            {% if page.category == 'learn' %}<li class="active"><a href="/learn.html">learn</a></li>{% else %}<li><a href="/learn.html">learn</a></li>{% endif %}
             <li><a href="https://github.com/nerves-project">code</a></li>
           </ul>
         </div><!--/.nav-collapse -->
@@ -48,19 +48,7 @@
             {{ content }}
         </div>
 
-	<hr>
-
 	<footer>
-	  <ul class="bs-social-buttons">
-	    <li class="follow-btn">
-	      <a href="https://twitter.com/NervesProject" class="twitter-follow-button" data-show-count="false">Follow @NervesProject</a>
-	      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-	    </li>
-	    <li class="tweet-btn">
-	      <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://nerves-project.org" data-text="Cross-compiled Erlang for embedded" data-via="NervesProject">Tweet</a>
-	      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-	    </li>
-	  </ul>
 
 	</footer>
     </div><!-- /.container -->
