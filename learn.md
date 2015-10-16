@@ -9,14 +9,62 @@ category: learn
 </center>
 <hr/>
 
-> In Septmber 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
+> __IMPORTANT__ -- In Septmber 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
 >
 > Unfortuantely, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
 >
 > The documentation below reflects how to use the nerves-sdk (foundation) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.
 
+<br/>
+# Architectural Overview
 
-## Getting Started 
+Write your firmware using Elixir or Erlang, and use popular build
+tools like [Rebar](https://github.com/basho/rebar), [Mix](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html), [Relx](https://github.com/erlware/relx) or [Exrm](https://github.com/bitwalker/exrm)
+a cross-compiled environment for targeting small to medium sized
+embedded devices. Releases are packaged into bootable all-in-one firmware
+images. [Buildroot](http://buildroot.net/) provides the base images and simplifies
+cross-compilation of external C/C++ libraries needed for your application.
+
+The Nerves project sets up your environment and provides the base images so that you
+can do this:
+
+![Alt Diagram of Nerves](images/nerves-summary.png)
+
+## For C/C++ Embedded Software Developers
+
+[Elixir](http://elixir-lang.org) and [Erlang](http://www.erlang.org/) provide higher level programming environments that have been used to build massively scalable soft real-time systems with requirements on high availability (5-9's). The underlying BEAM VM system has built-in support for concurrency, distribution and fault tolerance.
+
+It is quite common to interface with C and C++ code in Erlang to
+handle performance critical or low level code or just to integrate
+with existing libraries. Erlang can even supervise your C and C++
+code so that crashes and failures can be handled and isolated
+from the rest of your code.
+
+The Nerves Project uses the Linux kernel to provide the devices drivers
+needed for your embedded system. The kernel can be configured using
+Buildroot to trim down the size of your firmware image if necessary.
+
+Since so much of what the standard Linux userland provides can be
+accomplished via Erlang libraries, very few userland tools are
+actually needed. In fact, Nerves replaces _init_ with a small C
+program that boots the Erlang runtime directly and lets Erlang
+control initialization. The standard Erlang release tools ensure
+that only the Erlang libraries that you need are included.
+
+## For Elixir or Erlang Developers
+
+Nerves provides a cross-compiled environment that is focused on creating small,
+self-contained packages for easy distribution and use on target hardware. The
+alternative is to develop on device, and this route can be very convenient
+and easy. See [Erlang Embedded](http://www.erlang-embedded.com/)
+for pre-built packages for your environment. However, developing on device
+may not be an option if the target is not powerful enough, and it also doesn't
+provide the tools and infrastructure for packaging code for manufacture.
+The Nerves Project aims to provide this infrastructure so that Erlang and
+to make the cross-compiled environment a natural one for development.
+
+
+# Getting Started 
 The first step is downloading and installing the [Nerves
 SDK](https://github.com/nerves-project/nerves-sdk) from GitHub. See the
 [README.md](https://github.com/nerves-project/nerves-sdk/blob/master/README.md)
@@ -29,16 +77,16 @@ a simple example. The Getting Started screencast below walks through the SDK
 installation and the demo application build step by step.
 
 <iframe width="420" height="315" src="//www.youtube.com/embed/kWXrct6nnGg"
-frameborder="0" allowfullscreen></iframe>
+frameborder="0" allowfullscreen>
+</iframe>
 
-## Overview Documentation
+# Components & Tools
 
-The Nerves Project contains several subprojects and collects them all
-together into the [Nerves SDK](https://github.com/nerves-project/nerves-sdk).
-Top level documentation for each of the projects is maintained in the
-`README.md` files. This page provides an overview of the subprojects.
+> This section is dated and does not reflect current componentry and tooling.  
 
 ### [fwtool](https://github.com/nerves-project/fwtool)
+
+> Note: deprecated, replaced by fwup
 
 This project is a commandline application that combines the root file system,
 bootloaders, and other configuration produced by the Nerves SDK into a set
@@ -74,6 +122,8 @@ that `relsync` will invoke on the target before and after the synchronization
 process.
 
 ### [mmccopy](https://github.com/fhunleth/mmccopy)
+
+> Note: deprecated, replaced by fwup
 
 This tool is a replacement for `dd` for copying firmware images or other data
 directly to SDCards and Flash memory. It provides numerous features such as
