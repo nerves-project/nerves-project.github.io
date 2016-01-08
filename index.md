@@ -25,7 +25,7 @@ Most devices need to get on a network, get discovered, update firmware, and deal
 
 <div class="feature-box">
 <h4>tooling</h4>
-Cross-compliation can be a total drag.  We're making it smooth as silk. We are working to get you from "mix new" to running code on your device in minutes.  
+Cross-compilation can be a total drag.  We're making it smooth as silk. We are working to get you from "mix new" to running code on your device in minutes.  
 </div>
 </div>
 
