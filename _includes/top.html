@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Nerves-project website">
+        <meta name="author" content="Frank Hunleth">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+        <title>{{ page.title }}</title>
+
+        <link rel="stylesheet" href="/assets/css/bootstrap.css">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/main.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="/assets/js/html5shiv.js"></script>
+          <script src="/assets/js/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">{{ site.name }}</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            {% if page.category == 'home' %}<li class="active"><a href="/">home</a></li>{% else %}<li><a href="/">home</a></li>{% endif %}
+            {% if page.category == 'news' %}<li class="active"><a href="/news/">news</a></li>{% else %}<li><a href="/news/">news</a></li>{% endif %}
+            {% if page.category == 'watch' %}<li class="active"><a href="/watch.html">watch</a></li>{% else %}<li><a href="/watch.html">watch</a></li>{% endif %}
+            {% if page.category == 'learn' %}<li class="active"><a href="/learn.html">learn</a></li>{% else %}<li><a href="/learn.html">learn</a></li>{% endif %}
+            <li><a href="https://github.com/nerves-project">code</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">

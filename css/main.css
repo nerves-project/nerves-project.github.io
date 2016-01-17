@@ -1,14 +1,19 @@
 body {
-  padding-top: 50px;
+  padding-top: 80px;
   font-size: 11pt;
+}
+
+#content h3 {
+    font-size: 15pt;
+}
+
+#content h4 { 
+    color: gray;
+    font-decoration: bold
 }
 
 .center {
     align: center;
-}
-
-.nerves-main {
-  padding: 40px 15px;
 }
 
 .feature-box-container {
@@ -19,18 +24,24 @@ body {
 
 .feature-box {
     align-self: flex-start;
-    padding: 10px;
-    width: 300px;
+    padding: 0px;
+    width: 200px;
     min-height: 160px;
     margin: auto;
 }
 
 
-.platform-support-icons {
-    float: right;
-    width: 160px;
-    padding: 10px;
+.platform-support img {
+    width: 40px;
+    padding: 0px;
+    border: none;
     font-size: 10pt;
+}
+
+.platform-support .blurb {
+    float: right;
+    width: 140px;
+    font-size: 9pt;
 }
 /*
  * Social buttons
@@ -60,6 +71,7 @@ body {
 .bs-social-buttons .twitter-share-button {
     width: 98px !important;
 }
+
 /* Style the GitHub buttons via CSS instead of inline attributes */
 .github-btn {
     border: 0;
