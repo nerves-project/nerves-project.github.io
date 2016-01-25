@@ -7,13 +7,20 @@ body {
     font-size: 15pt;
 }
 
-#content h4 { 
+#content h4 {
     color: gray;
     font-decoration: bold
 }
 
 .center {
     align: center;
+}
+
+.navbar-brand {
+  background: url(/images/logo.png) center center no-repeat;
+  background-size: 40px 40px;
+  height: 50px;
+  width: 50px;
 }
 
 .feature-box-container {
