@@ -22,7 +22,7 @@ category: learn
 # Architectural Overview
 
 Write your firmware using Elixir or Erlang, and use popular build
-tools like [Rebar](https://github.com/basho/rebar), [Mix](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html), [Relx](https://github.com/erlware/relx) or [Exrm](https://github.com/bitwalker/exrm)
+tools like [Rebar](https://github.com/rebar/rebar), [Mix](http://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html), [Relx](https://github.com/erlware/relx) or [Exrm](https://github.com/bitwalker/exrm)
 a cross-compiled environment for targeting small to medium sized
 embedded devices. Releases are packaged into bootable all-in-one firmware
 images. [Buildroot](http://buildroot.net/) provides the base images and simplifies
