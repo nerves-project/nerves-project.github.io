@@ -23,7 +23,7 @@ category: home
 
     <div class="feature-box">
     <h4><b>tooling</b></h4>
-    Cross-compliation can be a total drag.  Our tools make it smooth as silk. Go from "mix new" to running code on your device in minutes.  
+    Cross-compilation can be a total drag.  Our tools make it smooth as silk. Go from "mix new" to running code on your device in minutes.  
     </div>
 </div>
 <hr/>
