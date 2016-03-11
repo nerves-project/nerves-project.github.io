@@ -13,7 +13,7 @@ category: learn
 >
 > Unfortunately, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
 >
-> The documentation below reflects how to use the nerves-sdk (foundation) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're very close.
+> The documentation below reflects how to use the nerves-sdk (now called nerves-system-br) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're very close.
 
 > In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or
 > contact us on the [mailing list](https://groups.google.com/group/nerves-project).
@@ -68,20 +68,9 @@ to make the cross-compiled environment a natural one for development.
 
 
 # Getting Started
-The first step is downloading and installing the [Nerves
-SDK](https://github.com/nerves-project/nerves-sdk) from GitHub. See the
-[README.md](https://github.com/nerves-project/nerves-sdk/blob/master/README.md)
-for instructions.
 
-Once the Nerves SDK has been installed, you can start your own Erlang projects
-and build them in the Nerves environment. Look at the [demonstration
-project](https://github.com/nerves-project/nerves-demo) for
-a simple example. The Getting Started screencast below walks through the SDK
-installation and the demo application build step by step.
-
-<iframe width="420" height="315" src="//www.youtube.com/embed/kWXrct6nnGg"
-frameborder="0" allowfullscreen>
-</iframe>
+Please see [Bakeware](http://bakeware.io) for an easy way to get started with
+Nerves until this documentation has been updated.
 
 # Components & Tools
 
@@ -115,28 +104,22 @@ executables, libraries, and other priv directory contents are copied, but
 that `relsync` will invoke on the target before and after the synchronization
 process.
 
-### [mmccopy](https://github.com/fhunleth/mmccopy)
-
-> Note: deprecated, functionality now included in fwup
-
-This tool is a replacement for `dd` for copying firmware images or other data
-directly to SDCards and Flash memory. It provides numerous features such as
-automatic SDCard device detection, efficient data copying, and progress
-reporting. Ultimately, it is needed on Nerves target hardware for updating
-images on device since Erlang does not allow file reads and writes to device
-files. See [Erlang Faq 9.12](http://www.erlang.org/faq/problems.html#id56464).
-
 ## Nerves Project FAQ
 
 ### What license does Nerves use?
 
-The Nerves SDK is covered by the [GPLv2 (or later)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
-as a consequence of using [Buildroot](http://buildroot.net/). The licenses for
-all of the code built in the SDK can be found by running `make legal-info` in
-the `buildroot` subdirectory of the SDK.
-
-Each Nerves subproject contains its license as part of the project. In most
-cases the license is the [MIT License](http://opensource.org/licenses/MIT).
+Nerves is split up into multiple projects with varying licenses. Nerves project
+code that is written in Erlang or Elixir is covered by the
+[Apache 2.0 license](https://opensource.org/licenses/Apache-2.0) or [MIT
+license](https://opensource.org/licenses/MIT). The `nerves-system-br` component
+contains scripts used for building C/C++ code that runs on the target. It
+uses [Buildroot](http://buildroot.net/). Both it and Buildroot are covered by
+the [GPLv2 license](https://opensource.org/licenses/GPL-2.0). While neither
+project contains code that runs on the target, they both build code for the
+target such as the Linux kernel, Erlang, and some utilities. Depending on your
+Nerves system configuration, other packages may be included. To get the full
+list, run `make legal-info`. Consult the Buildroot documentation for more
+information.
 
 ### Where did my Ethernet go?
 

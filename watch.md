@@ -9,14 +9,14 @@ category: watch
 </center>
 <hr/>
 ## Embedded Elixir in Action
-Presentation given by Garth Hitchens at ElixirConf in October, 2015.  Gives a good overview of Nerves, it's capabilities, and where it is going as a platform, as well as demonstrating it's capabilities   
+Presentation given by Garth Hitchens at ElixirConf in October, 2015.  Gives a good overview of Nerves, it's capabilities, and where it is going as a platform, as well as demonstrating it's capabilities
 
 <iframe width="420" height="315" src="//www.youtube.com/embed/kpzQrFC55q4"
 frameborder="0" allowfullscreen></iframe>
 
 <hr/>
 ## Getting Started with Nerves
-Frank Hunleth describes how to use `nerves-sdk` to build cross-compiled 
+Frank Hunleth describes how to use `nerves-sdk` (now renamed to `nerves-system-br`) to build cross-compiled
 firmware written in erlang.  While we are working to dramatically simplify this
 process with our `bake` tool, this is a good overview of how nerves
 can be used today in linux to cross-compile Erlang and Elixir code.
