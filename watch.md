@@ -40,6 +40,7 @@ SumoBots</a> </strong> from <strong><a href="//www.slideshare.net/fhunleth"
 target="_blank">Frank Hunleth</a></strong> </div>
 
 ---
+
 ## Building an IP Network Camera
 Slides from a presentation given by Frank Hunleth at Erlang Factory 2014 demonstrating using Nerves to build an IP camera out of a BeagleBone Black.
 
@@ -55,6 +56,7 @@ href="http://www.slideshare.net/fhunleth" target="_blank">Frank
 Hunleth</a></strong> </div>
 
 ---
+
 ## Using Erlang in an Embedded and Cross-Compiled World
 Slides from a presentation given by Frank Hunleth to an Erlang users's group in Washington DC, 2013.  Describes the history of the nerves project and the motivation.
 
