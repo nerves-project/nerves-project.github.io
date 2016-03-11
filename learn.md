@@ -30,7 +30,7 @@ cross-compilation of external C/C++ libraries needed for your application.
 The Nerves project sets up your environment and provides the base images so that you
 can do this:
 
-![Alt Diagram of Nerves](images/nerves-summary.png)
+![Alt Diagram of Nerves](/images/nerves-summary.png)
 
 ## For C/C++ Embedded Software Developers
 
