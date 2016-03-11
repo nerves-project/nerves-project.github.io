@@ -4,10 +4,8 @@ title: nerves
 category: learn
 ---
 
-<center>
 # learn
-</center>
-<hr/>
+---
 
 > __IMPORTANT__ -- In September 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
 >
@@ -18,7 +16,7 @@ category: learn
 > In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or
 > contact us on the [mailing list](https://groups.google.com/group/nerves-project).
 
-<hr/><br/>
+---
 # Architectural Overview
 
 Write your firmware using Elixir or Erlang, and use popular build
