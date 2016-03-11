@@ -9,13 +9,13 @@ category: learn
 </center>
 <hr/>
 
-> __IMPORTANT__ -- In Septmber 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
+> __IMPORTANT__ -- In September 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
 >
-> Unfortuantely, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
+> Unfortunately, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
 >
 > The documentation below reflects how to use the nerves-sdk (foundation) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're very close.
 
-> In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or 
+> In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or
 > contact us on the [mailing list](https://groups.google.com/group/nerves-project).
 
 <hr/><br/>
@@ -67,7 +67,7 @@ The Nerves Project aims to provide this infrastructure so that Erlang and
 to make the cross-compiled environment a natural one for development.
 
 
-# Getting Started 
+# Getting Started
 The first step is downloading and installing the [Nerves
 SDK](https://github.com/nerves-project/nerves-sdk) from GitHub. See the
 [README.md](https://github.com/nerves-project/nerves-sdk/blob/master/README.md)
@@ -85,12 +85,12 @@ frameborder="0" allowfullscreen>
 
 # Components & Tools
 
-> This section is dated and does not reflect current componentry and tooling.  
+> This section is dated and does not reflect current componentry and tooling.
 
 ### [fwup](https://github.com/fhunleth/fwup)
 
 
-The fwup utility is a configurable image-based firmware update utility for embedded Linux-based systems. It has two modes of operation. The first mode creates compressed archives containing root file system images, bootloaders, and other image material. These can be distributed via websites, email or update servers. The second mode applies the firmware images in a robust and repeatable way. 
+The fwup utility is a configurable image-based firmware update utility for embedded Linux-based systems. It has two modes of operation. The first mode creates compressed archives containing root file system images, bootloaders, and other image material. These can be distributed via websites, email or update servers. The second mode applies the firmware images in a robust and repeatable way.
 
 ### [erlinit](https://github.com/nerves-project/erlinit)
 
