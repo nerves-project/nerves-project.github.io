@@ -9,14 +9,15 @@ category: learn
 
 > __IMPORTANT__ -- In September 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
 >
-> Unfortunately, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
+> Unfortunately, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material soon.
 >
-> The documentation below reflects how to use the nerves-sdk (now called nerves-system-br) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're very close.
+> The documentation below reflects how to use the nerves-sdk (now called nerves-system-br) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're close.
 
 > In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or
 > contact us on the [mailing list](https://groups.google.com/group/nerves-project).
 
 ---
+
 # Architectural Overview
 
 Write your firmware using Elixir or Erlang, and use popular build
