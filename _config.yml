@@ -1,6 +1,5 @@
 name: nerves
-markdown: redcarpet
-highlighter: pygments
+highlighter: rouge
 permalink: /news/:year/:month/:day/:title/
 redcarpet:
   extensions: ['with_toc_data', 'tables', 'smart']
