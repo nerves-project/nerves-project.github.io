@@ -1,8 +1,6 @@
 name: nerves
-markdown: redcarpet
-highlighter: pygments
+markdown: kramdown
+highlighter: rouge
 permalink: /news/:year/:month/:day/:title/
-redcarpet:
-  extensions: ['with_toc_data', 'tables', 'smart']
 gems:
   - jekyll-redirect-from

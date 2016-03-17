@@ -4,21 +4,20 @@ title: nerves
 category: learn
 ---
 
-<center>
 # learn
-</center>
-<hr/>
+---
 
 > __IMPORTANT__ -- In September 2015, the nerves project dramatically expanded to include the charter and members of the former [cellulose](http://cellulose.io) project.  This change involved an increase in focus on the [Elixir](http://elixir-lang.org) language, a broader scope encompassing an embedded framework and tooling, as well as more than doubling the size of the core team.
 >
-> Unfortunately, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material by year's end.
+> Unfortunately, the documentation we have available at this time does not yet reflect these changes, and we are diligently working to update it.  We hope to have some better overview material soon.
 >
-> The documentation below reflects how to use the nerves-sdk (foundation) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're very close.
+> The documentation below reflects how to use the nerves-sdk (now called nerves-system-br) to build firmware in either Erlang or Elixir.   The methods require linux or a linux VM, which we hope to alleviate soon.   We haven't delivered yet on our ease-of-getting-going goal, but we're close.
 
-> In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or 
+> In the meantime, if you are very hearty and interested in helping us craft nerves, contact us on the __#nerves__ channel in the [elixir-lang slack community](https://elixir-slackin.herokuapp.com/) or
 > contact us on the [mailing list](https://groups.google.com/group/nerves-project).
 
-<hr/><br/>
+---
+
 # Architectural Overview
 
 Write your firmware using Elixir or Erlang, and use popular build
@@ -31,7 +30,7 @@ cross-compilation of external C/C++ libraries needed for your application.
 The Nerves project sets up your environment and provides the base images so that you
 can do this:
 
-![Alt Diagram of Nerves](images/nerves-summary.png)
+![Alt Diagram of Nerves](/images/nerves-summary.png)
 
 ## For C/C++ Embedded Software Developers
 
@@ -67,30 +66,19 @@ The Nerves Project aims to provide this infrastructure so that Erlang and
 to make the cross-compiled environment a natural one for development.
 
 
-# Getting Started 
-The first step is downloading and installing the [Nerves
-SDK](https://github.com/nerves-project/nerves-sdk) from GitHub. See the
-[README.md](https://github.com/nerves-project/nerves-sdk/blob/master/README.md)
-for instructions.
+# Getting Started
 
-Once the Nerves SDK has been installed, you can start your own Erlang projects
-and build them in the Nerves environment. Look at the [demonstration
-project](https://github.com/nerves-project/nerves-demo) for
-a simple example. The Getting Started screencast below walks through the SDK
-installation and the demo application build step by step.
-
-<iframe width="420" height="315" src="//www.youtube.com/embed/kWXrct6nnGg"
-frameborder="0" allowfullscreen>
-</iframe>
+Please see [Bakeware](http://bakeware.io) for an easy way to get started with
+Nerves until this documentation has been updated.
 
 # Components & Tools
 
-> This section is dated and does not reflect current componentry and tooling.  
+> This section is dated and does not reflect current componentry and tooling.
 
 ### [fwup](https://github.com/fhunleth/fwup)
 
 
-The fwup utility is a configurable image-based firmware update utility for embedded Linux-based systems. It has two modes of operation. The first mode creates compressed archives containing root file system images, bootloaders, and other image material. These can be distributed via websites, email or update servers. The second mode applies the firmware images in a robust and repeatable way. 
+The fwup utility is a configurable image-based firmware update utility for embedded Linux-based systems. It has two modes of operation. The first mode creates compressed archives containing root file system images, bootloaders, and other image material. These can be distributed via websites, email or update servers. The second mode applies the firmware images in a robust and repeatable way.
 
 ### [erlinit](https://github.com/nerves-project/erlinit)
 
@@ -115,28 +103,22 @@ executables, libraries, and other priv directory contents are copied, but
 that `relsync` will invoke on the target before and after the synchronization
 process.
 
-### [mmccopy](https://github.com/fhunleth/mmccopy)
-
-> Note: deprecated, functionality now included in fwup
-
-This tool is a replacement for `dd` for copying firmware images or other data
-directly to SDCards and Flash memory. It provides numerous features such as
-automatic SDCard device detection, efficient data copying, and progress
-reporting. Ultimately, it is needed on Nerves target hardware for updating
-images on device since Erlang does not allow file reads and writes to device
-files. See [Erlang Faq 9.12](http://www.erlang.org/faq/problems.html#id56464).
-
 ## Nerves Project FAQ
 
 ### What license does Nerves use?
 
-The Nerves SDK is covered by the [GPLv2 (or later)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
-as a consequence of using [Buildroot](http://buildroot.net/). The licenses for
-all of the code built in the SDK can be found by running `make legal-info` in
-the `buildroot` subdirectory of the SDK.
-
-Each Nerves subproject contains its license as part of the project. In most
-cases the license is the [MIT License](http://opensource.org/licenses/MIT).
+Nerves is split up into multiple projects with varying licenses. Nerves project
+code that is written in Erlang or Elixir is covered by the
+[Apache 2.0 license](https://opensource.org/licenses/Apache-2.0) or [MIT
+license](https://opensource.org/licenses/MIT). The `nerves-system-br` component
+contains scripts used for building C/C++ code that runs on the target. It
+uses [Buildroot](http://buildroot.net/). Both it and Buildroot are covered by
+the [GPLv2 license](https://opensource.org/licenses/GPL-2.0). While neither
+project contains code that runs on the target, they both build code for the
+target such as the Linux kernel, Erlang, and some utilities. Depending on your
+Nerves system configuration, other packages may be included. To get the full
+list, run `make legal-info`. Consult the Buildroot documentation for more
+information.
 
 ### Where did my Ethernet go?
 

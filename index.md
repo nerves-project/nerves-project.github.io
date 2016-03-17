@@ -6,7 +6,7 @@ category: home
 
 <center>
 <h1><a href="http://nerves-project.org">nerves</a></h1>
-<h3>craft bulletproof firmware in the stunningly productive [**elixir**](http://elixir-lang.org/) language</h3>
+<h3>craft bulletproof firmware in the stunningly productive <a href="http://elixir-lang.org"><b>elixir</b></a> language</h3>
 </center>
 
 <hr/>
@@ -23,11 +23,11 @@ category: home
 
     <div class="feature-box">
     <h4><b>tooling</b></h4>
-    Cross-compilation can be a total drag.  Our tools make it smooth as silk. Go from "mix new" to running code on your device in minutes.  
+    Cross-compliation can be a total drag.  Our tools make it smooth as silk. Go from "mix new" to running code on your device in minutes.
     </div>
 </div>
 <hr/>
 
 Nerves is young, but already powers rock-solid shipping industrial products!  Check us out if you are a hearty experimenter and interested in a new way of creating embedded systems.
 
-Nerves is fully open source with a permissive (MIT) license.  Nerves uses Buildroot to provide Linux, so some portions of the platform are licensed under the GPL.
+Nerves is fully open source.  Nerves uses Buildroot to provide Linux, so some portions of the platform are licensed under the GPL.
