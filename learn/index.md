@@ -100,11 +100,18 @@ There will be some modules in this section to help bridge those gaps.
 
 ### What license does Nerves use?
 
-The Nerves SDK is covered by the [GPLv2 (or later)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html) as a consequence of using [Buildroot](https://buildroot.org).
-The licenses for all of the code built in the SDK can be found by running `make legal-info` in the `buildroot` subdirectory of the SDK.
-
-Each Nerves subproject contains its license as part of the project.
-In most cases the license is the [MIT License](http://opensource.org/licenses/MIT).
+Nerves is split up into multiple projects with varying licenses. Nerves project
+code that is written in Erlang or Elixir is covered by the
+[Apache 2.0 license](https://opensource.org/licenses/Apache-2.0) or [MIT
+license](https://opensource.org/licenses/MIT). The `nerves-system-br` component
+contains scripts used for building C/C++ code that runs on the target. It
+uses [Buildroot](http://buildroot.net/). Both it and Buildroot are covered by
+the [GPLv2 license](https://opensource.org/licenses/GPL-2.0). While neither
+project contains code that runs on the target, they both build code for the
+target such as the Linux kernel, Erlang, and some utilities. Depending on your
+Nerves system configuration, other packages may be included. To get the full
+list, run `make legal-info`. Consult the Buildroot documentation for more
+information.
 
 ### I need to make changes to Buildroot, but it takes so long to build.
 
