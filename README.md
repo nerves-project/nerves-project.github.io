@@ -3,7 +3,7 @@
 # Setup
 
 Use rvm to install a recent version of ruby. See
-[https://rvm.beginrescueend.com/](https://rvm.beginrescueend.com/).
+[https://rvm.io/](https://rvm.io/).
 After this, run the following:
 
     rvm use 2.0   # If you get the login shell error, go to the
