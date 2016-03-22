@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: learn
 title: nerves
 category: learn
 ---
@@ -58,14 +58,13 @@ The **Getting Started** modules teach you the basics of building firmware using 
 They're designed as a series of small achievements so that you can make progress and learn at your own pace, even if your schedule doesn't allow large blocks of focused time.
 We recommend that you go through each of the modules in order to ensure everything works smoothly.
 
-> Sorry! These are still just place-holders.
-> They'll be published soon, so be sure to watch this space!
+> Sorry! Many of these guides are still just place-holders.
+> If you're looking for a way to contribute, we'd love for you to write one of these!
 
-  1. Choose Target Platform and Development Environment
-  1. Install Bakeware
-  1. Burn a Pre-Built Demo Firmware
-  1. Build and Run the Blinky Demo
-  1. Build and Run the Hello Network Demo
+  1. Prepare your Tools
+  1. Pre-Built Demo Firmware
+  1. The Blinky Demo
+  1. The Hello Network Demo
   1. Your First Nerves Project
   1. Elixir/OTP Crash-Course
 
@@ -75,8 +74,8 @@ The **How Do I...** modules go deeper into the details of how to interface with 
 Even if you're already familiar with Elixir, some things will be different when you're working in an embedded environment, like testing.
 There will be some modules in this section to help bridge those gaps.
 
-> Sorry! These are still just place-holders.
-> They'll be published soon, so be sure to watch this space!
+> Sorry! All of these guides are still just place-holders.
+> If you're looking for a way to contribute, we'd love for you to write one of these!
 
   1. Test Code that Depends on Hardware or Drivers
   1. Connect to an Ethernet Network (wired and wireless)
@@ -96,7 +95,7 @@ There will be some modules in this section to help bridge those gaps.
 
 > The content that follows is dated and may not reflect the current status of the Nerves Project
 
-## Nerves Project FAQ
+## Frequently-Asked Questions
 
 ### What license does Nerves use?
 
