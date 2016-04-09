@@ -24,7 +24,7 @@ Nerves also supports other BEAM languages like [Erlang](https://www.erlang.org/)
 If you're just getting started with Nerves, we think you'll probably want to start with a visual summary of the tools you'll be using and learning more about.
 Don't worry if it doesn't all sink in right away, just skim over it so you have some context before the **Getting Started** section.
 
-> (insert a high-level diagram here)
+![Overview of Nerves Components](/images/nerves_overview.png)
 
 ### [Bakeware](http://www.bakeware.io/)
 
