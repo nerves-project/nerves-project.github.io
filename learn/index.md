@@ -61,7 +61,7 @@ We recommend that you go through each of the modules in order to ensure everythi
 > Sorry! Many of these guides are still just place-holders.
 > If you're looking for a way to contribute, we'd love for you to write one of these!
 
-  1. Prepare your Tools
+  1. [Prepare your Tools](prepare.html)
   1. Pre-Built Demo Firmware
   1. The Blinky Demo
   1. The Hello Network Demo
