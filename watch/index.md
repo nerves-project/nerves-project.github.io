@@ -8,6 +8,33 @@ category: watch
 
 ---
 
+## Nerves - Getting Started, and the Road Ahead
+Garth Hitchens presents at Elixir Daze 2016, giving a detailed update his previous talk, **Embedded Elixir in Action**.
+He describes the current state of the platform, libraries, and tooling around Nerves.
+He also talks about the future integration with `mix`, upcoming support for network protocols, and plans for more robust, built-in security features.
+
+<iframe width="420" height="315" src="//www.youtube.com/embed/poWoCWDLxRU"
+frameborder="0" allowfullscreen></iframe>
+
+---
+
+## Embedded Elixir / Introduction to Nerves
+Justin Schneck discusses why Elixir is a great language for embedded development, gives us an update on the current state of the Nerves project. He also goes through a detailed demonstration of how to use Bakeware to build and deploy a Nerves app from a Mac.
+
+<iframe width="420" height="315" src="//www.youtube.com/embed/V7SAb02PaUU"
+frameborder="0" allowfullscreen></iframe>
+
+---
+
+## Embedded Elixir with Nerves
+Greg Mefford gives a brief overview of why Elixir and Nerves are a great platform for embedded developent, introduces the Nerves core team, and gives an update on the team's current short-term roadmap.
+He describes how the tools in the Nerves ecosystem work together to build a firmware image and shows a whimsical demo, driving NeoPixels from a Raspberry Pi.
+
+<iframe width="420" height="315" src="//www.youtube.com/embed/kJYHzxIh_Yc"
+frameborder="0" allowfullscreen></iframe>
+
+---
+
 ## Embedded Elixir in Action
 Presentation given by Garth Hitchens at ElixirConf in October, 2015.  Gives a good overview of Nerves, it's capabilities, and where it is going as a platform, as well as demonstrating it's capabilities
 
