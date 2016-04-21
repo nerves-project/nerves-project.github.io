@@ -61,12 +61,12 @@ We recommend that you go through each of the modules in order to ensure everythi
 > Sorry! Many of these guides are still just place-holders.
 > If you're looking for a way to contribute, we'd love for you to write one of these!
 
-  1. [Prepare your Tools](prepare.html)
-  1. [Pre-Built Demo Firmware](pre-built-demo.html)
-  1. [The Blinky Demo](blinky-demo.html)
-  1. [The Hello Network Demo](network-demo.html)
-  1. [Your First Nerves Project](first-project.html)
-  1. [Elixir/OTP Crash-Course](elixir-otp-crash-course.html)
+  1. [Prepare your Tools](prepare)
+  1. [Pre-Built Demo Firmware](pre-built-demo)
+  1. [The Blinky Demo](blinky-demo)
+  1. [The Hello Network Demo](network-demo)
+  1. [Your First Nerves Project](first-project)
+  1. [Elixir/OTP Crash-Course](elixir-otp-crash-course)
 
 ## How Do I...
 
