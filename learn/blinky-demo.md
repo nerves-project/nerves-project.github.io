@@ -23,6 +23,7 @@ Depending on what kind of target hardware you have, you will need to choose the 
 
 | Raspberry Pi     | rpi  |
 | Raspberry Pi 2   | rpi2 |
+| Raspberry Pi 3   | rpi3 |
 | Beaglebone Black | bbb  |
 
     bake system get --target rpi2
