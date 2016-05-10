@@ -37,10 +37,14 @@ You can **Burn** this file to an SD card like this:
     bake burn --target rpi2
 
     # On Linux (make sure you use the correct suffix for your target hardware)
-    fwup -a -i _images/blinky-rpi2 -t complete
+    fwup -a -i _images/blinky-rpi2.fw -t complete
 
 Once it is done, put the SD card into your target hardware and power it on.
 If you have a screen attached to the HDMI port, you will see Linux booting up.
 After about four seconds, you will see the on-board LED blinking on and off forever.
 
 Success!
+
+## Troubleshooting
+
+On Linux, you might get the message `fwup: Memory card couldn't be found automatically.` while burning the image. In that case, try the `fwup` command again with `sudo`.
