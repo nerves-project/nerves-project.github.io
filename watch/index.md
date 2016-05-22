@@ -8,6 +8,14 @@ category: watch
 
 ---
 
+## Enhanced Embedded Systems with Nerves
+Justin Schneck presents at ElixirConfEU 2016, giving a detailed description of how to use Nerves with the new Mix integration to build robust firmware in Elixir, including a UI leveraging a Phoenix back-end also running on the device. [slides](http://s3.amazonaws.com/erlang-conferences-production/media/files/000/000/089/original/NervesRevolution.pdf)
+
+<iframe width="420" height="315" src="https://www.youtube.com/embed/118-g0ODfgg"
+frameborder="0" allowfullscreen></iframe>
+
+---
+
 ## Nerves - Getting Started, and the Road Ahead
 Garth Hitchens presents at Elixir Daze 2016, giving a detailed update his previous talk, **Embedded Elixir in Action**.
 He describes the current state of the platform, libraries, and tooling around Nerves.
@@ -28,7 +36,7 @@ frameborder="0" allowfullscreen></iframe>
 
 ## Embedded Elixir with Nerves
 Greg Mefford gives a brief overview of why Elixir and Nerves are a great platform for embedded developent, introduces the Nerves core team, and gives an update on the team's current short-term roadmap.
-He describes how the tools in the Nerves ecosystem work together to build a firmware image and shows a whimsical demo, driving NeoPixels from a Raspberry Pi.
+He describes how the tools in the Nerves ecosystem work together to build a firmware image and shows a whimsical demo, driving NeoPixels from a Raspberry Pi. [slides](http://slides.com/gregmefford/first_dose_of_embedded_elixir_with_nerves#/)
 
 <iframe width="420" height="315" src="//www.youtube.com/embed/kJYHzxIh_Yc"
 frameborder="0" allowfullscreen></iframe>
