@@ -13,7 +13,7 @@ category: home
 <div class="feature-box-container">
     <div class="feature-box">
     <h4><b>Platform</b></h4>
-    Pack your whole application into 20MB that starts in seconds by booting a lean, custom cross-compiled Linux directly to the Erlang VM.
+    Pack your whole application into 20MB that starts in seconds by booting a lean, custom cross-compiled Linux directly to the battle-hardened Erlang VM.
     </div>
 
     <div class="feature-box">
