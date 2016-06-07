@@ -6,6 +6,8 @@ category: news
 
 ---
 
+> NOTE: As of June 2016, Bake is no longer the best way to build firmware with Nerves. Check out [this news update](http://nerves-project.org/news/2016/05/29/a-whirlwind-of-recent-changes/#mix-integration) for more details on the native Mix integration for Nerves.
+
 The core team has been quietly but diligently working on simplifying one of the most frustrating parts of getting started with Nerves: the build process.  And we're ready for you to give what we've done a spin.
 
 When I gave the [Embedded Elixir in Action](https://www.youtube.com/watch?v=kpzQrFC55q4) talk in October, building your Nerves firmware always involved running a cross compiler under Linux.  It was one of the most frustrating parts of Nerves -- you had to run Linux in a virtual machine in order to do compiles, because the toolchains only worked on Linux, not on OS X or Windows.
