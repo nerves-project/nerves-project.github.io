@@ -6,24 +6,24 @@ category: home
 
 <center>
 <h1><a href="http://nerves-project.org">nerves</a></h1>
-<h3>craft bulletproof firmware in the stunningly productive <a href="http://elixir-lang.org"><b>elixir</b></a> language</h3>
+<h3>keep embedded devices at your fingertips using the <a href="http://elixir-lang.org"><b>Elixir</b></a> language</h3>
 </center>
 
 <hr/>
 <div class="feature-box-container">
     <div class="feature-box">
-    <h4><b>platform</b></h4>
-    Using a lean, custom cross-compiled linux, nerves boots directly to the battle hardened BEAM VM, starting your application in seconds.
+    <h4><b>Platform</b></h4>
+    Pack your whole application into 20MB that starts in seconds by booting a lean, custom cross-compiled Linux directly to the battle-hardened Erlang VM.
     </div>
 
     <div class="feature-box">
-    <h4><b>framework</b></h4>
-    Most devices need to get on a network, get discovered, update firmware, and deal with I/O of various kinds.  You're not on your own.
+    <h4><b>Framework</b></h4>
+    Let Nerves take care of the network, discovery, I/O, firmware updates and more. Focus on what matters and have fun writing robust and maintainable software.
     </div>
 
     <div class="feature-box">
-    <h4><b>tooling</b></h4>
-    Cross-compliation can be a total drag.  Our tools make it smooth as silk. Go from "mix new" to running code on your device in minutes.
+    <h4><b>Tooling</b></h4>
+    Go from "mix new" to running code on your device in minutes. From cross-compilation to remote device access, our tools got you covered.
     </div>
 </div>
 <hr/>
