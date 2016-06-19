@@ -1,12 +1,12 @@
 ---
 layout: home
-title: nerves
+title: Nerves
 category: home
 ---
 
 <center>
 <h1><a href="http://nerves-project.org">Nerves</a></h1>
-<h3>craft bulletproof firmware in the stunningly productive <a href="http://elixir-lang.org"><b>elixir</b></a> language</h3>
+<h3>Craft and deploy bulletproof embedded software in <a href="http://elixir-lang.org"><b>Elixir</b></a></h3>
 </center>
 
 <hr/>
