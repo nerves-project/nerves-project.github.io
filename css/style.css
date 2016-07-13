@@ -51,7 +51,7 @@ a.spec, a.spec:visited {
 a:hover {
   text-decoration: none;
   color: #000;
-} 
+}
 a:focus { outline: none; }
 a:hover, a:active { outline: 0; }
 
@@ -331,7 +331,7 @@ td {
 
 /* Lists
 -------------------------------------------------------------- */
-ul li, ol li { line-height: 2.1em; }
+.widget ul li, .widget ol li { line-height: 2.1em; }
 dl { margin: 0 0 20px 30px; }
 dl dt {
   margin: 0;

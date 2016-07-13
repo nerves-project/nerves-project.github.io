@@ -10,6 +10,7 @@ After this, run the following:
                   # terminal preferences and select run command as login
                   # shell.
     gem install jekyll
+    bundle install
     jekyll serve --watch
 
 Look at [http://localhost:4000](http://localhost:4000) in a browser to
@@ -18,4 +19,3 @@ previous the page.
 # Deploying
 
     git push
-

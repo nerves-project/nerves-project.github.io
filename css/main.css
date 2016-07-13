@@ -93,3 +93,5 @@ body {
       padding-left: 0;
   }
 }
+
+div.container.thirdparty li { margin-bottom: 12px; }
