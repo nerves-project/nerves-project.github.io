@@ -16,6 +16,8 @@ integrations.
 
 ## <a id="hardware"></a>Hardware libraries
 
+* **[elixir_ale](https://github.com/fhunleth/elixir_ale)** - Interact
+  with hardware in Elixir - GPIOs, I2C and SPI
 * **[Nerves.IO.Neopixel](https://github.com/GregMefford/nerves_io_neopixel)** -
   Drive WS2812B NeoPixel RGB LED strips from a Raspberry Pi
 * **[Nerves.IO.RC522](https://github.com/arjan/nerves_io_rc522)** -
