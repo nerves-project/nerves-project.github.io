@@ -39,9 +39,10 @@
             {% if page.category == 'news' %}<li class="active"><a href="/news/">News</a></li>{% else %}<li><a href="/news/">News</a></li>{% endif %}
             {% if page.category == 'watch' %}<li class="active"><a href="/watch/">Watch</a></li>{% else %}<li><a href="/watch/">Watch</a></li>{% endif %}
             <li><a href="https://github.com/nerves-project">Code</a></li>
+            {% if page.category == 'libraries' %}<li class="active"><a href="/libraries/">Libraries</a></li>{% else %}<li><a href="/libraries/">Libraries</a></li>{% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
-    <div class="container">
+    <div class="container {{ page.category }}">
