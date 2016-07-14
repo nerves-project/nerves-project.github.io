@@ -44,8 +44,8 @@ The list separated in officially supported and community contributed projects.
   Drive WS2812B NeoPixel RGB LED strips from a Raspberry Pi
 * **[nerves_io_rc522](https://hex.pm/packages/nerves_io_rc522)** -
   Read NFC tags using the RC522 RFID module
-
-
+* **[gen_mqtt](https://hex.pm/packages/gen_mqtt)** -
+  Turning processes into MQTT clients
 
 <hr/>
 
