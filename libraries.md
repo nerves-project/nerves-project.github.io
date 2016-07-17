@@ -40,12 +40,14 @@ The list separated in officially supported and community contributed projects.
 
 * **[elixir_ale](https://hex.pm/packages/elixir_ale)** - Interact
   with hardware in Elixir - GPIOs, I2C and SPI
+* **[gen_mqtt](https://hex.pm/packages/gen_mqtt)** -
+  Turning processes into MQTT clients
+* **[hmc5883l](https://hex.pm/packages/hmc5883l)** - OTP application for reading
+  the HMC5883L 3-axis magnetometer
 * **[nerves_io_neopixel](https://hex.pm/packages/nerves_io_neopixel)** -
   Drive WS2812B NeoPixel RGB LED strips from a Raspberry Pi
 * **[nerves_io_rc522](https://hex.pm/packages/nerves_io_rc522)** -
   Read NFC tags using the RC522 RFID module
-* **[gen_mqtt](https://hex.pm/packages/gen_mqtt)** -
-  Turning processes into MQTT clients
 
 <hr/>
 
