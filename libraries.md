@@ -46,6 +46,8 @@ The list separated in officially supported and community contributed projects.
   the HMC5883L 3-axis magnetometer
 * **[nerves_io_neopixel](https://hex.pm/packages/nerves_io_neopixel)** -
   Drive WS2812B NeoPixel RGB LED strips from a Raspberry Pi
+* **[nerves_io_nfc](https://hex.pm/packages/nerves_io_nfc)** -
+  Read NFC tags using LibNFC-compatible USB NFC readers
 * **[nerves_io_rc522](https://hex.pm/packages/nerves_io_rc522)** -
   Read NFC tags using the RC522 RFID module
 
