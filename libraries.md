@@ -40,6 +40,8 @@ The list separated in officially supported and community contributed projects.
 
 * **[elixir_ale](https://hex.pm/packages/elixir_ale)** - Interact
   with hardware in Elixir - GPIOs, I2C and SPI
+* **[firmata](https://hex.pm/packages/firmata)** Control Arduino and other devices that
+  work with the Firmata protocol
 * **[gen_mqtt](https://hex.pm/packages/gen_mqtt)** -
   Turning processes into MQTT clients
 * **[hmc5883l](https://hex.pm/packages/hmc5883l)** - OTP application for reading
