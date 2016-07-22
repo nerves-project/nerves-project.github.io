@@ -52,6 +52,8 @@ The list separated in officially supported and community contributed projects.
   Read NFC tags using LibNFC-compatible USB NFC readers
 * **[nerves_io_rc522](https://hex.pm/packages/nerves_io_rc522)** -
   Read NFC tags using the RC522 RFID module
+* **[nerves_ntp](https://hex.pm/packages/nerves_ntp)** -
+  OTP application for synchronizing time using built-in `ntpd` command
 
 <hr/>
 
