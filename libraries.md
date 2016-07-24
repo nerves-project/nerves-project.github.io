@@ -54,6 +54,8 @@ The list separated in officially supported and community contributed projects.
   Read NFC tags using the RC522 RFID module
 * **[nerves_ntp](https://hex.pm/packages/nerves_ntp)** -
   OTP application for synchronizing time using built-in `ntpd` command
+* **[XGPS](https://github.com/rveshovda/xgps)** -
+  OTP application for reading data from GPS attach to UART/serial
 
 <hr/>
 
