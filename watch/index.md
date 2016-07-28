@@ -8,6 +8,14 @@ category: watch
 
 ---
 
+## Mixed Up with Nerves - My Journey So Far
+Greg Mefford presents at the Cincinnati Elixir Meetup, giving an update on recent news from the Nerves team and community. He also talks about his experience getting involved with contributing to the Nerves project and subsequently joining as a core team member. [slides](https://github.com/GregMefford/presentations/tree/master/2016-07-05_mixed-up-with-nerves-my-journey-so-far)
+
+<iframe width="420" height="315" src="https://www.youtube.com/embed/YMVL4275Zog"
+frameborder="0" allowfullscreen></iframe>
+
+---
+
 ## Enhanced Embedded Systems with Nerves
 Justin Schneck presents at ElixirConfEU 2016, giving a detailed description of how to use Nerves with the new Mix integration to build robust firmware in Elixir, including a UI leveraging a Phoenix back-end also running on the device. [slides](http://s3.amazonaws.com/erlang-conferences-production/media/files/000/000/089/original/NervesRevolution.pdf)
 
