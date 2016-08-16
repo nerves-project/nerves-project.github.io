@@ -24,7 +24,7 @@ The list separated in officially supported and community contributed projects.
   Connect to WiFi networks on Nerves platforms
 * **[nerves_leds](https://hex.pm/packages/nerves_leds)** -
   Functions to drive LEDs on embedded systems
-* **[nerves_networking](https://github.com/nerves-project/nerves_networking)** -
+* **[nerves_networking](https://hex.pm/packages/nerves_networking)** -
   Ethernet management
 * **[nerves_network_interface](https://hex.pm/packages/nerves_network_interface)** -
   Discover, setup, and get stats on network interfaces
