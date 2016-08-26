@@ -56,6 +56,10 @@ The list separated in officially supported and community contributed projects.
   OTP application for synchronizing time using built-in `ntpd` command
 * **[XGPS](https://hex.pm/packages/xgps)** -
   OTP application for reading data from GPS attach to UART/serial
+* **[Chromecast](https://github.com/NationalAssociationOfRealtors/chromecast)** - A library for monitoring and controlling a [Chromecast](https://www.google.com/intl/en_us/chromecast/)
+* **[SSDP](https://github.com/NationalAssociationOfRealtors/ssdp)** - Discover devices on your network that use the [Simple Service Discovery Protocol](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol)
+* **[Raven](https://github.com/NationalAssociationOfRealtors/raven)** - A Client for the [Rainforest Automation Raven USB Stick](https://rainforestautomation.com/rfa-z106-raven/)
+* **[Lifx](https://github.com/NationalAssociationOfRealtors/lifx)** - A Client for [Lifx](http://lifx.com/) LAN API
 
 <hr/>
 
