@@ -61,6 +61,7 @@ The list separated in officially supported and community contributed projects.
 * **[Raven](https://hex.pm/packages/raven_smcd)** - A Client for the [Rainforest Automation Raven USB SMCD](https://rainforestautomation.com/rfa-z106-raven/)
 * **[Lifx](https://hex.pm/packages/lifx)** - A Client for [Lifx](http://lifx.com/) LAN API
 * **[mDNS](https://hex.pm/packages/mdns)** - A simple [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) (zeroconf, bonjour) client for device discovery on your local network.
+* **[Movi](https://hex.pm/packages/movi)** - A library for communicating with the [Audeme MOVI™ Voice Control Shield](http://www.audeme.com/movi.html)
 
 <hr/>
 
