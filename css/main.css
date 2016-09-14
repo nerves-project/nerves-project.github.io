@@ -2,7 +2,7 @@ body {
   font-size: 11pt;
 }
 
-#header {
+.header {
   position: relative;
   background-image: url(/images/header.svg);
   background-position: center;
@@ -11,9 +11,16 @@ body {
   padding: 0; /* reset */
   width: 100%;
   height: 500px;
+  clear: both;
+  width: 100%;
+  padding-bottom: 10px;
 }
 
-#header-mask {
+.header img{
+  max-width: 100%; 
+}
+
+.header-mask {
   background: url(/images/logo.png) center center no-repeat rgba(0, 0, 0, 0.7);
   background-size: 600px 200px;
   width: 100%;
@@ -25,11 +32,11 @@ body {
   border-radius: 0;
 }
 
-#content h3 {
+.content h3 {
     font-size: 15pt;
 }
 
-#content h4 {
+.content h4 {
     color: gray;
     font-decoration: bold
 }

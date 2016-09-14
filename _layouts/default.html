@@ -5,21 +5,23 @@
 
   <body>
 
-    <div id="header">
-      <div id="header-mask"></div>
+    <div id="header" class="header">
+      <div class="header-mask"></div>
     </div>
 
     {% include nav.html %}
 
     <div class="container {{ page.category }}">
+      <div class="row">
+        <div id="content" class="col-md-9">
+          {{ content }}
+        </div><!-- #content -->
 
-      <div id="content">
-        {{ content }}
-      </div><!-- #content -->
-
-      <div id="sidebar-primary" class="sidebar home-page">
-        {% include sidebar.html %}
+        <div id="sidebar-primary" class="col-md-3">
+          {% include sidebar.html %}
+        </div>
       </div>
+    </div>
 
     </div><!-- /.container -->
 
