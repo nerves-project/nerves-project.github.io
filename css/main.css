@@ -7,12 +7,10 @@ body {
   background-image: url(/images/header.svg);
   background-position: center;
   background-size: cover;
-  height: 0;
   padding: 0; /* reset */
-  width: 100%;
-  height: 500px;
   clear: both;
   width: 100%;
+  height: 200px;
   padding-bottom: 10px;
 }
 
@@ -22,9 +20,9 @@ body {
 
 .header-mask {
   background: url(/images/logo.png) center center no-repeat rgba(0, 0, 0, 0.7);
-  background-size: 600px 200px;
+  background-size: 225px 75px;
   width: 100%;
-  height: 500px;
+  height: 200px;
 }
 
 .navbar {
@@ -128,6 +126,28 @@ body {
   }
   .bs-social-buttons li:first-child {
       padding-left: 0;
+  }
+}
+
+@media (min-width: 400px) {
+  .header {
+    height: 300px;
+  }
+
+  .header-mask {
+    height: 300px;
+    background-size: 300px 100px;
+  }
+}
+
+@media (min-width: 725px) {
+  .header {
+    height: 500px;
+  }
+
+  .header-mask {
+    height: 500px;
+    background-size: 600px 200px;
   }
 }
 
