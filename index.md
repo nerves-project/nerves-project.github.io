@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Craft and deploy bulletproof embedded software in Elixir &mdash; Nerves Project
+title: Craft and deploy bulletproof embedded software in Elixir
 category: home
 ---
 

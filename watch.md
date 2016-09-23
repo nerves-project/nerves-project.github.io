@@ -1,6 +1,6 @@
 ---
 layout: default
-title: nerves
+title: Nerves talks and screencasts
 category: watch
 ---
 
