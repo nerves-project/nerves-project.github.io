@@ -30,47 +30,6 @@ body {
   border-radius: 0;
 }
 
-.content h3 {
-    font-size: 15pt;
-}
-
-.content h4 {
-    color: gray;
-    font-decoration: bold
-}
-
-.center {
-    align: center;
-}
-
-.feature-box-container {
-    display: flex;
-    align-items: top;
-    flex-wrap: wrap;
-}
-
-.feature-box {
-    align-self: flex-start;
-    padding: 0px;
-    width: 200px;
-    min-height: 160px;
-    margin: auto;
-}
-
-
-.platform-support img {
-    width: 40px;
-    padding: 0px;
-    border: none;
-    font-size: 10pt;
-}
-
-.platform-support .blurb {
-    float: right;
-    width: 140px;
-    font-size: 9pt;
-}
-
 .video-container {
   position: relative;
   padding-bottom: 56.25%; /* 16:9 */
@@ -83,41 +42,6 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-}
-
-/*
- * Social buttons
- *
- * Twitter and GitHub social action buttons (for homepage and footer).
- */
-
-.bs-social {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-.bs-social-buttons {
-    display: inline-block;
-    margin-bottom: 0;
-    padding-left: 0;
-    list-style: none;
-}
-.bs-social-buttons li {
-    display: inline-block;
-    line-height: 1;
-    padding: 5px 8px;
-}
-.bs-social-buttons .twitter-follow-button {
-    width: 225px !important;
-}
-.bs-social-buttons .twitter-share-button {
-    width: 98px !important;
-}
-
-/* Style the GitHub buttons via CSS instead of inline attributes */
-.github-btn {
-    border: 0;
-    overflow: hidden;
 }
 
 @media (min-width: 768px) {
