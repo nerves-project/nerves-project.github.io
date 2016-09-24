@@ -55,7 +55,7 @@ category: home
     <img width="80px" src="/images/pi_logo.png"/>
   </div>
   <div class="col-md-8">
-    The most popular prototyping boards are the Beaglebone Black, Intel Galileo, and Raspberry Pi, Pi 2, and Pi 3.
+    The most popular prototyping boards are the Beaglebone Black and Raspberry Pi, Pi 2, and Pi 3.
   </div>
 </div>
 
