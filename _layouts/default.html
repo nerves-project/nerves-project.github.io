@@ -5,11 +5,11 @@
 
   <body>
 
-    <div id="header" class="header">
+    {% include nav.html %}
+
+    <div id="header" class="header {% if page.url != '/' %}minimal{% endif %}">
       <div class="header-mask"></div>
     </div>
-
-    {% include nav.html %}
 
     <div class="container {{ page.category }}">
       <div class="row">

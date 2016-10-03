@@ -10,7 +10,7 @@ body {
   padding: 0; /* reset */
   clear: both;
   width: 100%;
-  height: 200px;
+  height: 175px;
   padding-bottom: 10px;
 }
 
@@ -22,12 +22,24 @@ body {
   background: url(/images/logo.png) center center no-repeat rgba(0, 0, 0, 0.7);
   background-size: 225px 75px;
   width: 100%;
-  height: 200px;
+  height: 175px;
 }
 
 .navbar {
   border: none;
   border-radius: 0;
+  margin-bottom: 0;
+}
+
+.navbar-nav > li > a {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  font-size: 18px;
+  font-family: 'Lato', sans-serif;
+}
+
+#content, #sidebar-primary {
+  margin-top: 30px;
 }
 
 .video-container {
@@ -55,11 +67,11 @@ body {
 
 @media (min-width: 400px) {
   .header {
-    height: 300px;
+    height: 275px;
   }
 
   .header-mask {
-    height: 300px;
+    height: 275px;
     background-size: 300px 100px;
   }
 }
@@ -72,6 +84,14 @@ body {
   .header-mask {
     height: 500px;
     background-size: 600px 200px;
+  }
+
+  .header.minimal {
+    height: 300px;
+  }
+  .header.minimal .header-mask {
+    height: 300px;
+    background-size: 300px 100px;
   }
 }
 
