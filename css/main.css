@@ -1,88 +1,63 @@
 body {
-  padding-top: 80px;
   font-size: 11pt;
 }
 
-#content h3 {
-    font-size: 15pt;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lato', sans-serif;
 }
 
-#content h4 {
-    color: gray;
-    font-decoration: bold
+.header {
+  position: relative;
+  background-image: url(/images/header.svg);
+  background-position: center;
+  background-size: cover;
+  padding: 0; /* reset */
+  clear: both;
+  width: 100%;
+  height: 175px;
+  padding-bottom: 10px;
 }
 
-.center {
-    align: center;
+.header img{
+  max-width: 100%; 
 }
 
-.navbar-brand {
-  background: url(/images/logo.png) center center no-repeat;
-  background-size: 40px 40px;
-  height: 50px;
-  width: 50px;
+.header-mask {
+  background: url(/images/logo.png) center center no-repeat rgba(0, 0, 0, 0.7);
+  background-size: 225px 75px;
+  width: 100%;
+  height: 175px;
 }
 
-.feature-box-container {
-    display: flex;
-    align-items: top;
-    flex-wrap: wrap;
+.navbar {
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
 }
 
-.feature-box {
-    align-self: flex-start;
-    padding: 0px;
-    width: 200px;
-    min-height: 160px;
-    margin: auto;
+.navbar-nav > li > a {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  font-size: 18px;
+  font-family: 'Lato', sans-serif;
 }
 
-
-.platform-support img {
-    width: 40px;
-    padding: 0px;
-    border: none;
-    font-size: 10pt;
+#content, #sidebar-primary {
+  margin-top: 30px;
 }
 
-.platform-support .blurb {
-    float: right;
-    width: 140px;
-    font-size: 9pt;
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  padding-top: 25px;
+  height: 0;
 }
-/*
- * Social buttons
- *
- * Twitter and GitHub social action buttons (for homepage and footer).
- */
-
-.bs-social {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-.bs-social-buttons {
-    display: inline-block;
-    margin-bottom: 0;
-    padding-left: 0;
-    list-style: none;
-}
-.bs-social-buttons li {
-    display: inline-block;
-    line-height: 1;
-    padding: 5px 8px;
-}
-.bs-social-buttons .twitter-follow-button {
-    width: 225px !important;
-}
-.bs-social-buttons .twitter-share-button {
-    width: 98px !important;
-}
-
-/* Style the GitHub buttons via CSS instead of inline attributes */
-.github-btn {
-    border: 0;
-    overflow: hidden;
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -91,6 +66,36 @@ body {
   }
   .bs-social-buttons li:first-child {
       padding-left: 0;
+  }
+}
+
+@media (min-width: 400px) {
+  .header {
+    height: 275px;
+  }
+
+  .header-mask {
+    height: 275px;
+    background-size: 300px 100px;
+  }
+}
+
+@media (min-width: 725px) {
+  .header {
+    height: 500px;
+  }
+
+  .header-mask {
+    height: 500px;
+    background-size: 600px 200px;
+  }
+
+  .header.minimal {
+    height: 300px;
+  }
+  .header.minimal .header-mask {
+    height: 300px;
+    background-size: 300px 100px;
   }
 }
 
