@@ -55,13 +55,11 @@ category: home
     <img width="80px" src="/images/pi_logo.png"/>
   </div>
   <div class="col-md-8">
-    The most popular prototyping boards are the Beaglebone Black and Raspberry Pi, Pi 2, and Pi 3.
+    <p>The most popular prototyping boards are the Beaglebone Black and Raspberry Pi family.</p>
+    <div class="row text-center">
+      <a class="btn btn-info btn-lg" href="https://hexdocs.pm/nerves/targets.html">
+        See All Supported Hardware
+      </a>
+    </div>
   </div>
 </div>
-
-<div class="row text-center">
-  <a class="btn btn-info btn-lg" href="https://github.com/nerves-project?utf8=%E2%9C%93&query=nerves_system_">
-    See All Hardware
-  </a>
-</div>
-
