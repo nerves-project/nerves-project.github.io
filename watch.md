@@ -8,6 +8,55 @@ category: watch
 
 ---
 
+## The Joy of Connecting Elixir to the Physical World
+
+Frank Hunleth's presentation at Elixir & Phoenix Conf 2016.
+
+With all of the Python, Node.js and C++ libraries for connecting to sensors, actuators, and other devices, it's easy to dismiss Elixir as a language for physical computing. Nothing could be farther from the truth. Between binary pattern matching, a functional approach to transforming low level data, and natural support for recovering from the hiccups of real world hardware, Elixir is an ideal language. The main parts missing have been low level library support.
+
+This talk starts with a discussion of the options for connecting to hardware devices, challenges and pitfalls of each technique, and tips for minimizing frustration. It will provide an in depth-view of using the `nerves_uart` library, your laptop, and an inexpensive FTDI cable to interact with sensors, motors, smart phones via Bluetooth LE, and more. Each example will show how Elixir can beautify some really ugly hardware interfaces. Finally, the talk will end with how to remove the tether to your laptop by creating standalone embedded devices with Nerves. [slides](https://speakerdeck.com/fhunleth/the-joy-of-connecting-elixir-to-the-physical-world)
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/SVy7gRU_-P8" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Nerves + Phoenix Saves a Father's Sanity!
+
+Joel Byler's presentation at Elixir & Phoenix Conf 2016.
+
+Recently I've been able to encourage my children to do their chores and not fight about it. Its been made possible with the help of Elixir and an Umbrella project which combines the use of Phoenix and Nerves (and some prototyping hardware) to build a chore system which rewards each kid with their own internet access after they've done their work for the day. It also makes it really easy to revoke access when they misbehave. In this talk I'll take you with me back through the journey, and I'll talk about why it was needed, what I learned, and how the the final outcome has saved my sanity. [slides](https://speakerdeck.com/joelbyler/nerves-plus-phoenix-saves-a-fathers-sanity)
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/cznxe3TCevk" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Building "learn to touch type" glove with Elixir and Arduino
+
+Tetiana Dushenkivska's presentation at Elixir & Phoenix Conf 2016.
+
+Knowledge-sharing about building "touch-typing glove" with Arduino and Elixir. This talk is about my journey from research, choosing tools, making flexible tiny pressure sensors, plugging them into Arduino, reading information from Arduino to the server running Elixir, and rendering result in the browser. [slides](https://speakerdeck.com/tetiana12345678/building-learn-to-touch-type-glove-with-elixir-and-arduino)
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/j_7kqFgIK-M" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Nerves: Connected beyond the Node
+Justin Schneck's presentation at Elixir & Phoenix Conf 2016.
+
+Nerves defines an entirely new way to build embedded systems with Elixir that is ready to revolutionize the industry. Embedded systems have never been easier to create using familiar tools and frameworks, and now we are making it even more connected. Together, we will explore new features in Nerves which make debugging your target even easier. Learn how to create stunning user interfaces for touchscreen displays using Phoenix. Perform ExUnit on your target device, and more. Join us to learn more about the exciting new features which makes Nerves a powerful and productive tool for creating amazing new products.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/VhAIDmtKhO4" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## Mixed Up with Nerves - My Journey So Far
 Greg Mefford presents at the Cincinnati Elixir Meetup, giving an update on recent news from the Nerves team and community. He also talks about his experience getting involved with contributing to the Nerves project and subsequently joining as a core team member. [slides](https://github.com/GregMefford/presentations/tree/master/2016-07-05_mixed-up-with-nerves-my-journey-so-far)
 
