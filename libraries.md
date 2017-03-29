@@ -41,6 +41,7 @@ The list separated in officially supported and community contributed projects.
 * **[Chromecast](https://hex.pm/packages/chromecast)** - A library for monitoring and controlling a [Chromecast](https://www.google.com/intl/en_us/chromecast/)
 * **[elixir_ale](https://hex.pm/packages/elixir_ale)** - Interact
   with hardware in Elixir - GPIOs, I2C and SPI
+* **[ex_lcd](https://hex.pm/packages/ex_lcd)** - A library for using character matrix LCD displays
 * **[firmata](https://hex.pm/packages/firmata)** Control Arduino and other devices that
   work with the Firmata protocol
 * **[gen_mqtt](https://hex.pm/packages/gen_mqtt)** -
