@@ -8,6 +8,63 @@ category: watch
 
 ---
 
+## Nervous System - Nerves Clustering Using Your Own Distribution
+
+Timmo Verlaan's presentation at ElixirConf.EU 2017.
+
+Coming with Erlang R19 is the option to use your own distribution module. This creates the possibility for having auto-connecting Nerves devices without worrying about the local network or specifying node names upfront. In this talk I will explore the different solutions up until now. One of which was my first go at creating "distributed blinky" (having a led blink on 2+ devices taking turns). Then I will take a look at how we can create our own distribution module and see how we can leverage that so we don't need any upfront knowledge about node names and are independent of the local network. Our goal is to create an autonomously connecting Nerves cluster with zero effort! But, can it be done?
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/kMHXd_iMGRU" frameborder="0" allowfullscreen></iframe>
+</div>
+
+## Fly like an Eagle
+
+Loic Vigneron's presentation at ElixirConf.EU 2017.
+
+It is the story of the birth of a quadcopter built using a 3D printer, a Raspberry Pi 3 and some Elixir magic. I will begin from the genesis of the project up to a flying drone. Expect some code, some hardware and some 3D printing time-lapse.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/TZnaqnxA4UY" frameborder="0" allowfullscreen></iframe>
+</div>
+
+## Prototype to Production: Creating Connected Hardware with Nerves
+
+Justin Schneck's presentation at Erlang & Elixir Factory SF 2017
+
+Nerves is a powerful platform for creating and distributing embedded linux systems in Elixir and Erlang. Using Nerves, you can quickly create robust devices from a wide selection of off the shelf hardware and accessories. Rapid prototyping is a crucial phase in the development of any product. Together, we will explore the new features of Nerves and demonstrate how to quickly create and iterate using devices like Raspberry Pi. Finally, we will describe the process of moving from prototype to production and how to create distributable devices.
+
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/aIGVOFwYtHE" frameborder="0" allowfullscreen></iframe>
+</div>
+
+## Lonestar ElixirConf 2017 - Opening Keynote
+
+Justin Schneck's Opening Keynote at Lonestar ElixirConf 2017.
+
+Developing "hardware and hardware accessories" can be difficult and time consuming. Until now, you would have to constantly swap SD cards or create and push full firmware updates in order to iterate on your device. We want to make the development cycle as comfortable as possible by marrying the fundamentals of Erlang hot code reloading with connected Hardware in the Loop (HIL). Together, we will explore the Nerves development cycle through live demonstrations from mix nerves.new to mix firmware. Furthermore, we will push live code updates and even leverage the Phoenix Live Reloader on the Target. Finally, we will take a peek at executing ExUnit tests on connected hardware.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/pVHhmqYozOM" frameborder="0" allowfullscreen></iframe>
+</div>
+
+## Creating a Nerves-based Status Monitor (or how to sneak Elixir into your company)
+
+Andrew Selder's presentation at Lonestar ElixirConf 2017.
+
+Like many of you, the organization I work for is deeply invested in an ecosystem other than Elixir, in our case Rails. However, we have lots of engineers interested in Elixir. The question: how do we get the rest of the developers interested and convince the bosses that Elixir is a worthwhile technology to invest in?
+
+In deciding what to do, we had to consider the potential impact to our service (the Boss really frowns on taking down the site and annoying paying customers), the scope of the project (the Boss frowns on developers disappearing for a month to play with cool shiny things), intriguing the other engineers (engineers like cool shiny things). Balancing all these concerns was the key in getting buy-in from everyone.
+
+We decided to build a status monitoring device using Nerves that shows the high level health of our app at a glance. We have LED strips showing recent apdex scores for our app (via NewRelic’s API), recent error rates (from Honeybadger), and the status of recent builds (from CircleCI), along with a big red flashing light for when Pingdom says our site is down.
+
+For about $100 in parts, and a couple weekends of hacking, we built an appliance that was useful to the organization, showed off the power of Elixir/OTP, and was just darn cool!
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/vbPbulimWLk" frameborder="0" allowfullscreen></iframe>
+</div>
+
 ## The Joy of Connecting Elixir to the Physical World
 
 Frank Hunleth's presentation at Elixir & Phoenix Conf 2016.
@@ -174,4 +231,3 @@ Slides from a presentation given by Frank Hunleth to an Erlang users's group in 
   </strong> from <strong><a href="http://www.slideshare.net/fhunleth"
   target="_blank">Frank Hunleth</a></strong> </div>
 </div>
-
