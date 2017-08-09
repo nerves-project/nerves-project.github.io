@@ -1,6 +1,10 @@
 source 'https://rubygems.org'
 
-# See: https://github.com/nerves-project/nerves-project.github.com/issues/25
-gem 'activesupport', '4.2.7'
+#http://jekyllrb.com/docs/github-pages/#deploying-jekyll-to-github-pages
 
-gem 'github-pages'
+require 'json'
+require 'open-uri'
+
+versions = JSON.parse(open('https://pages.github.com/versions.json').read)
+
+gem 'github-pages', versions['github-pages']
