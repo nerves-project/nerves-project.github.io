@@ -2,5 +2,5 @@ name: nerves
 markdown: kramdown
 highlighter: rouge
 permalink: /news/:year/:month/:day/:title/
-gems:
+plugins:
   - jekyll-redirect-from

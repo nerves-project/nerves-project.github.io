@@ -63,3 +63,34 @@ category: home
     </div>
   </div>
 </div>
+<h3>Nerves Badge</h3>
+<div class="row">
+  <div class="col-md-2 text-center">
+    <a href="/images/badge/built-with-nerves-badge.svg"><img width="100px" src="/images/badge/nerves-badge_100x52_black.png"/></a>
+  </div>
+  <div class="col-md-2 text-center">
+    <div>1000x518</div>
+    <a href="/images/badge/nerves-badge_1000x518_black.png">Black</a>
+    <a href="/images/badge/nerves-badge_1000x518_white.png">White</a>
+  </div>
+  <div class="col-md-2 text-center">
+    <div>500x259</div>
+    <a href="/images/badge/nerves-badge_500x259_black.png">Black</a>
+    <a href="/images/badge/nerves-badge_500x259_white.png">White</a>
+  </div>
+  <div class="col-md-2 text-center">
+    <div>200x104</div>
+    <a href="/images/badge/nerves-badge_200x104_black.png">Black</a>
+    <a href="/images/badge/nerves-badge_200x104_white.png">White</a>
+  </div>
+  <div class="col-md-2 text-center">
+    <div>100x52</div>
+    <a href="/images/badge/nerves-badge_100x52_black.png">Black</a>
+    <a href="/images/badge/nerves-badge_100x52_white.png">White</a>
+  </div>
+  <div class="col-md-2 text-center">
+    <div>75x39</div>
+    <a href="/images/badge/nerves-badge_75x39_black.png">Black</a>
+    <a href="/images/badge/nerves-badge_75x39_white.png">White</a>
+  </div>
+</div>

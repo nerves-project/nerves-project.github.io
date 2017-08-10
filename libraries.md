@@ -20,8 +20,8 @@ The list separated in officially supported and community contributed projects.
 * **[nerves_firmware_http](https://github.com/nerves-project/nerves_firmware_http)** -
   HTTP/REST micro service providing over-the-network firmware
   management
-* **[nerves_interim_wifi](https://hex.pm/packages/nerves_interim_wifi)** -
-  Connect to WiFi networks on Nerves platforms
+* **[nerves_network](https://github.com/nerves-project/nerves_network)** -
+  Connect to wired and wireless networks on Nerves platforms
 * **[nerves_leds](https://hex.pm/packages/nerves_leds)** -
   Functions to drive LEDs on embedded systems
 * **[nerves_networking](https://hex.pm/packages/nerves_networking)** -
