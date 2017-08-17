@@ -94,3 +94,9 @@ category: home
     <a href="/images/badge/nerves-badge_75x39_white.png">White</a>
   </div>
 </div>
+<h3>Sponsorship</h3>
+<div class="row">
+  <div>
+    <a href="https://www.letote.com/careers" target="_blank"><img width="150" height="150" src="/images/sponsorship/letote.png"></a>
+  </div>
+</div>
