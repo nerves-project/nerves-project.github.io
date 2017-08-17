@@ -50,12 +50,8 @@ category: home
 
 <h3>Hardware Support</h3>
 <div class="row">
-  <div class="col-md-4 text-center">
-    <img width="80px" src="/images/beaglebone_icon.jpg"/>
-    <img width="80px" src="/images/pi_logo.png"/>
-  </div>
-  <div class="col-md-8">
-    <p>The most popular prototyping boards are the Beaglebone Black and Raspberry Pi family.</p>
+  <div class="col-md-12">
+    <p>Nerves supports many popular prototyping boards such as the Beaglebone Black and Raspberry Pi family. If a board can run embedded Linux (not uClinux), it likely can run Nerves.</p>
     <div class="row text-center">
       <a class="btn btn-info btn-lg" href="https://hexdocs.pm/nerves/targets.html">
         See All Supported Hardware
