@@ -43,7 +43,7 @@ category: home
     </p>
 
     <p>
-      Nerves is fully open source.  Nerves uses Buildroot to provide Linux, so some portions of the platform are licensed under the GPL.
+      Nerves is also fully open source with the majority of code licensed under <a href="https://opensource.org/licenses/Apache-2.0">Apache 2.0</a>. Nerves does make use of non-Apache 2.0 code such as the Linux kernel and Buildroot. Licensing details of non-Elixir components is provided via Buildroot tooling. Licensing details for Elixir components is available through hex.pm.
     </p>
   </div>
 </div>
