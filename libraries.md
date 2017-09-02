@@ -28,6 +28,7 @@ The list separated in officially supported and community contributed projects.
   Discover, setup, and get stats on network interfaces
 * **[nerves_uart](https://hex.pm/packages/nerves_uart)** -
   Discover and use UARTs and serial ports
+* **[system_registry](https://hex.pm/packages/system_registry) - Atomic nested term storage and dispatch registry
 
 ## <a id="thirdparty"></a>Community libraries
 
