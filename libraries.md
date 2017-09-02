@@ -11,8 +11,6 @@ The following is a list of add-on libraries for the Nerves
 system. These libraries make it easy for developers to interface with
 hardware or add extra functionality to their systems.
 
-The list separated in officially supported and community contributed projects.
-
 <hr/>
 
 ## <a id="core"></a>Official libraries
