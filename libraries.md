@@ -24,8 +24,6 @@ The list separated in officially supported and community contributed projects.
   Connect to wired and wireless networks on Nerves platforms
 * **[nerves_leds](https://hex.pm/packages/nerves_leds)** -
   Functions to drive LEDs on embedded systems
-* **[nerves_networking](https://hex.pm/packages/nerves_networking)** -
-  Ethernet management
 * **[nerves_network_interface](https://hex.pm/packages/nerves_network_interface)** -
   Discover, setup, and get stats on network interfaces
 * **[nerves_ssdp_client](https://github.com/nerves-project/nerves_ssdp_client)** -
@@ -34,7 +32,6 @@ The list separated in officially supported and community contributed projects.
   Simple Service Discovery Protocol (SSDP) Server
 * **[nerves_uart](https://hex.pm/packages/nerves_uart)** -
   Discover and use UARTs and serial ports
-
 
 ## <a id="thirdparty"></a>Community libraries
 
