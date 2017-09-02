@@ -17,6 +17,8 @@ The list separated in officially supported and community contributed projects.
 
 ## <a id="core"></a>Official libraries
 
+* **[nerves_firmware_ssh](https://hex.pm/packages/nerves_firmware_ssh)** -
+  Over-the-air updates to Nerves devices using ssh
 * **[nerves_network](https://github.com/nerves-project/nerves_network)** -
   Connect to wired and wireless networks on Nerves platforms
 * **[nerves_leds](https://hex.pm/packages/nerves_leds)** -
