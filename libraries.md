@@ -19,6 +19,8 @@ The list separated in officially supported and community contributed projects.
 
 * **[nerves_firmware_ssh](https://hex.pm/packages/nerves_firmware_ssh)** -
   Over-the-air updates to Nerves devices using ssh
+* **[nerves_init_gadget](https://hex.pm/packages/nerves_init_gadget)** -
+  Easy Nerves initialization for devices with USB gadget interfaces
 * **[nerves_network](https://github.com/nerves-project/nerves_network)** -
   Connect to wired and wireless networks on Nerves platforms
 * **[nerves_leds](https://hex.pm/packages/nerves_leds)** -
