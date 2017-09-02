@@ -17,6 +17,7 @@ The list separated in officially supported and community contributed projects.
 
 ## <a id="core"></a>Official libraries
 
+* **[bootloader](https://hex.pm/packages/bootloader)** - Bootloader for the Erlang VM
 * **[nerves_firmware_ssh](https://hex.pm/packages/nerves_firmware_ssh)** -
   Over-the-air updates to Nerves devices using ssh
 * **[nerves_init_gadget](https://hex.pm/packages/nerves_init_gadget)** -
