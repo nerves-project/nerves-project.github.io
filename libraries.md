@@ -26,10 +26,6 @@ The list separated in officially supported and community contributed projects.
   Functions to drive LEDs on embedded systems
 * **[nerves_network_interface](https://hex.pm/packages/nerves_network_interface)** -
   Discover, setup, and get stats on network interfaces
-* **[nerves_ssdp_client](https://github.com/nerves-project/nerves_ssdp_client)** -
-  Simple Service Discovery Protocol (SSDP) Client
-* **[nerves_ssdp_server](https://github.com/nerves-project/nerves_ssdp_server)** -
-  Simple Service Discovery Protocol (SSDP) Server
 * **[nerves_uart](https://hex.pm/packages/nerves_uart)** -
   Discover and use UARTs and serial ports
 
@@ -59,6 +55,10 @@ The list separated in officially supported and community contributed projects.
   Read NFC tags using the RC522 RFID module
 * **[nerves_ntp](https://hex.pm/packages/nerves_ntp)** -
   OTP application for synchronizing time using built-in `ntpd` command
+* **[nerves_ssdp_client](https://github.com/nerves-project/nerves_ssdp_client)** -
+  Simple Service Discovery Protocol (SSDP) Client
+* **[nerves_ssdp_server](https://github.com/nerves-project/nerves_ssdp_server)** -
+  Simple Service Discovery Protocol (SSDP) Server
 * **[Raven](https://hex.pm/packages/raven_smcd)** - A Client for the [Rainforest Automation Raven USB SMCD](https://rainforestautomation.com/rfa-z106-raven/)
 * **[SSDP](https://hex.pm/packages/ssdp)** - Discover devices on your network that use the [Simple Service Discovery Protocol](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol)
 * **[XGPS](https://hex.pm/packages/xgps)** -
