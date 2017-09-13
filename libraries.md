@@ -64,12 +64,12 @@ hardware or add extra functionality to their systems.
 * **[nerves_ssdp_server](https://github.com/nerves-project/nerves_ssdp_server)** -
   Simple Service Discovery Protocol (SSDP) Server
 * **[picam](https://hex.pm/packages/picam)** - Stream MJPEG video and capture stills using the Raspberry Pi's camera module
+* **[Pigpiox](https://hex.pm/packages/pigpiox)** -
+  Interface with [pigpiod](http://abyz.co.uk/rpi/pigpio/pigpiod.html) on the Raspberry Pi
 * **[Raven](https://hex.pm/packages/raven_smcd)** - A Client for the [Rainforest Automation Raven USB SMCD](https://rainforestautomation.com/rfa-z106-raven/)
 * **[SSDP](https://hex.pm/packages/ssdp)** - Discover devices on your network that use the [Simple Service Discovery Protocol](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol)
 * **[XGPS](https://hex.pm/packages/xgps)** -
   OTP application for reading data from GPS attach to UART/serial
-* **[Pigpiox](https://hex.pm/packages/pigpiox)** -
-  Interface with [pigpiod](http://abyz.co.uk/rpi/pigpio/pigpiod.html) on the Raspberry Pi 
 
 <hr/>
 
