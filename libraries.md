@@ -68,6 +68,8 @@ hardware or add extra functionality to their systems.
 * **[SSDP](https://hex.pm/packages/ssdp)** - Discover devices on your network that use the [Simple Service Discovery Protocol](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol)
 * **[XGPS](https://hex.pm/packages/xgps)** -
   OTP application for reading data from GPS attach to UART/serial
+* **[Pigpiox](https://hex.pm/packages/pigpiox)** -
+  Interface with [pigpiod](http://abyz.co.uk/rpi/pigpio/pigpiod.html) on the Raspberry Pi 
 
 <hr/>
 
