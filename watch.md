@@ -8,6 +8,85 @@ category: watch
 
 ---
 
+## Building an Artificial Pancreas with Elixir and Nerves
+
+Tim Mecklem's presentation at ElixirConf 2017.
+
+People with Type 1 Diabetes have to constantly monitor & control their food, blood glucose, insulin, physical activity and other factors in order to manage this autoimmune disease effectively. Even with advancements like insulin pumps and continuous glucose monitoring, the process is still manual and error prone for many people. What would happen if someone with T1D could delegate the constant cycle of monitoring, predicting and controlling to a computer?
+
+In this session, I'll get personal about my own journey in supporting my T1D wife using technology. You'll learn about an open source project called the Open Artificial Pancreas System, or OpenAPS, and how it closes the loop on a cycle that the rest of us take for granted. Then together we'll explore what happened when I took my knowledge of OpenAPS and Elixir and glued them together with the Nerves Project.
+
+We'll touch briefly on the topics of hardware prototyping, reverse engineering and binary decoding and how it all came together in one project. Before the session is over, you'll see an embedded Elixir application talk to a commercial insulin pump through the power of the Nerves Project.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/ARQD4BN_5ns" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Keep an Eye on the Sky with Nerves and Phoenix
+
+Jeff Smith's presentation at ElixirConf 2017.
+
+As part of the next generation air traffic control system, regulators in the United States and abroad will require most aircraft to be equipped with avionics by 2020 that automatically broadcast identity, position, and velocity data at regular intervals using a standard radio messaging protocol. This technology, known as Automatic Dependent Surveillance Broadcast (ADS-B), is already in use by the majority of aircraft today and can easily be received on the ground by anyone using cheap Software Defined Radio (SDR) hardware purchased online.
+
+Because ADS-B messages can come from hundreds (if not thousands) of aircraft operating in the sky in parallel at any given time, Elixir is well suited to elegantly handle the problem of tracking them all concurrently in realtime. In this talk, we'll explore highly concurrent approaches to solving this problem using the tools and techniques offered by OTP and GenStage. We'll examine how SDR hardware support is provided using Nerves on an embedded Linux platform such as Raspberry Pi. Finally, we'll take a look at some ways we can visualize all of this flight activity on the web in realtime using Phoenix.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/UoSQBOP_Siw" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Embedded Elixir for Monitoring the Built Environment
+
+Christopher Coté's presentation at ElixirConf 2017.
+
+At CRT Labs we are developing an open source building health monitoring system, Rosetta Home. The platform consists of several subsystems for gathering data from disparate data sources including hyper-local weather, whole-home energy usage, indoor environmental quality and HVAC utilization.
+
+The platform is built on a Raspberry Pi 3 running Nerves, a system for building embedded Elixir systems, and several USB gateways for interacting with the different subsystem hardware. Through a combination of wireless protocols including WiFi, ZigBee and 915Mhz FSK we aggregate the disparate data sources for analysis within a cloud based GUI. The Raspberry Pi also hosts a local web server for configuration and review of real time sensor data using websockets and an Elm based frontend.
+
+The cloud platform consists of a simple Elixir/Erlang middleware for client/server certificate verification, InfluxDB as the time-series data store and Grafana for data visualization.
+
+The talk will go in depth into building a production Nerves system and include a full demo of the working system.
+
+Christopher Coté is also a member of the Nerves core development team.
+
+The platform itself is available here https://github.com/rosetta-home/rosetta_home . Along with open sourcing the core platform, we have also open sourced all of the libraries the platform is built upon.
+
+* https://github.com/NationalAssociationOfRealtors/ssdp
+* https://github.com/NationalAssociationOfRealtors/mdns
+* https://github.com/NationalAssociationOfRealtors/raven
+* https://github.com/NationalAssociationOfRealtors/meteo_stick
+* https://github.com/NationalAssociationOfRealtors/chromecast
+* https://github.com/NationalAssociationOfRealtors/ieq_gateway
+* https://github.com/NationalAssociationOfRealtors/lifx
+* https://github.com/NationalAssociationOfRealtors/radio_thermostat
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/_zQ_u7o1rNo" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Realtime Vehicle Tracking with Elixir and Phoenix.
+
+James Smith's presentation at ElixirConf 2017.
+
+Our client came to us with an idea. Help students catch their school buses on time. Doing this required adding realtime bus tracking to their mobile application. I knew Elixir would be well suited for this but, I underestimated just how much.
+
+Elixir helped us quickly parse the binary protocols of GPS devices. Phoenix helped us to send realtime updates from devices to our mobile application. Ranch made it easy to deal with the thundering herd of GPS devices trying to connect to us all at once.
+
+This is not to say that their weren't challenges along the way. We had to deal with hardware protocols that did not always line up with their spec sheets. Communication between us and the buses had to be safe and secure. The nature of communication over the cellular network meant messages could be received out of order. The logistics of school buses that can break down or get moved to different routes meant devices had to be dynamically supervised. Even through these challenges OTP, Elixir, and Phoenix continued to shine.
+
+In this talk discuss these challenges and talk through the solutions we came up with. We will touch on parsing binary protocols, dealing with out of order messages and adding dynamic supervision in OTP.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/aLnSO6FQpHs" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## Nervous System - Nerves Clustering Using Your Own Distribution
 
 Timmo Verlaan's presentation at ElixirConf.EU 2017.
