@@ -74,6 +74,10 @@ is updated as well. -->
 
 <a href="https://www.letote.com/careers" target="_blank"><img width="150" height="150" src="/images/sponsorship/letote.png"></a>
 
+### Silver Sponsors
+
+<a href="https://www.smartrent.com" target="_blank"><img width="150" height="150" src="/images/sponsorship/smartrent.png"></a>
+
 [[Become a metal level sponsor]](/sponsoring)
 
 ### Open Collective Sponsors
