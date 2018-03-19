@@ -43,6 +43,7 @@ hardware or add extra functionality to their systems.
   Turning processes into MQTT clients
 * **[hmc5883l](https://hex.pm/packages/hmc5883l)** - OTP application for reading
   the HMC5883L 3-axis magnetometer
+* **[Joystick](https://hex.pm/packages/joystick)** - Discover and get Input events from Linux Joystick devices.
 * **[Lifx](https://hex.pm/packages/lifx)** - A Client for [Lifx](http://lifx.com/) LAN API
 * **[mDNS](https://hex.pm/packages/mdns)** - A simple [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) (zeroconf, bonjour) server and client for device discovery on your local network.
 * **[MeteoStick](https://hex.pm/packages/meteo_stick)** - Client for communicating with the [MeteoStick](http://www.smartbedded.com/wiki/index.php/Meteostick) and [Fine Offset Weather Station](http://www.ambientweather.com/amws1000array.html)
@@ -70,7 +71,6 @@ hardware or add extra functionality to their systems.
 * **[SSDP](https://hex.pm/packages/ssdp)** - Discover devices on your network that use the [Simple Service Discovery Protocol](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol)
 * **[XGPS](https://hex.pm/packages/xgps)** -
   OTP application for reading data from GPS attach to UART/serial
-* **[Joystick](https://hex.pm/packages/joystick)** - Discover and get Input events from Linux Joystick devices.
 <hr/>
 
 Add your own library here?
