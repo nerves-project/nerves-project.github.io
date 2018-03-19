@@ -70,7 +70,7 @@ hardware or add extra functionality to their systems.
 * **[SSDP](https://hex.pm/packages/ssdp)** - Discover devices on your network that use the [Simple Service Discovery Protocol](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol)
 * **[XGPS](https://hex.pm/packages/xgps)** -
   OTP application for reading data from GPS attach to UART/serial
-
+* **[Joystick](https://hex.pm/packages/joystick)** - Discover and get Input events from Linux Joystick devices.
 <hr/>
 
 Add your own library here?
