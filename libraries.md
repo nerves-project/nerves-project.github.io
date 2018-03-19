@@ -15,7 +15,6 @@ hardware or add extra functionality to their systems.
 
 ## <a id="core"></a>Official libraries
 
-* **[bootloader](https://hex.pm/packages/bootloader)** - Bootloader for the Erlang VM
 * **[nerves_firmware_ssh](https://hex.pm/packages/nerves_firmware_ssh)** -
   Over-the-air updates to Nerves devices using ssh
 * **[nerves_init_gadget](https://hex.pm/packages/nerves_init_gadget)** -
@@ -28,6 +27,7 @@ hardware or add extra functionality to their systems.
   Discover, setup, and get stats on network interfaces
 * **[nerves_uart](https://hex.pm/packages/nerves_uart)** -
   Discover and use UARTs and serial ports
+* **[shoehorn](https://hex.pm/packages/shoehorn)** - More control over OTP Application init and failure handling
 * **[system_registry](https://hex.pm/packages/system_registry)** - Atomic nested term storage and dispatch registry
 
 ## <a id="thirdparty"></a>Community libraries
