@@ -39,8 +39,6 @@ hardware or add extra functionality to their systems.
 * **[ex_lcd](https://hex.pm/packages/ex_lcd)** - A library for using character matrix LCD displays
 * **[firmata](https://hex.pm/packages/firmata)** Control Arduino and other devices that
   work with the Firmata protocol
-* **[gen_mqtt](https://hex.pm/packages/gen_mqtt)** -
-  Turning processes into MQTT clients
 * **[hmc5883l](https://hex.pm/packages/hmc5883l)** - OTP application for reading
   the HMC5883L 3-axis magnetometer
 * **[Joystick](https://hex.pm/packages/joystick)** - Discover and get Input events from Linux Joystick devices.
@@ -69,6 +67,8 @@ hardware or add extra functionality to their systems.
   Interface with [pigpiod](http://abyz.co.uk/rpi/pigpio/pigpiod.html) on the Raspberry Pi
 * **[Raven](https://hex.pm/packages/raven_smcd)** - A Client for the [Rainforest Automation Raven USB SMCD](https://rainforestautomation.com/rfa-z106-raven/)
 * **[SSDP](https://hex.pm/packages/ssdp)** - Discover devices on your network that use the [Simple Service Discovery Protocol](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol)
+* **[tortoise](https://hex.pm/packages/tortoise)** -
+  A MQTT client for Elixir
 * **[XGPS](https://hex.pm/packages/xgps)** -
   OTP application for reading data from GPS attach to UART/serial
 <hr/>
