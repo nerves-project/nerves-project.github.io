@@ -57,11 +57,13 @@ hardware or add extra functionality to their systems.
 * **[nerves_io_rc522](https://hex.pm/packages/nerves_io_rc522)** -
   Read NFC tags using the RC522 RFID module
 * **[nerves_ntp](https://hex.pm/packages/nerves_ntp)** -
-  OTP application for synchronizing time using built-in `ntpd` command
+  DEPRECATED please use [nerves_time](https://hex.pm/packages/nerves_time)
 * **[nerves_ssdp_client](https://github.com/nerves-project/nerves_ssdp_client)** -
   Simple Service Discovery Protocol (SSDP) Client
 * **[nerves_ssdp_server](https://github.com/nerves-project/nerves_ssdp_server)** -
   Simple Service Discovery Protocol (SSDP) Server
+  **[nerves_time](https://hex.pm/packages/nerves_time) -
+  Keeps the system clock on Nerves devices in sync when connected to the network and close to in sync when disconnected.
 * **[picam](https://hex.pm/packages/picam)** - Stream MJPEG video and capture stills using the Raspberry Pi's camera module
 * **[Pigpiox](https://hex.pm/packages/pigpiox)** -
   Interface with [pigpiod](http://abyz.co.uk/rpi/pigpio/pigpiod.html) on the Raspberry Pi
@@ -76,3 +78,4 @@ hardware or add extra functionality to their systems.
 Add your own library here?
 [edit this file on GitHub](https://github.com/nerves-project/nerves-project.github.com/edit/master/libraries.md)
 and then submit a PR.
+
