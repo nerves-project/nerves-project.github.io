@@ -62,7 +62,7 @@ hardware or add extra functionality to their systems.
   Simple Service Discovery Protocol (SSDP) Client
 * **[nerves_ssdp_server](https://github.com/nerves-project/nerves_ssdp_server)** -
   Simple Service Discovery Protocol (SSDP) Server
-  **[nerves_time](https://hex.pm/packages/nerves_time) -
+* **[nerves_time](https://hex.pm/packages/nerves_time)** -
   Keeps the system clock on Nerves devices in sync when connected to the network and close to in sync when disconnected.
 * **[picam](https://hex.pm/packages/picam)** - Stream MJPEG video and capture stills using the Raspberry Pi's camera module
 * **[Pigpiox](https://hex.pm/packages/pigpiox)** -
