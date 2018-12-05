@@ -25,14 +25,18 @@ hardware or add extra functionality to their systems.
   Functions to drive LEDs on embedded systems
 * **[nerves_network_interface](https://hex.pm/packages/nerves_network_interface)** -
   Discover, setup, and get stats on network interfaces
-* **[nerves_uart](https://hex.pm/packages/nerves_uart)** -
-  Discover and use UARTs and serial ports
 * **[shoehorn](https://hex.pm/packages/shoehorn)** - More control over OTP Application init and failure handling
 * **[system_registry](https://hex.pm/packages/system_registry)** - Atomic nested term storage and dispatch registry
 
 ## <a id="thirdparty"></a>Community libraries
 
 * **[Chromecast](https://hex.pm/packages/chromecast)** - A library for monitoring and controlling a [Chromecast](https://www.google.com/intl/en_us/chromecast/)
+* **[circuits_i2c](https://hex.pm/packages/circuits_i2c)** - Communicate over
+  I2C in Elixir
+* **[circuits_spi](https://hex.pm/packages/circuits_spi)** - Communicate over
+  SPI in Elixir
+* **[circuits_uart](https://hex.pm/packages/circuits_uart)** -
+  Discover and use UARTs and serial ports
 * **[elixir_ale](https://hex.pm/packages/elixir_ale)** - Interact
   with hardware in Elixir - GPIOs, I2C and SPI
 * **[exbee](https://hex.pm/packages/exbee)** - Communicate with XBee wireless radios in Elixir
