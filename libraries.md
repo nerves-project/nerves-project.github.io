@@ -45,6 +45,7 @@ hardware or add extra functionality to their systems.
   work with the Firmata protocol
 * **[hmc5883l](https://hex.pm/packages/hmc5883l)** - OTP application for reading
   the HMC5883L 3-axis magnetometer
+* **[input_event](https://hex.pm/packages/input_event)** - Input events from keyboards, mice, touchscreens, joysticks and more
 * **[Joystick](https://hex.pm/packages/joystick)** - Discover and get Input events from Linux Joystick devices.
 * **[Lifx](https://hex.pm/packages/lifx)** - A Client for [Lifx](http://lifx.com/) LAN API
 * **[mDNS](https://hex.pm/packages/mdns)** - A simple [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) (zeroconf, bonjour) server and client for device discovery on your local network.
