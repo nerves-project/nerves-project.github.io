@@ -35,6 +35,8 @@ hardware or add extra functionality to their systems.
   I2C in Elixir
 * **[circuits_spi](https://hex.pm/packages/circuits_spi)** - Communicate over
   SPI in Elixir
+* **[circuits_gpio](https://hex.pm/packages/circuits_gpio)** - Communicate over
+  GPIO in Elixir
 * **[circuits_uart](https://hex.pm/packages/circuits_uart)** -
   Discover and use UARTs and serial ports
 * **[elixir_ale](https://hex.pm/packages/elixir_ale)** - Interact
