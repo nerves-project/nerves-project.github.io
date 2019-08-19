@@ -64,6 +64,20 @@ It is time to make the personal wheel. In this talk we will look at what it mean
 
 ---
 
+## My first Nerves Project: Bioreactor
+
+David Schainker's presentation at ElixirConf 2018.
+
+Living in a vibrant Asian city can have its downsides, especially with regards to air quality. While buying the Latest and Greatest IoIT air filter can help with particulate matter in the air, there is little help with increased CO2 levels in your home, except installing and taking care of lots and lots of plants - an interesting challenge if you live in a high rise apartment building.
+
+Armed with The Nerves Project and available literature on growing algae to remove CO2 from air, this talk will summarize the process of building and testing a basic “breeder” bioreactor that uses algae to create more fresh oxygen in the home. The ultimate goal of this project is to build a reactor that can self-sustain an “optimzed” state of maximum CO2 removal for a given reactor vessel size, with the aid of artificial light, and electricity.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/1bQlc-K6vN0" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## Embedded Elixir with Nerves
 
 Greg Mefford's presentation at Code BEAM STO 2018.
