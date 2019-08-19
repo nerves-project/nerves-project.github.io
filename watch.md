@@ -8,6 +8,86 @@ category: watch
 
 ---
 
+## Dadgineering with Elixir+Nerves
+
+Jon Carsten's presentation at Empex 2019.
+
+Are you a parent of children, pets, or just really immature roommates? Do you wish you could use Elixir to help solve household issues and annoyances? Do you frequently over-engineer side projects? Then you might be a dadgineer (or momgineer).
+
+This talk is compilation of fun projects using Elixir & Nerves to solve silly problems around my home. Projects such as a "Picture Board Turn Selector" to programmatically answer the age old question of "Whose turn is it!?", complete with LED light show. Or hardening the security of the toy storage room with electromagnetic latching and biometric unlocking procedure.
+
+The projects are overly complex for the problems they are solving, but my hope is that it helps inspire others to break into the world of hardware. To provide yet another set of wild examples to show how fun and sometimes surprisingly easy it is to create your own customizations in the physical world.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/SJc4YYYloTQ" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Building a Smart Sprinkler Controller with Nerves
+
+Todd Resudek's presentation at Lonestar ElixirConf 2019.
+
+Smart sprinklers controllers can cost $200 or more and there is no way to customize them. For around $50 you can build your own sprinkler controller with Nerves and have the freedom to customize it in any way you want. I will walk you through the software and hardware you need to get going, including sensors that can make your controller smarter than any available off-the-shelf today.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/qklciKp7sD8" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Five Easy Ways To Start With Nerves
+
+Michael Ries' presentation at Empex LA 2019.
+
+Some simple projects to get started with using Nerves.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/BfWac2y7cJM" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Physical Elixir
+
+Justin Schneck's presentation at The Big Elixir 2018.
+
+Invention has always been fueled by the need to conquer the physical world by making repetitive, time-consuming tasks easier or automated. The wheel permanently changed the workload of human kind and the web has followed suit. In the infancy of internet connectivity, our focus has been on solving informational problems.
+
+In a post-internet connected world, our problem solving must naturally progress back to the physical world. Our new physical frontier is not limited to large-scale problems of industry alone. Technology has afforded us the opportunity to solve small-scale problems for the individual with mastery and efficiency previously only available to industry.
+
+It is time to make the personal wheel. In this talk we will look at what it means to create production ready devices through a series of examples. First we will explore how to use Nerves to model and automate tasks around your home or office. Next we will see how Nerves is used to help companies build innovative products. Finally, we will model and build a device in a live demo.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/ZxDYdayfOS0" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Embedded Elixir with Nerves
+
+Greg Mefford's presentation at Code BEAM STO 2018.
+
+Nerves makes it very easy to leverage the BEAM in an embedded device using readily-available and low-cost hardware like the Raspberry Pi family of single-board computers. In this talk, we will cover the basics of what Nerves is and how to structure your application for easier testing without needing real hardware.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/IVCQvcCEjkU" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Customize Your Car
+
+Brien Wankel's presentation at Lonestar ElixirConf 2018.
+
+Customize your car: An Adventure in Using Elixir and Nerves to Hack Your Vehicle's Electronics Network
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/ykVktdc7Ggc" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## Building an Artificial Pancreas with Elixir and Nerves
 
 Tim Mecklem's presentation at ElixirConf 2017.
