@@ -8,6 +8,98 @@ category: watch
 
 ---
 
+## ElixirConf 2019 Keynote
+
+Justin Schneck's keynote presentation at ElixirConf 2019.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/fRP_dVton7o" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Introducing Grizzly
+
+Matt Ludwigs' lightning talk at ElixirConf 2019.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/nsf3DkJxOIk" frameborder="0" allowfullscreen></iframe>
+</div>
+
+## Heralding Harald
+
+Daniel Spofford's lightning talk at ElixirConf 2019.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/RtCHJYIR1bs" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Nerves @ 433 MHZ
+
+Jon Carsten's lightning talk at ElixirConf 2019.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/PEheIY6gGhY" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Quickstarting Nerves
+
+Frank Hunleth's lightning talk at ElixirConf 2019.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/rcFDLg7faL8" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Breaking Into Nerves: How to Use Your Elixir Knowledge to Create Your First Embedded Nerves Project
+
+Jacqueline Manzi's presentation at ElixirConf 2019.
+
+Comfortable with Elixir, but new to embedded programming? Great, me too! This talk will go over the steps needed to get started with Nerves and use familiar Elixir concepts like GenServers, GenStages, Ports, and NIFs to create a practical Nerves project, such as a security camera with motion detection using a RaspberryPi.
+
+I'll go over the hurdles I encountered and how I overcame them so that hopefully you won't have to. We'll also discuss interesting findings on topics that become more prominent with embedded software like the use of Ports over NIFs.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/IU8epH8FAI4" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Photogenic: Building a Photo Booth with Beginners Using Nerves, LiveView and Scenic
+
+Bruce Tate's presentation at ElixirConf 2019.
+
+Designing and Consume APIs Like a Pro!
+
+Elixir has three scorching hot libraries right now, Phoenix LiveView, Nerves and Scenic. It's no accident that usage of these vastly different problem sets expose APIs with plenty in common. They are powerful for experts but friendly to beginners. In this talk, we'll look at these frameworks through the eyes of new Elixir users, even some new programmers.
+
+Our photo booth project, introduced in an Elixir mentoring group, used all of them to build a three-fold project, to talk to hardware with a camera and a display, take photos and present them to a user, and how to send those photos and screen them before they're made publicly available. We'll look at how we broke down each problem and the designs that each of those pieces has in common. The answers may surprise you.
+
+Beginners will love seeing how to apply common problems in functional programming, primarily using reducers and functions to model state. Experts will love seeing how to expose APIs, shielding away the complexity from new users but making its full power available for experts.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/l8JckcZibS4" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## A Practical* Use for Nerves
+
+Eric Christeson's presentation at ElixirConf 2019.
+
+After a winter with a leaking roof due to ice dams, I decided to install some de-icing cables on my roof. To be energy conscious, I only wanted to turn them on when conditions are right for ice to form. Instead of paying $80 for a thermostat to control them, I decided that this summer's project will be building a system based on Nerves running on a Raspberry Pi. It will involve several thermometers and most likely, a z-wave based system for controlling power. I plan to use Phoenix for a remote interface and possible Scenic with a touch screen for status and configuration. I plan to document the process and project and talk about my experience with all of these technologies.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/dFTmn5WKvvQ" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## Dadgineering with Elixir+Nerves
 
 Jon Carsten's presentation at Empex 2019.
