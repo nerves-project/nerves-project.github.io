@@ -13,7 +13,7 @@ category: home
 
 <div class="row">
   <div class="col-md-4">
-    <h3>Platform</h3>
+    <h3><a href="/platform/">Platform</a></h3>
     <p class="text-justify">
       Pack your whole application into as little as 12MB and have it start in seconds by booting a lean cross-compiled Linux directly to the battle-hardened Erlang VM.
     </p>
