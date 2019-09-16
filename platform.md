@@ -1,3 +1,8 @@
+---
+layout: default
+title: Nerves platform and tooling
+category: platform
+---
 
 # Cross-compiled Erlang for Embedded Devices
 
@@ -12,7 +17,9 @@ cross-compilation of external C/C++ libraries needed for your application.
 The Nerves project sets up your environment and provides the base images so that you
 can do this:
 
-![Alt Diagram of Nerves](images/nerves-summary.png)
+<p style="width:100%;overflow:scroll">
+  <img src="/images/nerves-summary.png" srcset="/images/nerves-summary@2x.png 2x" alt="Alt Diagram of Nerves" width="800px" />
+</p>
 
 ## For C/C++ Embedded Software Developers
 
