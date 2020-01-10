@@ -8,6 +8,36 @@ category: watch
 
 ---
 
+## Building A Smarter Sprinkler With Scenic And Nerves
+
+Powell Kinney's presentation at The Big Elixir 2019
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/MS3Iap-2umQ" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Why Your Next (or First) Hardware Project Should be Built with Nerves
+
+Todd Resudek's presentation at Gig City Elixir 2019
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/X0Ap_bMqiaU" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
+## Adopting Nerves for IoT
+
+Justin Schneck's keynote presentation at Gig City Elixir 2019
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/6wQufierLQw" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## ElixirConf 2019 Keynote
 
 Justin Schneck's keynote presentation at ElixirConf 2019.
