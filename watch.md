@@ -212,6 +212,18 @@ Nerves makes it very easy to leverage the BEAM in an embedded device using readi
 
 ---
 
+## Arduino, Elixir And Nerves: A Deep Dive Into the Firmata Protocol
+
+Christopher Coté's presentation at Code BEAM SF 2018.
+
+Firmata is a binary protocol that extends the MIDI protocol. It is used by many languages to talk to microcontrollers from any host machine ([https://github.com/firmata/protocol](https://github.com/firmata/protocol)). This talk will go over the details of implementing the protocol in Elixir and have some live demos of communicating from a Nerves based host machine to an Arduino Uno.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/sTOOjfUrQ0A" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## Customize Your Car
 
 Brien Wankel's presentation at Lonestar ElixirConf 2018.
