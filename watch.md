@@ -8,6 +8,20 @@ category: watch
 
 ---
 
+## Nerves Takes to the Sky
+
+Michael Ries' presentation at Empex LA 2020
+
+The problem with a paper airplane, is that it always seems to turn one way or the other. I can never get them to maintain a steady course. What if Nerves was riding along as the pilot?
+
+We'll first talk about inertial measurement sensors and how they can report their position in 3-D space. Then we'll dive into how we can talk to those sensors from a Nerves project. We'll end by talking about some logistics around weight, battery, etc and with any luck a live demo of tossing a glider over the heads of the audience. I'll bring a video as backup in-case the live demo is hazardous or fails.
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/46fZEm4SWL8" frameborder="0" allowfullscreen></iframe>
+</div>
+
+---
+
 ## Building A Smarter Sprinkler With Scenic And Nerves
 
 Powell Kinney's presentation at The Big Elixir 2019
