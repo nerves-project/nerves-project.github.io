@@ -1,6 +1,0 @@
-name: nerves
-markdown: kramdown
-highlighter: rouge
-permalink: /news/:year/:month/:day/:title/
-plugins:
-  - jekyll-redirect-from
