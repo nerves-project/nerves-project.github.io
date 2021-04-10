@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="252px" height="657px" viewBox="0 0 252 657" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Rectangle</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="83.4120941%" y1="-73.9075355%" x2="37.9637062%" y2="97.8348311%" id="linearGradient-1">
+            <stop stop-color="#4FBDDF" offset="0%"></stop>
+            <stop stop-color="#42A7C6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="01---Nerves-Website" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01---Landing-Page" transform="translate(0.000000, -1850.000000)" fill="url(#linearGradient-1)">
+            <g id="Newsletter-Section" transform="translate(-237.000000, 1850.000000)">
+                <path d="M153.615859,35.2582547 L271.199577,312.268136 L410.299859,639.967864 L156.311672,617.874316 C128.917695,615.491409 108.588811,591.435462 110.80769,564.027711 L153.615859,35.2582547 L153.615859,35.2582547 Z" id="Rectangle" transform="translate(258.548463, 337.613059) scale(-1, -1) rotate(23.000000) translate(-258.548463, -337.613059) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440px" height="616px" viewBox="0 0 1440 616" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>Background Header</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="182.639249%" y1="29.2232122%" x2="2.21835047%" y2="58.0209338%" id="linearGradient-1">
+            <stop stop-color="#4FBDDF" offset="0%"></stop>
+            <stop stop-color="#42A7C6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="01---Nerves-Website" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="06---Documentation" fill="url(#linearGradient-1)">
+            <g id="Header-Section" transform="translate(-67.000000, -150.000000)">
+                <polygon id="Background-Header" transform="translate(778.002931, 383.850198) rotate(-6.000000) translate(-778.002931, -383.850198) " points="95.3389503 76.961012 1527.45048 227.481999 1478.76017 690.739384 28.5553833 688.720768"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>
