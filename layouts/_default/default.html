@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+  {{ partial "head.html" .}}
+
+  <body>
+
+    {{ partial "nav.html" .}}
+
+    <div id="header" class="header {{ if ne .Page.Permalink '/' }}minimal{{ end }}">
+      <div class="header-mask"></div>
+    </div>
+
+    <div class="container {{ .Params.category }}">
+      <div class="row">
+        <div id="content" class="col-md-9">
+          {{ .Content }}
+        </div><!-- #content -->
+
+        <div id="sidebar-primary" class="col-md-3">
+          {{ partial "sidebar.html" . }}
+        </div>
+      </
+      div>
+    </div>
+
+    </div><!-- /.container -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+    </body>
+</html>

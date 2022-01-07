@@ -1,0 +1,103 @@
+body {
+  font-size: 11pt;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lato', sans-serif;
+}
+
+.header {
+  position: relative;
+  background-image: url(/images/header.svg);
+  background-position: center;
+  background-size: cover;
+  padding: 0; /* reset */
+  clear: both;
+  width: 100%;
+  height: 175px;
+  padding-bottom: 10px;
+}
+
+.header img{
+  max-width: 100%;
+}
+
+.header-mask {
+  background: url(/images/badge/nerves-badge_500x259_white.png) center center no-repeat rgba(0, 0, 0, 0.7);
+  background-size: 500px 259px;
+  width: 100%;
+  height: 175px;
+}
+
+.navbar {
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+.navbar-nav > li > a {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  font-size: 18px;
+  font-family: 'Lato', sans-serif;
+}
+
+#content, #sidebar-primary {
+  margin-top: 30px;
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  padding-top: 25px;
+  height: 0;
+}
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .bs-social {
+      text-align: left;
+  }
+  .bs-social-buttons li:first-child {
+      padding-left: 0;
+  }
+}
+
+@media (min-width: 300px) {
+  .header {
+    height: 200px;
+  }
+
+  .header-mask {
+    height: 200px;
+    background-size: 200px 104px;
+  }
+}
+
+@media (min-width: 725px) {
+  .header {
+    height: 500px;
+  }
+
+  .header-mask {
+    height: 500px;
+    background-size: 500px 259px;
+  }
+
+  .header.minimal {
+    height: 200px;
+  }
+
+  .header.minimal .header-mask {
+    height: 200px;
+    background-size: 200px 104px;
+  }
+}
+
+div.container.libraries li { margin-bottom: 12px; }

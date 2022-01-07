@@ -1,0 +1,3 @@
+baseURL = 'https://nerves-project.org/'
+languageCode = 'en-us'
+title = 'Nerves Project'
