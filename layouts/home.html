@@ -1,14 +1,36 @@
 {{ define "main" }}
 
-<section class="hero is-primary">
+<header class="hero is-primary is-medium">
   <div class="hero-body">
-    <p class="title">{{.Site.Title}}</p>
-    <p class="sibtitle">{{ .Site.Params.description }}</p>
+    <div class="container">
+      <p class="title is-2 mb-6">{{ .Params.Tagline }}</p>
+      <p class="subtitle">{{ .Params.aboutNerves | safeHTML }}</p>
+    </div>
   </div>
-</section>
+</header>
 
-<main class="content container my-6 px-4">
-  {{ .Content }}
+<main class="container px-4 mb-6">
+  <section class="section">
+    <h4 class="subtitle is-4">{{ .Params.Introduction | safeHTML }}</h4>
+  </section>
+
+  <ul class="mb-6">
+    {{ range .Params.Features }}
+      <li class="card mb-4">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-left is-hidden-mobile">
+              <figure class="image is-96x96"><img src="{{ .image }}"></figure>
+            </div>
+            <div class="media-content">
+              <h4 class="title is-4">{{ .name }}</h4>
+              <p class="subtitle is-6">{{ .description | safeHTML }}</p>
+            </div>
+          </div>
+        </div>
+      </li>
+    {{ end }}
+  </ul>
 </main>
 
 {{ end }}

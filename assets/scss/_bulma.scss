@@ -4,6 +4,7 @@
 // https://github.com/jgthms/bulma/tree/master/sass
 @import '../../node_modules/bulma/sass/utilities/_all';
 $navbar-breakpoint: $tablet;
+$navbar-height: 4rem;
 $navbar-item-hover-background-color: transparent;
 $family-san-serif: 'Montserrat', BlinkMacSystemFont, -apple-system, 'Segoe UI',
   'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
