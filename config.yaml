@@ -12,10 +12,6 @@ params:
 # https://gohugo.io/content-management/menus/
 menu:
   main:
-    - identifier: posts
-      name: Posts
-      url: '/posts/'
-      weight: 2
     - identifier: about
       name: About
       url: '/about/'
