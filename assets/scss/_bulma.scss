@@ -7,6 +7,7 @@
 // https://github.com/jgthms/bulma/tree/master/sass
 @import '../../node_modules/bulma/sass/utilities/_all';
 $navbar-breakpoint: $tablet;
+$navbar-item-hover-background-color: transparent;
 
 @import '../../node_modules/bulma/sass/base/_all';
 @import '../../node_modules/bulma/sass/elements/_all';

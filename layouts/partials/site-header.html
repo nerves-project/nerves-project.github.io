@@ -1,5 +1,5 @@
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand" style="max-height: 52px">
+<nav class="navbar py-2" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand" style="max-height: 43px">
     <a class="navbar-item" href="{{.Site.BaseURL}}">{{ partial "nerves-logo" . }}</a>
     <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="appHeaderNavbarMenu">
       <span aria-hidden="true"></span>
@@ -10,11 +10,13 @@
 
   <div id="appHeaderNavbarMenu" class="navbar-menu">
     {{ if .Site.Menus.main }}
-    <div class="navbar-start">
-      {{ range .Site.Menus.main }}
-      <a href="{{ .URL }}" class="navbar-item {{ cond (eq $.RelPermalink .URL) " is-active" "" }}">{{ .Name }}</a>
-      {{ end }}
-    </div>
+      <div class="navbar-start">
+        {{ range .Site.Menus.main }}
+          <a href="{{ .URL }}" class="navbar-item {{ cond (eq $.RelPermalink .URL) " is-active" "" }}">
+            {{ cond (eq .Name "Github") (partial "github-logo" .)  .Name }}
+          </a>
+        {{ end }}
+      </div>
     {{ end }}
   </div>
 </nav>
