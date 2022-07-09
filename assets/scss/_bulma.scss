@@ -1,13 +1,14 @@
 // https://bulma.io/documentation/customize/with-node-sass/
 
-// Update some of Bulma's component variables
-// $body-background-color: $grey-lighter;
-
 // Import only what you need from Bulma
 // https://github.com/jgthms/bulma/tree/master/sass
 @import '../../node_modules/bulma/sass/utilities/_all';
 $navbar-breakpoint: $tablet;
 $navbar-item-hover-background-color: transparent;
+$family-san-serif: 'Montserrat', BlinkMacSystemFont, -apple-system, 'Segoe UI',
+  'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+  'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+$family-primary: $family-san-serif;
 
 @import '../../node_modules/bulma/sass/base/_all';
 @import '../../node_modules/bulma/sass/elements/_all';
