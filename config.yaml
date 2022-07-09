@@ -1,11 +1,13 @@
 # https://gohugo.io/getting-started/configuration/#all-configuration-settings
 baseURL: '/'
 languageCode: 'en-us'
-title: 'My New Hugo Site'
+title: 'Nerves Project'
 
 # https://gohugo.io/variables/site/#the-siteparams-variable
 params:
-  description: Sit fugiat ut velit irure elit voluptate veniam.
+  description: >
+    Nerves is the open-source platform and infrastructure you need to build,
+    deploy, and securely manage your fleet of IoT devices at speed and scale.
 
 # https://gohugo.io/content-management/menus/
 menu:
