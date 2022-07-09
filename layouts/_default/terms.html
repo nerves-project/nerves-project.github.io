@@ -10,8 +10,8 @@
   </div>
 </section>
 
-<main class="container my-6 px-4">
-  <p>{{ .Content }}</p>
+<main class="content container my-6 px-4">
+  {{ .Content }}
 
   {{ range $key, $value := .Data.Terms }}
     <a href="{{ "/" | relLangURL }}{{ $.Data.Plural | urlize }}/{{ $key | urlize }}">

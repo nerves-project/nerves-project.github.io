@@ -22,6 +22,8 @@ $link: $primary;
 @import '../../node_modules/bulma/sass/helpers/_all';
 @import '../../node_modules/bulma/sass/layout/_all';
 
+@import 'syntax';
+
 main {
   min-height: 50vh;
 }
