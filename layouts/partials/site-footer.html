@@ -1,5 +1,21 @@
-<footer class="footer">
-  <div class="content">
-    <p>&copy; {{ with .Site.Copyright | default .Site.Title }} {{ . | safeHTML }} {{ now.Format "2006"}} {{ end }}</p>
+<footer class="footer has-text-centered">
+  <div class="has-text-centered mb-4"><img src="/img/nerves.svg"></div>
+  <div class="is-justify-content-center mb-2">
+    {{ range .Site.Menus.footer2 }}
+      <a href="{{ .URL }}" class="mx-2" title="{{ .Name }}">{{ .Pre }}</a>
+    {{ end }}
+  </div>
+  <div class="navbar-start is-justify-content-center mb-2">
+    {{ range .Site.Menus.footer1 }}
+      <a href="{{ .URL }}" class="navbar-item {{ cond (eq $.RelPermalink .URL) " is-active" "" }}">
+        {{ .Name }}
+      </a>
+    {{ end }}
+  </div>
+  <div>
+    &copy;
+    {{ with .Site.Copyright | default .Site.Title }}
+      {{ . | safeHTML }} {{ now.Format "2006"}}
+    {{ end }}
   </div>
 </footer>
