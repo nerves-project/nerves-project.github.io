@@ -5,8 +5,8 @@
     <div class="container">
       <p class="title is-2 mb-6">{{ .Params.Tagline }}</p>
       <p class="subtitle">{{ .Params.aboutNerves | safeHTML }}</p>
-      <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light">Get started</a>
-      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-light">Subscribe to Newsletter</a>
+      <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light mb-2">Get started</a>
+      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-light mb-2">Subscribe to Newsletter</a>
     </div>
   </div>
 </header>
@@ -60,7 +60,7 @@
     </ul>
   </section>
 
-  <section class="section">
+  <section class="section px-0">
     <div class="columns">
       <div class="column">
         <h2 class="title is-2">Newsletter</h2>
@@ -81,7 +81,7 @@
     </div>
   </section>
 
-  <section class="section content">
+  <section class="section content px-0">
     <h2 class="title is-2">We love our sponsors</h2>
     <p>
       Nerves Open Collective and industry-level sponsors help us provide the
@@ -132,7 +132,7 @@
                 Collective go towards paying for operational, marketing, and
                 other expenses.
               </p>
-              <a class="button is-primary" href="https://opencollective.com/nerves-project">
+              <a class="button is-primary is-small" href="https://opencollective.com/nerves-project">
                 Contribute on Open Collective
               </a>
             </div>
