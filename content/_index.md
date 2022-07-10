@@ -44,4 +44,18 @@ features:
       Nerves helps you bring the principles of agile development to your IoT
       development cycle. Because Nerves runtime is immutable, Nerves also
       brings agility to long-term maintenance.
+newsletter:
+  title: 'Nerves Newsletter'
+  description: |
+    The Nerves Newsletter covers some of these in each issue:
+    - Project news and releases
+    - Featured projects
+    - Featured talks
+    - Technical notes explaining parts of Nerves, straight from the core team
+    - Community contribution opportunities
+  subscriptionURL: 'https://underjord.io/nerves-newsletter.html'
+  archiveURL: 'https://embedded-elixir.com/page/newsletter'
+  feedURL: 'https://underjord.io/feed.xml'
+
+
 ---

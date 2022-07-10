@@ -31,6 +31,18 @@
       </li>
     {{ end }}
   </ul>
+
+  <section class="section has-background-primary-light">
+    <h2 class="title is-2">{{ .Params.Newsletter.title }}</h2>
+    <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
+    <div>
+      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-outlined">Subscribe</a>
+      <div class="mt-2">
+        <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
+        <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
+      </div>
+    </div>
+  </section>
 </main>
 
 {{ end }}
