@@ -6,6 +6,7 @@
       <p class="title is-2 mb-6">{{ .Params.Tagline }}</p>
       <p class="subtitle">{{ .Params.aboutNerves | safeHTML }}</p>
       <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light">Get started</a>
+      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-light">Subscribe to Newsletter</a>
     </div>
   </div>
 </header>
@@ -20,22 +21,50 @@
       <li class="column">
         <div class="card mb-4">
           <div class="card-image is-hidden-mobile">
-            <figure class="image is-4by3"><img src="{{ .image }}" style="padding: 3rem 0 1rem 0"></figure>
+            <figure class="image is-4by3">
+              <img src="{{ .image }}" style="padding: 3rem 0 1rem 0">
+            </figure>
           </div>
           <div class="card-content">
             <h4 class="title is-4">{{ .name }}</h4>
-            <div class="content">{{ .description | safeHTML }}</div>
+            <div class="content">{{ .description | markdownify }}</div>
           </div>
         </div>
       </li>
     {{ end }}
   </ul>
 
+  <section class="section px-0">
+    <h2 class="title is-2">Technologies</h2>
+    <p class="mb-4">{{ .Params.TechnologiesIntroduction | markdownify  }} </p>
+    <ul class="mb-6">
+      {{ range .Params.Technologies }}
+        <li>
+          <div class="card mb-4">
+            <div class="card-content">
+              <div class="media">
+                <div class="media-left">
+                  <figure class="image is-32x32">
+                    <img src="{{ .image }}">
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <a href="{{ .URL }}" class="title is-4">{{ .name }}</a>
+                </div>
+              </div>
+              <div class="content">{{ .description | markdownify }}</div>
+            </div>
+          </div>
+        </li>
+      {{ end }}
+    </ul>
+  </section>
+
   <section class="section">
     <h2 class="title is-2">{{ .Params.Newsletter.title }}</h2>
     <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
     <div>
-      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary">Subscribe</a>
+      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-medium">Subscribe</a>
       <div class="mt-2">
         <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
         <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
