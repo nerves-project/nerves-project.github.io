@@ -15,3 +15,8 @@ $link: $primary;
 main {
   min-height: 50vh;
 }
+
+// To make the cards have equal height
+.card {
+  height: 100%;
+}
