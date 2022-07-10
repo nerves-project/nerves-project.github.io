@@ -61,13 +61,22 @@
   </section>
 
   <section class="section">
-    <h2 class="title is-2">Newsletter</h2>
-    <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
-    <div>
-      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-medium">Subscribe</a>
-      <div class="mt-2">
-        <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
-        <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
+    <div class="columns">
+      <div class="column">
+        <h2 class="title is-2">Newsletter</h2>
+        <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
+        <div>
+          <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-medium">Subscribe</a>
+          <div class="mt-2">
+            <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
+            <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
+          </div>
+        </div>
+      </div>
+      <div class="column has-background-primary is-hidden-mobile">
+        <figure class="image is-1by1">
+          <img src="/img/system.svg">
+        </figure>
       </div>
     </div>
   </section>
@@ -82,7 +91,7 @@
       <summary>Our sponsors</summary>
 
       <section class="section has-text-centered">
-        <h3 class="title is-3">Platinum Sponsor</h3>
+        <h3 class="title is-4 has-text-grey-dark">Platinum Sponsor</h3>
 
         <a href="https://smartrent.com/">
           <img src="/img/SmartRent_logo.png" alt="SmartRent">
@@ -90,7 +99,7 @@
       </section>
 
       <section class="section has-text-centered">
-        <h3 class="title is-3">Bronze Sponsor</h3>
+        <h3 class="title is-4 has-text-grey-dark">Bronze Sponsor</h3>
 
         <a href="https://binarynoggin.com/">
           <img src="/img/BinaryNoggin_logo.png" alt="BinaryNoggin">
