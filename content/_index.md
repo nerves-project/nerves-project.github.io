@@ -6,6 +6,7 @@ aboutNerves: |
   <strong>Nerves</strong> is the open-source platform and infrastructure you
   need to build, deploy, and securely manage your fleet of IoT devices at speed
   and scale.
+getStartedURL: 'https://hexdocs.pm/nerves/getting-started.html'
 introduction:
   Hardware doesn't have to be hard. Nerves makes edge computing easier by solving
   the most complex infrastructure problems. Let Nerves take care of the network,
