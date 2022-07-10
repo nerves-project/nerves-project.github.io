@@ -13,20 +13,20 @@ params:
 # https://gohugo.io/content-management/menus
 menu:
   main:
-    - name: 'Forum'
-      url: 'https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74'
-      weight: 1
     - name: 'Docs'
       url: 'https://hexdocs.pm/nerves'
+      weight: 1
+    - name: 'Newsletter'
+      url: 'https://embedded-elixir.com/page/newsletter'
       weight: 2
-    - name: 'Blog'
-      url: 'https://embedded-elixir.com'
+    - name: 'Forum'
+      url: 'https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74'
       weight: 3
     - name: 'Tips'
       url: 'https://tips.nerves-project.org'
       weight: 4
-    - name: 'Newsletter'
-      url: 'https://embedded-elixir.com/page/newsletter'
+    - name: 'Blog'
+      url: 'https://embedded-elixir.com'
       weight: 5
     - name: 'Github'
       url: 'https://github.com/nerves-project'
@@ -35,14 +35,14 @@ menu:
     - name: 'Docs'
       url: 'https://hexdocs.pm/nerves'
       weight: 1
-    - name: 'Blog'
-      url: 'https://embedded-elixir.com'
+    - name: 'Newsletter'
+      url: 'https://embedded-elixir.com/page/newsletter'
       weight: 2
     - name: 'Tips'
       url: 'https://tips.nerves-project.org'
       weight: 3
-    - name: 'Newsletter'
-      url: 'https://embedded-elixir.com/page/newsletter'
+    - name: 'Blog'
+      url: 'https://embedded-elixir.com'
       weight: 4
   footer2:
     - name: 'Forum'

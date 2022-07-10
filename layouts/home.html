@@ -37,7 +37,7 @@
   <section class="section px-0">
     <h2 class="title is-2">Technologies</h2>
     <p class="mb-4">{{ .Params.TechnologiesIntroduction | markdownify  }} </p>
-    <ul class="mb-6">
+    <ul>
       {{ range .Params.Technologies }}
         <li>
           <div class="card mb-4">
@@ -61,7 +61,7 @@
   </section>
 
   <section class="section">
-    <h2 class="title is-2">{{ .Params.Newsletter.title }}</h2>
+    <h2 class="title is-2">Newsletter</h2>
     <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
     <div>
       <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-medium">Subscribe</a>

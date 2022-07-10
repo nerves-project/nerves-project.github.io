@@ -66,7 +66,6 @@ technologies:
       - Enables use of code that's not yet available for the
       [Erlang virtual machine](https://en.wikipedia.org/wiki/BEAM_(Erlang_virtual_machine))
 newsletter:
-  title: 'Nerves Newsletter'
   description: |
     The Nerves Newsletter covers some of these in each issue:
     - Project news and releases
