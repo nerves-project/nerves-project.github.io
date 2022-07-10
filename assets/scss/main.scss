@@ -3,11 +3,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
 // Set your brand colors
-$nerves-blue: #42a7c6;
+$nerves-blue-light: #42a7c6;
+$nerves-blue-dark: #33647E;
 
 // Update Bulma's global variables
-$primary: $nerves-blue;
-$link: $primary;
+$primary: $nerves-blue-dark;
+$link: $nerves-blue-light;
 
 @import 'bulma';
 @import 'syntax';
