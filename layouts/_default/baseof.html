@@ -2,7 +2,7 @@
 <html lang="{{ $.Site.LanguageCode | default "en" }}">
   {{ partial "head" . }}
 
-  <body>
+  <body data-type="{{.Type}}" data-kind="{{.Kind}}" data-is-home="{{.IsHome}}">
     {{ block "header" . }}{{ partial "site-header" . }}{{end}}
 
     {{ block "main" . }}{{ end }}

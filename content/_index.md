@@ -3,7 +3,7 @@
 tagline: |
   Build your next IoT product with proven technology
 aboutNerves: |
-  <strong>Nerves</strong> is the open-source platform and infrastructure you
+  **Nerves** is the open-source platform and infrastructure you
   need to build, deploy, and securely manage your fleet of IoT devices at speed
   and scale.
 getStartedURL: 'https://hexdocs.pm/nerves/getting-started.html'
@@ -76,4 +76,23 @@ newsletter:
   subscriptionURL: 'https://underjord.io/nerves-newsletter.html'
   archiveURL: 'https://embedded-elixir.com/page/newsletter'
   feedURL: 'https://underjord.io/feed.xml'
+casesIntroduction: |
+  Companies across industries are using Nerves to support their most innovative
+  projects and drive operational efficiencies.
+featuredCases:
+  - name: 'Farmbot'
+    image: '/img/Farmbot-case-cover.jpg'
+    URL: /cases/farmbot
+    description: |
+      Managing Fleets of Smart Farming Devices with Nerves
+  - name: 'Hop'
+    image: '/img/Hop-case-cover.jpg'
+    URL: /cases/hop
+    description: |
+      Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System
+  - name: 'Le Tote'
+    image: '/img/LeTote-case-cover.jpg'
+    URL: /cases/letote
+    description: |
+      Increasing Warehouse Efficiency with Nerves
 ---

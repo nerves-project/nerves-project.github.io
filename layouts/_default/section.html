@@ -5,30 +5,24 @@
     <p class="title">{{.Title}}</p>
   </div>
 </section>
-
-<main class="content container my-6 px-4">
-  {{ .Content }}
-
+<main class="container my-6 px-4">
+  <div class="content">{{ .Content }}</div>
   <div>
     {{ range .Paginator.Pages.ByPublishDate.Reverse }}
     <a href="{{ .RelPermalink }}">
-      <article class="card">
+      <article class="card mb-4">
         <div class="card-content">
           <div class="media">
             <div class="media-content">
               <p class="title is-4">{{ .Title }}</p>
-              <p class="subtitle is-6"><time datetime="{{ .Date }}">{{ .Date }}</time></p>
             </div>
           </div>
-          <div class="content">
-            {{ .Summary }}
-          </div>
+          <div class="content">{{ .Summary }}</div>
         </div>
       </article>
     </a>
     {{ end }}
   </div>
-
   {{- template "_internal/pagination.html" . -}}
 </main>
 

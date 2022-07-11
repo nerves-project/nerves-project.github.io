@@ -1,0 +1,25 @@
+{{ define "main" }}
+
+{{/*
+  Example URL: /tags/case/
+*/}}
+
+<section class="hero is-primary">
+  <div class="hero-body">
+    <p class="title">Tag: {{.Title}}</p>
+  </div>
+</section>
+<main class="container my-6 px-4">
+  <div class="content">{{ .Content }}</div>
+  <ul class="mb-4">
+    {{ range .Pages }}
+      <li class="card mb-2">
+        <div class="card-content">
+          <a href="{{ .Permalink }}" class="title is-6">{{ .Title }}</a>
+        </div>
+      </li>
+    {{ end }}
+  </ul>
+</main>
+
+{{ end }}
