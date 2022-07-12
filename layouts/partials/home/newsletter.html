@@ -1,0 +1,20 @@
+<div class="columns">
+  <div class="column">
+    <h2 class="title is-2">Newsletter</h2>
+    <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
+    <div>
+      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-medium">
+        Subscribe
+      </a>
+      <div class="mt-2">
+        <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
+        <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
+      </div>
+    </div>
+  </div>
+  <div class="column has-background-primary is-hidden-mobile">
+    <figure class="image is-1by1">
+      <img src='{{ relURL "img/system.svg" }}'>
+    </figure>
+  </div>
+</div>

@@ -5,8 +5,12 @@
     <div class="container">
       <p class="title is-2 mb-6">{{ .Params.Tagline }}</p>
       <p class="subtitle">{{ .Params.aboutNerves | markdownify }}</p>
-      <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light mb-2 mr-2">Get started</a>
-      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-light mb-2">Subscribe to Newsletter</a>
+      <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light mb-2 mr-2">
+        Get started
+      </a>
+      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-light mb-2">
+        Subscribe to Newsletter
+      </a>
     </div>
   </div>
 </header>
@@ -14,158 +18,20 @@
   <section class="section">
     <h4 class="subtitle is-4">{{ .Params.Introduction | markdownify }}</h4>
   </section>
-  <ul class="columns mb-6">
-    {{ range .Params.Features }}
-      <li class="column">
-        <div class="card mb-4">
-          <div class="card-image is-hidden-mobile">
-            <figure class="image is-1by1">
-              <img src="{{ relURL .image }}" class="px-6">
-            </figure>
-          </div>
-          <div class="card-content">
-            <h4 class="title is-4">{{ .name }}</h4>
-            <div class="content">{{ .description | markdownify }}</div>
-          </div>
-        </div>
-      </li>
-    {{ end }}
-  </ul>
-  <section class="section px-0">
-    <h2 class="title is-2">Technologies</h2>
-    <p class="mb-4">{{ .Params.TechnologiesIntroduction | markdownify }} </p>
-    <ul>
-      {{ range .Params.Technologies }}
-        <li>
-          <div class="card mb-4">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-left">
-                  <figure class="image is-32x32">
-                    <img src="{{ relURL .image }}">
-                  </figure>
-                </div>
-                <div class="media-content">
-                  <a href="{{ .URL }}" class="title is-4">{{ .name }}</a>
-                </div>
-              </div>
-              <div class="content">{{ .description | markdownify }}</div>
-            </div>
-          </div>
-        </li>
-      {{ end }}
-    </ul>
+  <section>
+    {{ partial "home/features.html" . }}
   </section>
   <section class="section px-0">
-    <div class="columns">
-      <div class="column">
-        <h2 class="title is-2">Newsletter</h2>
-        <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
-        <div>
-          <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-medium">Subscribe</a>
-          <div class="mt-2">
-            <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
-            <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
-          </div>
-        </div>
-      </div>
-      <div class="column has-background-primary is-hidden-mobile">
-        <figure class="image is-1by1">
-          <img src='{{ relURL "img/system.svg" }}'>
-        </figure>
-      </div>
-    </div>
+    {{ partial "home/technologies.html" . }}
   </section>
   <section class="section px-0">
-    <h2 class="title is-2">Cases</h2>
-    <p class="mb-4">{{ .Params.CasesIntroduction | markdownify }} </p>
-    <ul class="columns">
-      {{ range .Params.featuredCases }}
-        <li class="column">
-          <a href="{{ relURL .URL }}">
-            <div class="card mb-4">
-              <div class="card-image">
-                <figure class="image is-3by2">
-                  <img src="{{ relURL .image }}" class="px-6">
-                </figure>
-              </div>
-              <div class="card-content">
-                <h4 class="title is-4">{{ .name }}</h4>
-                <div class="content">{{ .description | markdownify }}</div>
-              </div>
-            </div>
-          </a>
-        </li>
-      {{ end }}
-    </ul>
+    {{ partial "home/newsletter.html" . }}
+  </section>
+  <section class="section px-0">
+    {{ partial "home/cases.html" . }}
   </section>
   <section class="section content px-0">
-    <h2 class="title is-2">We love our sponsors</h2>
-    <p>
-      Nerves Open Collective and industry-level sponsors help us provide the
-      tools you need to develop and launch your most interesting projects.
-    </p>
-    <details>
-      <summary>Our sponsors</summary>
-      <section class="section has-text-centered">
-        <h3 class="title is-4 has-text-grey-dark">Platinum Sponsor</h3>
-        <a href="https://smartrent.com/">
-          <img src='{{ relURL "img/SmartRent_logo.png" }}' alt="SmartRent">
-        </a>
-      </section>
-      <section class="section has-text-centered">
-        <h3 class="title is-4 has-text-grey-dark">Bronze Sponsor</h3>
-        <a href="https://binarynoggin.com/">
-          <img src='{{ relURL "img/BinaryNoggin_logo.png" }}' alt="BinaryNoggin">
-        </a>
-      </section>
-      <iframe src="https://opencollective.com/nerves-project/banner.html?limit=10&id=banner-iframe-693&style={}" width="100%" height="6543" frameborder="0" scrolling="no"></iframe>
-    </details>
-    <h3>Sponsor this project</h3>
-    <p>
-      While we completely enjoy working on the project, the reality is that we
-      can make better progress with companies and individuals supporting our
-      efforts. We're an open-source project, so in keeping with those
-      principles, we'd like to be completely transparent in this effort and
-      appropriately recognize everyone involved.
-      <br>
-      <br>
-      To do this, we have two options for sponsorship:
-    </p>
-    <div class="columns">
-      <div class="column">
-        <div class="card mb-4">
-          <div class="card-content">
-            <div class="content">
-              <h4>Open Collective Contribution</h4>
-              <p>
-                Contributions can be as small as $2/month. Funds from Open
-                Collective go towards paying for operational, marketing, and
-                other expenses.
-              </p>
-              <a class="button is-primary is-small" href="https://opencollective.com/nerves-project">
-                Contribute on Open Collective
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="card mb-4">
-          <div class="card-content">
-            <div class="content">
-              <h4>Sponsoring a Nerves Team Member</h4>
-              <p>
-                Fund one or more individuals on a weekly basis to contribute to
-                maintenance, infrastructure, or other activities important to
-                the project. Sponsorship is handled directly with the team
-                member being sponsored.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    {{ partial "home/sponsors.html" . }}
   </section>
 </main>
 

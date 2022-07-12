@@ -33,8 +33,6 @@ features:
       Nerves helps you bring the principles of agile development to your IoT
       development cycle. Because Nerves runtime is immutable, Nerves also
       brings agility to long-term maintenance.
-technologiesIntroduction: |
-  Nerves defines a new way to build embedded systems, using Erlang virtual machine, Elixir and Linux.
 technologies:
   - name: 'Erlang'
     image: 'img/erlang.svg'
@@ -76,9 +74,6 @@ newsletter:
   subscriptionURL: 'https://underjord.io/nerves-newsletter.html'
   archiveURL: 'https://embedded-elixir.com/page/newsletter'
   feedURL: 'https://underjord.io/feed.xml'
-casesIntroduction: |
-  Companies across industries are using Nerves to support their most innovative
-  projects and drive operational efficiencies.
 featuredCases:
   - name: 'Farmbot'
     image: 'img/Farmbot-case-cover.jpg'

@@ -1,0 +1,17 @@
+<ul class="columns mb-6">
+  {{ range .Params.Features }}
+    <li class="column">
+      <div class="card mb-4">
+        <div class="card-image is-hidden-mobile">
+          <figure class="image is-1by1">
+            <img src="{{ relURL .image }}" class="px-6">
+          </figure>
+        </div>
+        <div class="card-content">
+          <h4 class="title is-4">{{ .name }}</h4>
+          <div class="content">{{ .description | markdownify }}</div>
+        </div>
+      </div>
+    </li>
+  {{ end }}
+</ul>

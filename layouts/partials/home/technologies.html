@@ -1,0 +1,26 @@
+<h2 class="title is-2">Technologies</h2>
+<p class="mb-4">
+  Nerves defines a new way to build embedded systems, using Erlang virtual
+  machine, Elixir and Linux.
+</p>
+<ul>
+  {{ range .Params.Technologies }}
+    <li>
+      <div class="card mb-4">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-left">
+              <figure class="image is-32x32">
+                <img src="{{ relURL .image }}">
+              </figure>
+            </div>
+            <div class="media-content">
+              <a href="{{ .URL }}" class="title is-4">{{ .name }}</a>
+            </div>
+          </div>
+          <div class="content">{{ .description | markdownify }}</div>
+        </div>
+      </div>
+    </li>
+  {{ end }}
+</ul>
