@@ -24,9 +24,9 @@ secure. Connor had used Nerves before at a previous company and was a regular
 open-source contributor to Nerves, so he knew the platform would help him
 accomplish these goals.
 
-![](/img/Farmbot-case-1.jpg)
-![](/img/Farmbot-case-2.jpg)
-![](/img/Farmbot-case-3.jpg)
+![](/nerves_website/img/Farmbot-case-1.jpg)
+![](/nerves_website/img/Farmbot-case-2.jpg)
+![](/nerves_website/img/Farmbot-case-3.jpg)
 
 ## How Nerves Helped
 

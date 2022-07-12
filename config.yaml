@@ -50,23 +50,23 @@ menu:
   footer2:
     - name: 'Forum'
       url: 'https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74'
-      pre: '<img src="/img/elixir-forum.svg" width="30rem">'
+      pre: 'img/elixir-forum.svg'
       weight: 1
     - name: 'Github'
       url: 'https://github.com/nerves-project'
-      pre: '<img src="/img/github.svg" width="30rem">'
+      pre: 'img/github.svg'
       weight: 2
     - name: 'Slack'
       url: 'https://elixir-slackin.herokuapp.com'
-      pre: '<img src="/img/slack.svg" width="30rem">'
+      pre: 'img/slack.svg'
       weight: 3
     - name: 'Twitter'
       url: 'https://twitter.com/NervesProject'
-      pre: '<img src="/img/twitter.svg" width="30rem">'
+      pre: 'img/twitter.svg'
       weight: 4
     - name: 'Meetup'
       url: 'https://www.meetup.com/nerves'
-      pre: '<img src="/img/meetup.svg" width="30rem">'
+      pre: 'img/meetup.svg'
       weight: 5
 
 # https://gohugo.io/content-management/taxonomies/

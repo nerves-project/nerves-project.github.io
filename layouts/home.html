@@ -5,7 +5,7 @@
     <div class="container">
       <p class="title is-2 mb-6">{{ .Params.Tagline }}</p>
       <p class="subtitle">{{ .Params.aboutNerves | markdownify }}</p>
-      <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light mb-2">Get started</a>
+      <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light mb-2 mr-2">Get started</a>
       <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-light mb-2">Subscribe to Newsletter</a>
     </div>
   </div>
@@ -20,7 +20,7 @@
         <div class="card mb-4">
           <div class="card-image is-hidden-mobile">
             <figure class="image is-1by1">
-              <img src="{{ .image }}" class="px-6">
+              <img src="{{ relURL .image }}" class="px-6">
             </figure>
           </div>
           <div class="card-content">
@@ -42,7 +42,7 @@
               <div class="media">
                 <div class="media-left">
                   <figure class="image is-32x32">
-                    <img src="{{ .image }}">
+                    <img src="{{ relURL .image }}">
                   </figure>
                 </div>
                 <div class="media-content">
@@ -71,7 +71,7 @@
       </div>
       <div class="column has-background-primary is-hidden-mobile">
         <figure class="image is-1by1">
-          <img src="/img/system.svg">
+          <img src='{{ relURL "img/system.svg" }}'>
         </figure>
       </div>
     </div>
@@ -82,11 +82,11 @@
     <ul class="columns">
       {{ range .Params.featuredCases }}
         <li class="column">
-          <a href="{{ .URL }}">
+          <a href="{{ relURL .URL }}">
             <div class="card mb-4">
               <div class="card-image">
                 <figure class="image is-3by2">
-                  <img src="{{ .image }}" class="px-6">
+                  <img src="{{ relURL .image }}" class="px-6">
                 </figure>
               </div>
               <div class="card-content">
@@ -110,13 +110,13 @@
       <section class="section has-text-centered">
         <h3 class="title is-4 has-text-grey-dark">Platinum Sponsor</h3>
         <a href="https://smartrent.com/">
-          <img src="/img/SmartRent_logo.png" alt="SmartRent">
+          <img src='{{ relURL "img/SmartRent_logo.png" }}' alt="SmartRent">
         </a>
       </section>
       <section class="section has-text-centered">
         <h3 class="title is-4 has-text-grey-dark">Bronze Sponsor</h3>
         <a href="https://binarynoggin.com/">
-          <img src="/img/BinaryNoggin_logo.png" alt="BinaryNoggin">
+          <img src='{{ relURL "img/BinaryNoggin_logo.png" }}' alt="BinaryNoggin">
         </a>
       </section>
       <iframe src="https://opencollective.com/nerves-project/banner.html?limit=10&id=banner-iframe-693&style={}" width="100%" height="6543" frameborder="0" scrolling="no"></iframe>

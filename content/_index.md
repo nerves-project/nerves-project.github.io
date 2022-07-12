@@ -14,21 +14,21 @@ introduction:
   writing robust and maintainable software.
 features:
   - name: 'Scalable'
-    image: '/img/scalable.svg'
+    image: 'img/scalable.svg'
     description: |
       Nerves is written in [Elixir](https://elixir-lang.org), but
       you don't have to rewrite everything in Elixir to get the advantages of
       Nerves — simply bring your own code (like C, C++, Python, Rust, and more)
       and scale up.
   - name: 'High Reliability'
-    image: '/img/high-reliability.svg'
+    image: 'img/high-reliability.svg'
     description: |
       Nerves uses the
       [Erlang runtime system](https://en.wikipedia.org/wiki/Erlang_(programming_language)),
       known for being distributed, fault-tolerant, soft real-time, and highly
       available.
   - name: 'Agile'
-    image: '/img/agile.svg'
+    image: 'img/agile.svg'
     description: |
       Nerves helps you bring the principles of agile development to your IoT
       development cycle. Because Nerves runtime is immutable, Nerves also
@@ -37,7 +37,7 @@ technologiesIntroduction: |
   Nerves defines a new way to build embedded systems, using Erlang virtual machine, Elixir and Linux.
 technologies:
   - name: 'Erlang'
-    image: '/img/erlang.svg'
+    image: 'img/erlang.svg'
     URL: https://en.wikipedia.org/wiki/Erlang_(programming_language)
     description: |
       - Simple strategy for building reliable programs
@@ -51,7 +51,7 @@ technologies:
       - Virtual machine with fine-grained Garbage collection (GC)
         - You get the benefits of a higher level language without the GC cost
   - name: 'Elixir'
-    image: '/img/elixir.svg'
+    image: 'img/elixir.svg'
     URL: https://en.wikipedia.org/wiki/Elixir_(programming_language)
     description: |
       - Built on top of the Erlang virtual machine (BEAM)
@@ -59,7 +59,7 @@ technologies:
       [Stack Overflow Developer Survey 2022](https://survey.stackoverflow.co/2022/#section-most-loved-dreaded-and-wanted-programming-scripting-and-markup-languages)
       - Vibrant and friendly community
   - name: 'Linux'
-    image: '/img/linux.svg'
+    image: 'img/linux.svg'
     URL: https://en.wikipedia.org/wiki/Linux
     description: |
       - Allows Nerves to run on lots of hardware
@@ -81,18 +81,18 @@ casesIntroduction: |
   projects and drive operational efficiencies.
 featuredCases:
   - name: 'Farmbot'
-    image: '/img/Farmbot-case-cover.jpg'
-    URL: /cases/farmbot
+    image: 'img/Farmbot-case-cover.jpg'
+    URL: cases/farmbot
     description: |
       Managing Fleets of Smart Farming Devices with Nerves
   - name: 'Hop'
-    image: '/img/Hop-case-cover.jpg'
-    URL: /cases/hop
+    image: 'img/Hop-case-cover.jpg'
+    URL: cases/hop
     description: |
       Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System
   - name: 'Le Tote'
-    image: '/img/LeTote-case-cover.jpg'
-    URL: /cases/letote
+    image: 'img/LeTote-case-cover.jpg'
+    URL: cases/letote
     description: |
       Increasing Warehouse Efficiency with Nerves
 ---

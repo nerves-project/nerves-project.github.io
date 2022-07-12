@@ -29,8 +29,8 @@ A bartender onsite reviews the rating and approves or denies service. On future
 visits, customers will be automatically recognized — which means all they have
 to do is approach the kiosk, choose a tap, and pour their beer.
 
-![](/img/Hop-case-1.png)
-![](/img/Hop-case-2.jpg)
+![](/nerves_website/img/Hop-case-1.png)
+![](/nerves_website/img/Hop-case-2.jpg)
 
 ## How Nerves Helped — IoT Prototyping & Hardware
 

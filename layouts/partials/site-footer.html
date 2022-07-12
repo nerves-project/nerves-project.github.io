@@ -1,13 +1,15 @@
 <footer class="footer has-text-centered">
-  <div class="has-text-centered mb-4"><img src="/img/nerves.svg"></div>
+  <div class="has-text-centered mb-4"><img src='{{ relURL "img/nerves.svg" }}'></div>
   <div class="is-justify-content-center mb-2">
     {{ range .Site.Menus.footer2 }}
-      <a href="{{ .URL }}" class="mx-2" title="{{ .Name }}">{{ .Pre }}</a>
+      <a href="{{ .URL }}" class="mx-2" title="{{ .Name }}">
+        <img src="{{ relURL .Pre }}" width="30rem">
+      </a>
     {{ end }}
   </div>
   <div class="navbar-start is-justify-content-center mb-2">
     {{ range .Site.Menus.footer1 }}
-      <a href="{{ .URL }}" class="navbar-item {{ cond (eq $.RelPermalink .URL) " is-active" "" }}">
+      <a href="{{ .URL }}" class='navbar-item {{ cond (eq $.RelPermalink .URL) " is-active" "" }}'>
         {{ .Name }}
       </a>
     {{ end }}

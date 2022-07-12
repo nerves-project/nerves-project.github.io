@@ -14,7 +14,7 @@
   {{ template "_internal/twitter_cards.html" . }}
   {{ template "_internal/opengraph.html" . }}
 
-  <link rel="shortcut icon" type="image/png" href="/img/icon.png">
+  <link rel="shortcut icon" type="image/png" href="{{ relURL "img/icon.png" }}">
 
   {{/* https://gohugo.io/hugo-pipes/scss-sass */}}
   {{ if .Site.IsServer }}
