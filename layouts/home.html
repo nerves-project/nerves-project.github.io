@@ -1,7 +1,7 @@
 {{ define "main" }}
 
-<header class="hero is-primary is-medium">
-  <div class="hero-body">
+<header class="hero is-primary is-medium" style="background-image:url(img/smart-city.svg);background-repeat:no-repeat;background-position:center right">
+  <div class="hero-body" style="background:rgba(51,100,126,0.8)">
     <div class="container">
       <p class="title is-2 mb-6">{{ .Params.Tagline }}</p>
       <p class="subtitle">{{ .Params.aboutNerves | markdownify }}</p>
