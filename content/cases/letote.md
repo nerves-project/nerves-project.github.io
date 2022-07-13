@@ -28,9 +28,9 @@ clothing were tiny, hidden on the back of the tag. Employees had to find and
 scan each individual tag at each touchpoint, adding a lot of unnecessary time
 to the production cycle.
 
-![](/nerves_website/img/LeTote-case-1.jpg)
-![](/nerves_website/img/LeTote-case-2.jpg)
-![](/nerves_website/img/LeTote-case-3.jpg)
+![](/nerves_website_next/img/LeTote-case-1.jpg)
+![](/nerves_website_next/img/LeTote-case-2.jpg)
+![](/nerves_website_next/img/LeTote-case-3.jpg)
 
 ## How Nerves Helped
 

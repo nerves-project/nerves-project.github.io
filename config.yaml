@@ -1,5 +1,5 @@
 # https://gohugo.io/getting-started/configuration/#all-configuration-settings
-baseURL: 'https://nerves-project.github.io/nerves_website'
+baseURL: 'https://nerves-project.github.io/nerves_website_next'
 languageCode: 'en-us'
 title: 'Nerves Project'
 Copyright: 'The Nerves Project Authors'
