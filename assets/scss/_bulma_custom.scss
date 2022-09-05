@@ -1,8 +1,22 @@
-// https://bulma.io/documentation/customize/with-node-sass/
+// Custom Bulma styles
+// See https://bulma.io/documentation/customize/with-node-sass/
+
+// Import fonts
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+// Set your brand colors
+$nerves-blue-light: #42a7c6;
+$nerves-blue-dark: #33647e;
+
+// Update Bulma's global variables
+$primary: $nerves-blue-dark;
+$link: $nerves-blue-light;
 
 // Import only what you need from Bulma
-// https://github.com/jgthms/bulma/tree/master/sass
+// See https://github.com/jgthms/bulma/tree/master/sass
 @import '../../node_modules/bulma/sass/utilities/_all';
+
+// Override Bulma variables
 $navbar-breakpoint: $tablet;
 $navbar-height: 4rem;
 $navbar-item-hover-background-color: transparent;
@@ -18,3 +32,8 @@ $family-primary: $family-san-serif;
 @import '../../node_modules/bulma/sass/grid/_all';
 @import '../../node_modules/bulma/sass/helpers/_all';
 @import '../../node_modules/bulma/sass/layout/_all';
+
+// make the cards have equal height
+.card {
+  height: 100%;
+}

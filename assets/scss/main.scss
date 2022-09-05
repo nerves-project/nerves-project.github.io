@@ -1,23 +1,8 @@
 @charset "utf-8";
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-
-// Set your brand colors
-$nerves-blue-light: #42a7c6;
-$nerves-blue-dark: #33647E;
-
-// Update Bulma's global variables
-$primary: $nerves-blue-dark;
-$link: $nerves-blue-light;
-
-@import 'bulma';
+@import 'bulma_custom';
 @import 'syntax';
 
 main {
   min-height: 50vh;
-}
-
-// To make the cards have equal height
-.card {
-  height: 100%;
 }
