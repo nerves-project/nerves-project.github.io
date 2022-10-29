@@ -16,15 +16,12 @@ menu:
     - name: 'Docs'
       url: 'https://hexdocs.pm/nerves'
       weight: 1
-    - name: 'Newsletter'
-      url: 'https://embedded-elixir.com/page/newsletter'
+    - name: 'Resources'
+      url: '/resources'
       weight: 2
-    - name: 'Forum'
-      url: 'https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74'
+    - name: 'Community'
+      url: '/community'
       weight: 3
-    - name: 'Tips'
-      url: 'https://tips.nerves-project.org'
-      weight: 4
     - name: 'Sponsors'
       url: '/sponsors'
       weight: 5
@@ -72,3 +69,9 @@ menu:
 # https://gohugo.io/content-management/taxonomies/
 taxonomies:
   tag: tags
+
+# https://gohugo.io/news/0.60.0-relnotes/
+markup:
+  goldmark:
+    renderer:
+      unsafe: true

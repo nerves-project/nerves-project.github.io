@@ -1,0 +1,14 @@
+{{ range . }}
+
+<article class="py-4" style="display: inline-block">
+  <h4 class="title is-5">
+    {{ .title }}
+  </h4>
+
+  <iframe width="400" height="300"
+    src="https://www.youtube.com/embed/{{ .videoId }}" title="YouTube video player"
+    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen></iframe>
+</article>
+
+{{ end }}

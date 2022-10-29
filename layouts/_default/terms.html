@@ -4,11 +4,8 @@
   Example URL: /tags/
 */}}
 
-<section class="hero is-primary">
-  <div class="hero-body">
-    <p class="title">{{.Title}}</p>
-  </div>
-</section>
+{{ partial "simple-hero" . }}
+
 <main class="container my-6 px-4">
   <div class="content">{{ .Content }}</div>
   {{ range $key, $value := .Data.Terms }}

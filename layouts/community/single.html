@@ -1,0 +1,34 @@
+{{ define "main" }}
+
+{{ partial "simple-hero" . }}
+
+<main class="container my-6 px-4">
+  <div class="content mb-6">
+    {{ .Content }}
+  </div>
+
+  <section class="mb-6">
+    <div class="mb-4">
+      {{ range .Params.communities }}
+      <a href="{{.linkUrl}}" class="button is-light">
+        <span class="icon">
+          <img src="{{ relURL .image }}" style="">
+        </span>
+        <span>{{ .name }}</span>
+      </a>
+    {{ end }}
+    </div>
+
+    <details open data-role="twitter-timeline-toggle">
+      <summary>Nerves Twitter Timeline</summary>
+      <a class="twitter-timeline" href="https://twitter.com/NervesProject?ref_src=twsrc%5Etfw">Tweets by NervesProject</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </details>
+  </section>
+
+  <section class="mb-6" id="talks">
+    <h3 class="title">Community Talks</h3>
+    {{ partial "youtube-list" .Params.talks }}
+  </section>
+</main>
+
+{{ end }}
