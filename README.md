@@ -2,32 +2,22 @@
 
 ## Get started
 
-Firstly, make sure that the [Hugo] static site generator and [Node.js] are
-available on your development machine.
+Firstly, make sure that the [Hugo][Install Hugo]static site generator and
+[Node.js] are available on your development machine.
 
-[Hugo]: https://en.wikipedia.org/wiki/Hugo_(software)
-[Node.js]: https://en.wikipedia.org/wiki/Node.js
-
-```
-hugo version
-```
-
-```
-node --version
-```
-
-```
-npm --version
-```
+[Install Hugo]: https://gohugo.io/getting-started/installing/
+[Node.js]: https://nodejs.org/
 
 Install dependencies.
 
 ```
-npm install
+bin/setup
 ```
 
-Run the development server and visit http://localhost:1313
+Run the development server.
 
 ```
-hugo server
+bin/server
 ```
+
+Visit http://localhost:1313
