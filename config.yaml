@@ -25,8 +25,8 @@ menu:
     - name: 'Tips'
       url: 'https://tips.nerves-project.org'
       weight: 4
-    - name: 'Blog'
-      url: 'https://embedded-elixir.com'
+    - name: 'Sponsors'
+      url: '/sponsors'
       weight: 5
     - name: 'Github'
       url: 'https://github.com/nerves-project'
