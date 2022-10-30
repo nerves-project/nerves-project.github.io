@@ -3,6 +3,11 @@
 @import 'bulma_custom';
 @import 'syntax';
 
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 main {
   min-height: 50vh;
 }

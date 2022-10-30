@@ -10,9 +10,9 @@
   <section class="mb-6">
     <div class="mb-4">
       {{ range .Params.communities }}
-      <a href="{{.linkUrl}}" class="button is-light">
-        <span class="icon">
-          <img src="{{ relURL .image }}" style="">
+      <a href="{{.linkUrl}}" class="button is-white">
+        <span class="icon mr-2">
+          <img src="{{ relURL .image }}">
         </span>
         <span>{{ .name }}</span>
       </a>
