@@ -10,13 +10,14 @@ Firstly, make sure that the [Hugo][Install Hugo] static site generator and
 
 Install dependencies.
 
-```
+```sh
+asdf install
 bin/setup
 ```
 
 Run the development server.
 
-```
+```sh
 bin/server
 ```
 
