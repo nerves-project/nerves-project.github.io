@@ -57,6 +57,10 @@ menu:
       url: 'https://elixir-slackin.herokuapp.com'
       pre: 'img/slack.svg'
       weight: 3
+    - name: 'Mastodon'
+      url: 'https://fosstodon.org/@NervesProject'
+      pre: 'img/mastodon.svg'
+      weight: 4
     - name: 'Twitter'
       url: 'https://twitter.com/NervesProject'
       pre: 'img/twitter.svg'

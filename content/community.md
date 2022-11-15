@@ -4,6 +4,9 @@ title: Community
 date: 2022-01-01
 tags: []
 communities:
+  - name: 'Mastodon'
+    linkUrl: 'https://fosstodon.org/@NervesProject'
+    image: 'img/mastodon.svg'
   - name: 'Twitter'
     linkUrl: 'https://twitter.com/NervesProject'
     image: 'img/twitter.svg'
