@@ -1,0 +1,67 @@
+{{ define "main" }}
+
+{{ partial "simple-hero" . }}
+
+<main class="container my-6 px-4">
+  <ul class="rows mb-6">
+    {{ range $index, $el := .Params.Options }}
+      <li class="row section">
+        <div class="columns">
+          {{ with .examples }}
+            <div class="column">
+              <div class="content">
+                <center><h3 class="title is-3">{{ $el.name }}</h3></center>
+                {{ $el.description }}
+                <div class="column">
+                  <span class="icon-text">
+                    <span><a href="{{ $el.link }}">{{ $el.link_text }}</a></span>
+                    <span class="icon">
+                      <img src="{{ relURL "img/arrow-right.svg" }}"></img>
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="columns">
+                {{ range . }}
+                  <div class="column">
+                    <figure class="image">
+                      <a href="{{ .link }}">
+                        <img src="{{ relURL .image }}" >
+                      </a>
+                    </figure>
+                  </div>
+                {{ end }}
+              </div>
+            </div>
+          {{ else}}
+            <div class="column">
+              <figure class="image">
+                <a href="{{ .link }}">
+                  <img src="{{ relURL .image }}" >
+                </a>
+              </figure>
+            </div>
+            <div class="column">
+              <div class="content">
+                <center><h3 class="title is-3">{{ .name }}</h3></center>
+                {{ .description }}
+                <div class="column">
+                  <span class="icon-text">
+                    <span><a href="{{ .link }}">{{ .link_text }}</a></span>
+                    <span class="icon">
+                      <img src="{{ relURL "img/arrow-right.svg" }}"></img>
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          {{ end }}
+        </div>
+      </li>
+    {{ end }}
+  </ul>
+</main>
+
+{{ end }}
