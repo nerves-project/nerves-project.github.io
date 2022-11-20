@@ -1,12 +1,15 @@
-<div class="columns">
+<div id="newsletter" class="columns">
   <div class="column">
     <h2 class="title is-2">Newsletter</h2>
-    <div class="content">{{ .Params.Newsletter.description | markdownify }}</div>
+    <div class="content">
+      {{ .Params.Newsletter.description | markdownify }}
+    </div>
     <div>
-      <a href="{{ .Params.Newsletter.SubscriptionURL }}" class="button is-primary is-medium">
+      <a class="js-modal-trigger button is-primary is-medium" data-target="modal-js-newsletter">
         Subscribe
       </a>
       <div class="mt-2">
+        <a href="{{ .Params.Newsletter.subscriptionURL }}">More info</a> |
         <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
         <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
       </div>
@@ -17,4 +20,55 @@
       <img src='{{ relURL "img/system.svg" }}'>
     </figure>
   </div>
+</div>
+
+<div id="modal-js-newsletter" class="modal">
+  <div class="modal-background"></div>
+
+  <div class="modal-content">
+    <div class="box">
+      <div class="content">
+        <blockquote>
+          <em>
+            I use Campaign Monitor and do my best to strangle the tracking-features out of it. The form does use an arbitrary bit of JS for the sign-up that I know little about. I've set this up so you will be flagged for no tracking. We are in the EU, work along the GDPR and tracking user data is a liability that I prefer to avoid.
+            <br>
+            <br>
+            Delivery occurs from <a>nervesnewsletter@underjord.io</a>
+          </em>
+          <p align="right"><br><strong>- Lars Wilkman of <a href="https://underjord.io">Underjord.io</a></strong></p>
+        </blockquote>
+      </div>
+      <form class="newsLt-form js-cm-form" id="subForm" action="https://www.createsend.com/t/subscribeerror?description=" method="post" data-id="2BE4EF332AA2E32596E38B640E905619B3E6FE651D46DAC4A7C16AC3F71311A0451D1A231E3067593FFBB359236AFE1DEF2D25DD3E0DDA04BA4855B8188A4135">
+        <div class="field">
+          <div class="control">
+            <input autocomplete="Email" aria-label="Email" placeholder="Email Address" class="input newsLt-formEmail js-cm-email-input qa-input-email" id="fieldEmail" maxlength="200" name="cm-jrllyhk-jrllyhk" required="" type="email">
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox" for="cm-privacy-consent">
+              <input aria-required="" id="cm-privacy-consent" name="cm-privacy-consent" required="" type="checkbox">
+              I agree to be emailed for the purposes of the newsletter
+            </label>
+            <input id="cm-privacy-consent-hidden" name="cm-privacy-consent-hidden" type="hidden" value="true">
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <input class="checkbox" id="good-faith-indicator" name="good-faith-indicator" required="" checked="checked" disabled="disabled" type="checkbox">
+            <label for="good-faith-indicator">I decline to have my email activity tracked</label>
+            <input id="cm-privacy-email-hidden" name="cm-privacy-email-hidden" type="hidden" value="true">
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="mainBtn button is-link newsLt-submit">SUBSCRIBE</button>
+          </div>
+        </div>
+      </form>
+      <script type="text/javascript" src="https://js.createsend1.com/javascript/copypastesubscribeformlogic.js"></script>
+    </div>
+  </div>
+
+  <button class="modal-close is-large" aria-label="close"></button>
 </div>

@@ -65,12 +65,22 @@ technologies:
       [Erlang virtual machine](https://en.wikipedia.org/wiki/BEAM_(Erlang_virtual_machine))
 newsletter:
   description: |
-    The Nerves Newsletter covers some of these in each issue:
+    The Nerves newsletter is managed with ❤️ by
+    <span class="icon-text">
+      <span><a href="https://underjord.io">Underjord.io</a></span>
+      <span class="icon">
+        <img src="https://underjord.io/img/logo2.svg"></img>
+      </span>
+    </span>
+    
+    Some topics in each issue include:
+
     - Project news and releases
     - Featured projects
     - Featured talks
     - Technical notes explaining parts of Nerves, straight from the core team
     - Community contribution opportunities
+    - Possibly sponsors if there is interest
   subscriptionURL: 'https://underjord.io/nerves-newsletter.html'
   archiveURL: 'https://embedded-elixir.com/page/newsletter'
   feedURL: 'https://underjord.io/feed.xml'
