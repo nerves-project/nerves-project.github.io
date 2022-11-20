@@ -7,7 +7,7 @@
     <ol>
       <li><a href="#newsletter">Newsletter</a></li>
       <li><a href="#books">Books</a></li>
-      <li><a href="#talks">Conference Talks</a></li>
+      <li><a href="{{ relURL "videos"}}">Videos</a></li>
     </ol>
     {{ .Content }}
   </div>
@@ -25,11 +25,6 @@
   <section class="mb-6" id="books">
     <h3 class="title">Books</h3>
     {{ partial "book-list" .Params.books }}
-  </section>
-
-  <section class="mb-6" id="talks">
-    <h3 class="title">Conference Talks</h3>
-    {{ partial "youtube-list" .Params.talks }}
   </section>
 </main>
 
