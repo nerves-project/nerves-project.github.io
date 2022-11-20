@@ -3,14 +3,6 @@ type: resources
 title: Resources
 date: 2022-01-01
 tags: []
-newsletter: |
-  The Nerves Newsletter covers some of these in each issue:
-
-  - Project news and releases
-  - Featured projects
-  - Featured talks
-  - Technical notes explaining parts of Nerves, straight from the core team
-  - Community contribution opportunities
 books:
   - name: Build a Binary Clock with Elixir and Nerves
     linkUrl: https://pragprog.com/titles/thnerves/build-a-binary-clock-with-elixir-and-nerves/
@@ -20,15 +12,24 @@ books:
     linkUrl: https://pragprog.com/titles/passweather/build-a-weather-station-with-elixir-and-nerves/
     image: https://pragprog.com/titles/passweather/build-a-weather-station-with-elixir-and-nerves/passweather-250.jpg
     description: Build and deploy a production-grade weather station sensor hub using Elixir and Nerves, all while leveraging the best practices established by the Nerves community for structuring and organizing Nerves applications.
-talks:
-  - title: Gettin' tipsy with Nerves 🍻
-    videoId: BtUmxoccZGE
-  - title: Embedded Elixir with Nerves Livebook
-    videoId: dZzM-rLu-zo
-  - title: An Ode to Firmware Design
-    videoId: pn5fC12RVjQ
+
+resources:
+  - name: Newsletter
+    image: img/newsletter.svg
+    link: newsletter
+  - name: Getting Started
+    image: img/getting_started.svg
+    link: getting_started
+  - name: Videos
+    image: img/videos.svg
+    link: videos
+  - name: Example Projects
+    image: img/nerves_new.png
+    link: https://github.com/nerves-project/nerves_examples
+  - name: Issues Tracker
+    image: img/github.svg
+    link: "https://github.com/issues?q=is%3Aopen+is%3Aissue+org%3Anerves-project+org%3Anerves-time+org%3Anerves-networking+archived%3Afalse+"
+  - name: Trademarks Policy
+    image: img/icon.png
+    link: trademarks
 ---
-
-Our website provides a [Getting Started guide] to learn more about Nerves' foundations.
-
-[Getting Started guide]: https://hexdocs.pm/nerves/getting-started.html

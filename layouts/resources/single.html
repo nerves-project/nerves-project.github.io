@@ -3,29 +3,41 @@
 {{ partial "simple-hero" . }}
 
 <main class="container my-6 px-4">
-  <div class="content mb-6">
-    <ol>
-      <li><a href="#newsletter">Newsletter</a></li>
-      <li><a href="#books">Books</a></li>
-      <li><a href="{{ relURL "videos"}}">Videos</a></li>
-    </ol>
-    {{ .Content }}
-  </div>
-
-  <section class="mb-6" id="newsletter">
-    <h3 class="title">Newsletter</h3>
-    <div class="content">
-      {{ .Params.newsletter | markdownify }}
+  <div class="columns">
+    <div class="column is-one-quarter">
+      <article class="panel is-primary">
+        <p class="panel-heading">
+          Links
+        </p>
+        {{ range .Params.resources }}
+          {{ $link := relURL .link }}
+          {{ if hasPrefix .link "http" }}
+            {{ $link := .link}}
+          {{ end }}
+          <a class="panel-block" href="{{ $link }}">
+            <span class="panel-icon">
+              <img src="{{ relURL .image }}" alt="">
+            </span>
+            {{ .name }}
+          </a>
+        {{ end }}
+      </article>
     </div>
-    <a href="https://underjord.io/nerves-newsletter.html" class="button is-primary is-medium">
-      Subscribe
-    </a>
-  </section>
-
-  <section class="mb-6" id="books">
-    <h3 class="title">Books</h3>
-    {{ partial "book-list" .Params.books }}
-  </section>
+    <div id="books" class="column box">
+      <h3 class="title">Books</h3>
+      <div class="columns is-multiline">
+        {{ range .Params.books }}
+        <div class="column">
+          <a href="{{ .linkUrl }}" target="_blank">
+            <figure class="image">
+              <img style="max-width: 250px" src="{{ .image }}">
+            </figure>
+          </a>
+        </div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
 </main>
 
 {{ end }}
