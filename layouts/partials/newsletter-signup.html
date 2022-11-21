@@ -1,25 +1,7 @@
-<div id="newsletter" class="columns">
-  <div class="column">
-    <h2 class="title is-2">Newsletter</h2>
-    <div class="content">
-      {{ .Params.Newsletter.description | markdownify }}
-    </div>
-    <div>
-      <a class="js-modal-trigger button is-primary is-medium" data-target="modal-js-newsletter">
-        Subscribe
-      </a>
-      <div class="mt-2">
-        <a href="{{ .Params.Newsletter.subscriptionURL }}">More info</a> |
-        <a href="{{ .Params.Newsletter.ArchiveURL }}">Past issues</a> |
-        <a href="{{ .Params.Newsletter.FeedURL }}">RSS feed</a>
-      </div>
-    </div>
-  </div>
-  <div class="column has-background-primary is-hidden-mobile">
-    <figure class="image is-1by1">
-      <img src='{{ relURL "img/system.svg" }}'>
-    </figure>
-  </div>
+<div>
+  <a class="js-modal-trigger button is-link is-medium" data-target="modal-js-newsletter">
+    Subscribe
+  </a>
 </div>
 
 <div id="modal-js-newsletter" class="modal">

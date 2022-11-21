@@ -19,13 +19,50 @@
     <h4 class="subtitle is-4">{{ .Params.Introduction | markdownify }}</h4>
   </section>
   <section>
-    {{ partial "home/features.html" . }}
+  {{ partial "home/features.html" . }}
   </section>
   <section class="section px-0">
     {{ partial "home/technologies.html" . }}
   </section>
-  <section class="section px-0">
-    {{ partial "home/newsletter.html" . }}
+  <section id="newsletter" class="section px-0">
+    <div class="columns">
+      <div class="column">
+        <h2 class="title is-2">Newsletter</h2>
+        <div class="content">
+          <p>
+            The Nerves newsletter is managed with ❤️ by
+            <span class="icon-text">
+              <span><a href="https://underjord.io">Underjord.io</a></span>
+              <span class="icon">
+                <img src="https://underjord.io/img/logo2.svg"></img>
+              </span>
+            </span>
+          </p>
+          
+          Some topics in each issue include:
+
+          <ul>
+            <li>Project news and releases</li>
+            <li>Featured projects</li>
+            <li>Featured talks</li>
+            <li>Technical notes explaining parts of Nerves, straight from the core team</li>
+            <li>Community contribution opportunities</li>
+            <li>Possibly sponsors if there is interest</li>
+          </ul>
+        </div>
+        {{ partial "newsletter-signup.html" }}
+        <div class="mt-2">
+          <a href="https://underjord.io/nerves-newsletter.html">More info</a> |
+          <a href="{{ relURL "newsletter" }}">Past issues</a> |
+          <a href="https://underjord.io/feed.xml">RSS feed</a>
+        </div>
+      </div>
+      <div class="column has-background-primary is-hidden-mobile">
+        <figure class="image is-1by1">
+          <img src='{{ relURL "img/system.svg" }}'>
+        </figure>
+      </div>
+    </div>
   </section>
   <section class="section px-0">
     {{ partial "home/cases.html" . }}

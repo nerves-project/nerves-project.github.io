@@ -1,0 +1,16 @@
+
+{{ define "main" }}
+
+{{ $issue := index .Params.aliases 0 }}
+<section class="hero is-primary">
+  <div class="hero-body">
+    <p class="title">{{.Title}}</p>
+    <p class="subtitle">
+      {{ .Date.Format "January 2, 2006" }} &bull; <em>Issue {{ $issue }}</em>
+    </p>
+  </div>
+</section>
+
+{{ partial (printf "newsletter/nerves-newsletter-%s.html" $issue)}}
+
+{{ end }}

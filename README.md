@@ -22,3 +22,10 @@ bin/server
 ```
 
 Visit http://localhost:1313
+
+
+### Adding to the newsletter archive
+
+* Get the newsletter HTML. Save in `layouts/partials/newsletter/nerves-newsletter-{ISSUE NUMBER}.html`
+  * Steps to do this vary, so TBD
+* Create `content/newsletter/YYYY-MM-DD-{title}.md` (Copy the previous one as starting point)
