@@ -16,22 +16,21 @@
 </section>
 
 <main class="container my-6 px-4">
-  <div class="content">
-    <div class="level">
-      <div class="level-item">
-        {{ partial "newsletter-signup.html" }}
-      </div>
-      <div class="level-item">
-        <a href="https://underjord.io/nerves-newsletter.html" class="button is-link is-medium">
-          <span class="icon-text">
-            <span>More info @ Underjord.io</span>
-            <span class="icon">
-              <img src="https://underjord.io/img/logo2.svg"></img>
-            </span>
-          </span>
-        </a>
-      </div>
+  <div class="level">
+    <div class="level-item">
+      {{ partial "newsletter-signup.html" }}
     </div>
+    <div class="level-item">
+      <a href="https://underjord.io/nerves-newsletter.html" class="button is-link is-medium">
+        <span class="icon-text">
+          <span>More info @ Underjord.io</span>
+          <span class="icon">
+            <img src="https://underjord.io/img/logo2.svg"></img>
+          </span>
+        </span>
+      </a>
+    </div>
+  </div>
   <div>
     {{ range .Paginator.Pages.ByPublishDate.Reverse }}
     <a href="{{ .RelPermalink }}">

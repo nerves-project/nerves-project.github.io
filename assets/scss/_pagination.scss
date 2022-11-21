@@ -1,0 +1,36 @@
+ul.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+
+  li.page-item {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.375rem;
+
+    a {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem;
+      background-color: $white;
+      color: $primary;
+      border: 1px solid $primary;
+      border-radius: 4px;
+      text-decoration: none;
+      height: 2.5rem;
+      min-width: 2.5rem;
+    }
+
+    &.disabled {
+      display: none;
+    }
+
+    &.active a {
+      background-color: $primary;
+      color: $white;
+      pointer-events: none;
+    }
+  }
+}
