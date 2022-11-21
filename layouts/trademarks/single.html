@@ -1,0 +1,35 @@
+{{ define "main" }}
+
+{{ partial "simple-hero" . }}
+
+<section class="section">
+  <div class="content is-medium">
+    <p class="">This document outlines the policy for allowed usage of the "Nerves" word and the Nerves logo by other parties.</p>
+
+    <p>"Nerves" and the Nerves logo are trademarks of the Nerves Project Authors. The Nerves Project Authors believe in a decentralized approach to growing the community and the ecosystem, independent of the Nerves Project and the Nerves Project Authors.</p>
+
+    <p>Anyone can use the Nerves trademarks if that use of the trademark is nominative. The trademarks must not be used to disparage the project and its community, nor be used in any way to imply ownership, endorsement, or association with the Nerves Project and the Nerves Project Authors.</p>
+
+    <p>You must not visually combine the Nerves logo with any other images, or change the logo in any way other than ways required by printing restrictions. If you want to create your own visual identity in relation to Nerves, you might use the shape of an unrelated "N" as part of your design, as seen in many community projects and initiatives. You must not combine or modify the Nerves logo.</p>
+
+    <center>
+      <a class="button is-link" href="{{ relURL "logos/png.zip" }}" download="nerves-logos-png.zip">
+        <span>PNG</span>
+        <span class="icon">
+          <img src="{{ relURL "img/download-white.svg" }}">
+        </span>
+      </a>
+      <a class="button is-link" href="{{ relURL "logos/svg.zip" }}" download="nerves-logos-svg.zip">
+        <span>SVG</span>
+        <span class="icon">
+          <img src="{{ relURL "img/download-white.svg" }}">
+        </span>
+      </a>
+    </center>
+  </div>
+  <div class="content is-medium">
+    {{ markdownify .Content }}
+  </div>
+</section>
+
+{{ end }}
