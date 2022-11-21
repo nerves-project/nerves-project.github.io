@@ -1,0 +1,81 @@
+#! /usr/bin/env elixir
+
+usage = """
+This script is used to fetch the contents of a newsletter and create the resources
+required to archive it on the website.
+
+It requires the URL to the newsletter source HTML, which can typically be found
+in the email at the top where it says "No images? Click here"
+
+You can optionally include the issue number. Otherwise it is inferred as the next
+incrementing number
+
+./bin/add_newsletter [URL] [ISSUE_NUMBER]
+"""
+
+## Dependencies
+Mix.install([
+  {:req, "~> 0.3"},
+  {:floki, "~> 0.34"}
+])
+
+[url | rem] = System.argv()
+
+if "--help" in System.argv() do
+  IO.puts(usage)
+  System.halt(0)
+end
+
+unless String.starts_with?(url, "http") do
+  IO.puts [IO.ANSI.red(), "Must include a valid URL to the newsletter", IO.ANSI.default_color()]
+  System.halt(1)
+end
+
+root = File.cwd!
+
+unless Path.basename(root) == "nerves_website_next" do
+  IO.puts [IO.ANSI.red(), "add_newsletter must be run from the repo root (i.e. ./bin/add_newsletter)", IO.ANSI.default_color()]
+  System.halt(1)
+end
+
+partials = Path.join(root, "layouts/partials/newsletter")
+content = Path.join(root, "content/newsletter")
+
+next =
+  with [issue_str | _] <- rem,
+  {issue, ""} <- Integer.parse(issue_str) do
+    issue
+  else
+    _ ->
+      IO.puts "|- Determining next issue"
+      issues =
+      for path <- Path.wildcard([partials, "/*"]), [num_str] = Regex.run(~r/\d+/, path), do: String.to_integer(num_str)
+      Enum.max(issues) + 1
+  end
+IO.puts("|- Adding issue #{to_string(next)}")
+
+IO.puts("|- Fetching HTML")
+%{body: body} = Req.get!(url)
+
+[title] = Floki.parse_document!(body) |> Floki.attribute("meta[property='og:title']", "content")
+
+date = Date.utc_today() |> Calendar.strftime("%Y-%m-%d")
+
+md_name = Path.join(content, [date, "-", String.replace(title, " ", "-") |> String.downcase(), ".md"])
+partial_name = Path.join(partials, "nerves-newsletter-#{next}.html")
+data = """
+---
+title: #{title}
+date: #{date}
+aliases:
+  - #{next}
+  - nerves-newsletter-#{next}.html
+---
+"""
+
+IO.puts(["|- Writing ", Path.relative_to(md_name, root)])
+File.write!(md_name, data)
+IO.puts(["|- Writing ", Path.relative_to(partial_name, root)])
+File.write!(partial_name, body)
+
+IO.puts([IO.ANSI.green(), "|- Done!", IO.ANSI.default_color()])

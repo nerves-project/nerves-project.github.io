@@ -24,8 +24,15 @@ bin/server
 Visit http://localhost:1313
 
 
-### Adding to the newsletter archive
+## Adding to the newsletter archive
 
-* Get the newsletter HTML. Save in `layouts/partials/newsletter/nerves-newsletter-{ISSUE NUMBER}.html`
-  * Steps to do this vary, so TBD
-* Create `content/newsletter/YYYY-MM-DD-{title}.md` (Copy the previous one as starting point)
+Once the Nerves newsletter has been delivered, get the URL to the HTML source
+(usually found at the top where it says `No images? Click here`) then run
+the script:
+
+```sh
+./bin/add_newsletter URL
+```
+
+There is a little bit of customization possible. See `./bin/add_newsletter --help`
+for more info
