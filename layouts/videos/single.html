@@ -23,15 +23,19 @@
             </ul>
           </div>
           {{ range $year, $data := .Params.videos }}
-          <div id="{{ $year }}-content" class="columns is-multiline" style="display:{{ if (hasPrefix $year $current_year) }}flex{{else}}none{{end}};">
-            {{ range $data }}
-              <div class="box column is-4">
-                <a href="https://youtu.be/{{ .videoId }}" target="_blank">
-                  <img src="https://img.youtube.com/vi/{{ .videoId }}/maxresdefault.jpg" alt="">
-                </a>
-                <center class="subtitle">{{ .title }}</center>
-              </div>
-            {{ end}}
+          <div id="{{ $year }}-content" style="display:{{ if (hasPrefix $year $current_year) }}block{{else}}none{{end}};">
+            <div  class="columns is-multiline">
+              {{ range $data }}
+                <div class="column is-4">
+                  <div class="box">
+                    <a href="https://youtu.be/{{ .videoId }}" target="_blank">
+                      <img src="https://img.youtube.com/vi/{{ .videoId }}/maxresdefault.jpg" alt="">
+                    </a>
+                    <center class="subtitle">{{ .title }}</center>
+                  </div>
+                </div>
+              {{ end}}
+            </div>
           </div>
           {{ end}}
         </div>
