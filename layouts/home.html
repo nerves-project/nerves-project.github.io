@@ -1,72 +1,127 @@
 {{ define "main" }}
 
-<header class="hero is-primary is-medium" style="background-image:url(img/smart-city.svg);background-repeat:no-repeat;background-position:100%">
+<header class="hero is-primary is-medium"
+  style="background-image:url(img/smart-city.svg);background-repeat:no-repeat;background-position:100%">
   <div class="hero-body" style="background:rgba(51,100,126,0.8)">
     <div class="container">
       <p class="title is-2 mb-6">{{ .Params.Tagline }}</p>
-      <p class="subtitle">{{ .Params.aboutNerves | markdownify }}</p>
-      <a href="{{ .Params.GetStartedURL }}" class="button is-primary is-light mb-2 mr-2">
+      <p class="subtitle" style="max-width:60%">{{ .Params.aboutNerves | markdownify }}</p>
+      <a href="#getting_started" class="button is-primary is-light is-large mb-2 mr-2">
         Get started
       </a>
-      <a href="#newsletter" class="button is-primary is-light mb-2">
-        Subscribe to Newsletter
+      <a href="#features" class="button is-primary is-light is-large mb-2">
+        Features
       </a>
     </div>
   </div>
 </header>
-<main class="container px-4 mb-6">
-  <section class="section">
-    <h4 class="subtitle is-4">{{ .Params.Introduction | markdownify }}</h4>
-  </section>
-  <section>
-  {{ partial "home/features.html" . }}
-  </section>
-  <section class="section px-0">
-    {{ partial "home/technologies.html" . }}
-  </section>
-  <section id="newsletter" class="section px-0">
-    <div class="columns">
-      <div class="column">
-        <h2 class="title is-2">Newsletter</h2>
-        <div class="content">
-          <p>
-            Stay on top of Nerves development and community news by subscribing to our biweekly newsletter provided with ❤️ by
-            <span class="icon-text">
-              <span><a href="https://underjord.io">Underjord.io</a></span>
-              <span class="icon">
-                <img src="https://underjord.io/img/logo2.svg"></img>
+<section id="getting_started" class="container">
+  <ul class="rows mb-6">
+    {{ range $index, $el := .Params.getting_started }}
+    <li class="row section">
+      <div class="columns">
+        {{ with .examples }}
+        <div class="column">
+          <div class="content">
+            <center>
+              <h3 class="title is-3">{{ $el.name }}</h3>
+            </center>
+            {{ $el.description }}
+            <div class="column">
+              <span class="icon-text">
+                <span><a href="{{ $el.link }}">{{ $el.link_text }}</a></span>
+                <span class="icon">
+                  <img src="{{ relURL "img/arrow-right.svg" }}"></img>
+                </span>
               </span>
-            </span>
-          </p>
-          
-          Some topics in each issue include:
-
-          <ul>
-            <li>Project news and releases</li>
-            <li>Featured projects</li>
-            <li>Featured talks</li>
-            <li>Technical notes explaining parts of Nerves, straight from the core team</li>
-            <li>Community contribution opportunities</li>
-            <li>Possibly sponsors if there is interest</li>
-          </ul>
+            </div>
+          </div>
         </div>
-        {{ partial "newsletter-signup.html" }}
-        <div class="mt-2">
-          <a href="https://underjord.io/nerves-newsletter.html">More info</a> |
-          <a href="{{ relURL "newsletter" }}">Past issues</a> |
-          <a href="https://underjord.io/feed.xml">RSS feed</a>
+        <div class="column">
+          <div class="columns">
+            {{ range . }}
+            <div class="column">
+              <figure class="image">
+                <a href="{{ .link }}">
+                  <img src="{{ relURL .image }}">
+                </a>
+              </figure>
+            </div>
+            {{ end }}
+          </div>
         </div>
+        {{ else}}
+        <div class="column">
+          <figure class="image">
+            <a href="{{ .link }}">
+              <img src="{{ relURL .image }}">
+            </a>
+          </figure>
+        </div>
+        <div class="column">
+          <div class="content">
+            <center>
+              <h3 class="title is-3">{{ .name }}</h3>
+            </center>
+            {{ .description }}
+            <div class="column">
+              <span class="icon-text">
+                <span><a href="{{ .link }}">{{ .link_text }}</a></span>
+                <span class="icon">
+                  <img src="{{ relURL "img/arrow-right.svg" }}"></img>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        {{ end }}
       </div>
-      <div class="column has-background-primary is-hidden-mobile">
-        <figure class="image is-1by1">
-          <img src='{{ relURL "img/system.svg" }}'>
-        </figure>
+    </li>
+    {{ end }}
+  </ul>
+</section>
+
+{{ partial "home/features.html" . }}
+
+<section id="newsletter" class="section">
+  <div class="columns">
+    <div class="column">
+      <h2 class="title is-2">Newsletter</h2>
+      <div class="content">
+        <p>
+          Stay on top of Nerves development and community news by subscribing to our biweekly newsletter provided with ❤️ by
+          <span class="icon-text">
+            <span><a href="https://underjord.io">Underjord.io</a></span>
+            <span class="icon">
+              <img src="https://underjord.io/img/logo2.svg"></img>
+            </span>
+          </span>
+        </p>
+
+        Some topics in each issue include:
+
+        <ul>
+          <li>Project news and releases</li>
+          <li>Featured projects</li>
+          <li>Featured talks</li>
+          <li>Technical notes explaining parts of Nerves, straight from the core team</li>
+          <li>Community contribution opportunities</li>
+          <li>Possibly sponsors if there is interest</li>
+        </ul>
+      </div>
+      {{ partial "newsletter-signup.html" }}
+      <div class="mt-2">
+        <a href="https://underjord.io/nerves-newsletter.html">More info</a> |
+        <a href="{{ relURL "newsletter" }}">Past issues</a> |
+        <a href="https://underjord.io/feed.xml">RSS feed</a>
       </div>
     </div>
-  </section>
-  <section class="section px-0">
-    {{ partial "home/cases.html" . }}
-  </section>
-</main>
+    <div class="column is-hidden-mobile">
+      <figure class="image is-1by1">
+        <img src='{{ relURL "img/system.svg" }}'>
+      </figure>
+    </div>
+  </div>
+</section>
 
 {{ end }}

@@ -1,17 +1,34 @@
-<ul class="columns mb-6">
-  {{ range .Params.Features }}
-    <li class="column">
-      <div class="card mb-4">
-        <div class="card-image is-hidden-mobile">
-          <figure class="image is-1by1">
-            <img src="{{ relURL .image }}" class="px-6">
-          </figure>
-        </div>
-        <div class="card-content">
-          <h4 class="title is-4">{{ .name }}</h4>
-          <div class="content">{{ .description | markdownify }}</div>
-        </div>
+<section id="features" class="hero">
+  <div class="hero-body" style="background:rgba(51,100,126,0.8)">
+    <div class="level">
+      <div class="level-item">
+        <p class="title is-2" style="color:#fff">Features</p>
       </div>
-    </li>
-  {{ end }}
-</ul>
+    </div>
+    <p class="subtitle mb-6" style="color:#fff">
+      {{ .Params.introduction }}
+    </p>
+
+    <div class="columns is-gapless is-multiline">
+      {{ range .Params.Features }}
+        <div class="column is-half" style="{{ .right }};{{ .bottom }}">
+          <div class="card feature" style="background-color: transparent !important;	-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;">
+            <div class="card-content">
+              <div class="media">
+                <div class="media-left">
+                  <figure class="image" style="background-color: #fff;border-radius: 9999px;">
+                    <img src="{{ relURL .image }}">
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <p class="title is-4" style="color:#fff">{{ .name }}</p>
+                  <p class="subtitle is-6" style="color:#fff">{{ .description | markdownify }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
