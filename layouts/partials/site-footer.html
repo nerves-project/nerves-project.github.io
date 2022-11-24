@@ -1,26 +1,25 @@
-<footer class="footer has-text-centered">
-  <div class="has-text-centered mb-4"><img src='{{ relURL "img/nerves.svg" }}'></div>
-  <div class="is-justify-content-center mb-2">
+<footer class="has-background-primary-light has-text-centered pt-6 pb-2">
+  <div class="has-text-centered mb-4"><img src='{{ relURL "img/nerves.svg" }}' style="height:4rem"></div>
+  <div class="is-justify-content-center my-4">
     {{ range .Site.Menus.footer2 }}
       <a href="{{ .URL }}" class="mx-2" title="{{ .Name }}">
         <img src="{{ relURL .Pre }}" width="30rem">
       </a>
     {{ end }}
   </div>
-  <div class="navbar-start is-justify-content-center mb-2">
+  <div class="navbar-start is-justify-content-center my-4">
     {{ range .Site.Menus.footer1 }}
       <a href="{{ .URL }}" class='navbar-item {{ cond (eq $.RelPermalink .URL) " is-active" "" }}'>
         {{ .Name }}
       </a>
     {{ end }}
   </div>
-  <div>
+  <div class="has-text-grey is-size-6">
     &copy;
     {{ with .Site.Copyright | default .Site.Title }}
       {{ . | safeHTML }} {{ now.Format "2006"}}
     {{ end }}
-  </div>
-  <div>
+    <br>
     Nerves and the Nerves logo are <a href="{{ relURL "trademarks" }}">trademarks of the Nerves Project Authors</a>
   </div>
 </footer>

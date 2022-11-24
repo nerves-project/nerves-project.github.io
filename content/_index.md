@@ -15,22 +15,14 @@ features:
   - name: Portable
     image: img/portable.svg
     description: This is totes portable
-    bottom: "border-bottom: 1px solid white"
-    right: "border-right: 1px solid white"
   - name: Maintainable
     image: img/cogssvg.svg
-    bottom: "border-bottom: 1px solid white"
   - name: Lean
     image: img/scalable.svg
-    bottom: "border-bottom: 1px solid white"
-    right: "border-right: 1px solid white"
   - name: Efficient
     image: img/agile.svg
-    bottom: "border-bottom: 1px solid white"
   - name: 'Scalable'
     image: 'img/scalable.svg'
-    bottom: "border-bottom: 1px solid white"
-    right: "border-right: 1px solid white"
     description: |
       Nerves is written in [Elixir](https://elixir-lang.org), but
       you don't have to rewrite everything in Elixir to get the advantages of
@@ -38,7 +30,6 @@ features:
       and scale up.
   - name: 'Reliable'
     image: 'img/high-reliability.svg'
-    bottom: "border-bottom: 1px solid white"
     description: |
       Nerves uses the
       [Erlang runtime system](https://en.wikipedia.org/wiki/Erlang_(programming_language)),
@@ -46,7 +37,6 @@ features:
       available.
   - name: 'Agile'
     image: 'img/agile.svg'
-    right: "border-right: 1px solid white"
     description: |
       Nerves helps you bring the principles of agile development to your IoT
       development cycle. Because Nerves runtime is immutable, Nerves also
@@ -94,7 +84,7 @@ newsletter:
         <img src="https://underjord.io/img/logo2.svg"></img>
       </span>
     </span>
-    
+
     Some topics in each issue include:
 
     - Project news and releases
