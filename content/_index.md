@@ -14,37 +14,57 @@ introduction: |
 features:
   - name: Portable
     image: img/portable.svg
-    description: This is totes portable
-  - name: Maintainable
-    image: img/cogssvg.svg
+    description: |
+      Nerves runs out-of-the-box on commonly available hardware. Nerves
+      leverages Linux and Buildroot to minimize the effort to port to other
+      devices.
   - name: Lean
     image: img/scalable.svg
-  - name: Efficient
-    image: img/agile.svg
-  - name: 'Scalable'
-    image: 'img/scalable.svg'
     description: |
-      Nerves is written in [Elixir](https://elixir-lang.org), but
-      you don't have to rewrite everything in Elixir to get the advantages of
-      Nerves — simply bring your own code (like C, C++, Python, Rust, and more)
-      and scale up.
-  - name: 'Reliable'
+      Nerves uses Elixir Mix releases to include only the code you need. Most
+      Nerves ports provide a Linux kernel and runtime with the basics so that
+      you build up rather than trim down. Firmware sizes start in the 20-30 MB
+      range.
+  - name: Reliable
     image: 'img/high-reliability.svg'
     description: |
       Nerves uses the
       [Erlang runtime system](https://en.wikipedia.org/wiki/Erlang_(programming_language)),
       known for being distributed, fault-tolerant, soft real-time, and highly
-      available.
-  - name: 'Agile'
+      available. Nerves firmware is immutable so you know exactly what software
+      is running.
+  - name: Secure
+    image: 'img/secure.svg'
+    description: |
+      Avoid hidden bugs and vulnerabilities with Nerves' secure opt-in approach
+      to building. Nerves starts minimal and provides regular security updates
+      to Erlang and Linux components. SBOM information is available via the
+      Buildroot integration.
+  - name: Efficient
+    image: img/agile.svg
+    description: |
+      Take advantage of Erlang and Elixir's I/O optimizations such as IOData
+      that minimize data copies over the entire stack. Thanks to common
+      abstractions, much of the ecosystem uses these features already.
+  - name: Extensible
+    image: 'img/extensible.svg'
+    description: |
+      Nerves is just one part of the vibrant Elixir ecosystem. Take advantage of
+      other Elixir projects like Phoenix, Nx, Livebook and more in embedded
+      projects.
+  - name: Agile
     image: 'img/agile.svg'
     description: |
       Nerves helps you bring the principles of agile development to your IoT
       development cycle. Because Nerves runtime is immutable, Nerves also
       brings agility to long-term maintenance.
-  - name: 'Secure'
-    image: 'img/twitter.svg'
+  - name: Polyglot
+    image: 'img/polyglot.svg'
     description: |
-      Avoid hidden bugs and vulnerabilities with Nerves' secure opt-in approach to building. Nerves starts minimal and guides you towards security best practices.
+      Nerves is written in [Elixir](https://elixir-lang.org), but
+      you don't have to rewrite everything in Elixir to get the advantages of
+      Nerves — bring your own code (like C, C++, Zig, Rust, and more)
+      and ship faster.
 technologies:
   - name: 'Erlang'
     image: 'img/erlang.svg'
