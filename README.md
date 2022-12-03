@@ -21,18 +21,16 @@ Run the development server.
 bin/server
 ```
 
-Visit http://localhost:1313
-
+Visit [localhost:1313](http://localhost:1313).
 
 ## Adding to the newsletter archive
 
 Once the Nerves newsletter has been delivered, get the URL to the HTML source
-(usually found at the top where it says `No images? Click here`) then run
-the script:
+(usually found at the top where it says `No images? Click here`) then run the
+script:
 
 ```sh
 ./bin/add_newsletter URL
 ```
 
-There is a little bit of customization possible. See `./bin/add_newsletter --help`
-for more info
+See `./bin/add_newsletter --help` for customization and more info.

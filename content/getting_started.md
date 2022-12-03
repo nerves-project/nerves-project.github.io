@@ -18,7 +18,7 @@ options:
     link: https://hexdocs.pm/nerves/getting-started.html#nerves-examples
     link_text: See all examples
     description: |
-      Nerves maintains serveral common application examples. Setup your development
+      Nerves maintains several common application examples. Setup your development
       environment and use one of these as a starting point for your specific situation.
     examples:
       - link: https://github.com/nerves-project/nerves_examples/tree/main/hello_wifi
