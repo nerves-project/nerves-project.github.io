@@ -52,19 +52,6 @@ features:
       Nerves is just one part of the vibrant Elixir ecosystem. Take advantage of
       other Elixir projects like Phoenix, Nx, Livebook and more in embedded
       projects.
-  - name: Agile
-    image: 'img/agile.svg'
-    description: |
-      Nerves helps you bring the principles of agile development to your IoT
-      development cycle. Because Nerves runtime is immutable, Nerves also
-      brings agility to long-term maintenance.
-  - name: Polyglot
-    image: 'img/polyglot.svg'
-    description: |
-      Nerves is written in [Elixir](https://elixir-lang.org), but
-      you don't have to rewrite everything in Elixir to get the advantages of
-      Nerves — bring your own code (like C, C++, Zig, Rust, and more)
-      and ship faster.
 technologies:
   - name: 'Erlang'
     image: 'img/erlang.svg'
