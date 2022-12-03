@@ -1,0 +1,37 @@
+{{ define "main" }}
+
+{{ partial "simple-hero" . }}
+
+<main class="container my-6 px-4">
+  <ul class="rows mb-6">
+    {{ range $index, $el := .Params.Options }}
+      <li class="row section">
+        <div class="columns is-5">
+            <div class="column is-one-fifth">
+              <figure class="image">
+                <a href="{{ .link }}">
+                  <img src="{{ relURL .image }}" >
+                </a>
+              </figure>
+            </div>
+            <div class="column">
+              <div class="content">
+                <h3 class="title is-2">{{ .name }}</h3>
+                {{ .description }}
+                <div class="column">
+                  <span class="icon-text">
+                    <span><a href="{{ .link }}">{{ .link_text }}</a></span>
+                    <span class="icon">
+                      <img src="{{ relURL "img/arrow-right.svg" }}"></img>
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+        </div>
+      </li>
+    {{ end }}
+  </ul>
+</main>
+
+{{ end }}

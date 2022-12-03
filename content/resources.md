@@ -35,6 +35,9 @@ resources:
   - name: Issues Tracker
     image: img/github.svg
     link: "https://github.com/issues?q=is%3Aopen+is%3Aissue+org%3Anerves-project+org%3Anerves-time+org%3Anerves-networking+archived%3Afalse+"
+  - name: Related Projects
+    image: img/related_projects.svg
+    link: related_projects
   - name: Trademarks Policy
     image: img/icon.png
     link: trademarks
