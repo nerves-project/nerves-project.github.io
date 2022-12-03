@@ -14,6 +14,12 @@ books:
     description: Build and deploy a production-grade weather station sensor hub using Elixir and Nerves, all while leveraging the best practices established by the Nerves community for structuring and organizing Nerves applications.
 
 resources:
+  - name: Project Directory
+    image: img/directory.svg
+    link: https://github.com/nerves-project/nerves#nerves-projects
+  - name: NervesTips
+    image: img/lightbulb.svg
+    link: https://tips.nerves-project.org
   - name: Newsletter
     image: img/newsletter.svg
     link: newsletter
