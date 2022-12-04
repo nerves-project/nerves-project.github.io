@@ -1,0 +1,41 @@
+<head>
+  <title>
+    {{- if and .Params.Title (not (eq .Params.Title .Site.Title)) -}}
+      {{ .Params.Title }} | {{ .Site.Title }}
+    {{- else -}}
+      {{ .Site.Title }}
+    {{- end -}}
+  </title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  {{/*
+    SCSS
+    - https://gohugo.io/hugo-pipes/scss-sass/
+    - https://github.com/luizdepra/hugo-coder/blob/29a7a942b7c6e494dd8cfb941f0950504769528c/layouts/_default/baseof.html#L29-L37
+  */}}
+  {{ if .Site.IsServer }}
+    {{ $cssOpts := (dict "targetPath" "css/main.css" "enableSourceMap" true ) }}
+    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | toCSS $cssOpts }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
+  {{ else }}
+    {{ $cssOpts := (dict "targetPath" "css/main.css" ) }}
+    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | toCSS $cssOpts | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}" crossorigin="anonymous" media="screen" />
+  {{ end }}
+
+  {{/*
+    JS
+    - https://gohugo.io/hugo-pipes/js/
+    - https://github.com/luizdepra/hugo-coder/blob/29a7a942b7c6e494dd8cfb941f0950504769528c/layouts/_default/baseof.html#L116-L122
+  */}}
+  {{ if .Site.IsServer }}
+    {{ $script := resources.Get "js/main.js" | js.Build }}
+    <script src="{{ $script.RelPermalink }}"></script>
+  {{ else }}
+    {{ $script := resources.Get "js/main.js" | js.Build | minify | fingerprint }}
+    <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}"></script>
+  {{ end }}
+</head>

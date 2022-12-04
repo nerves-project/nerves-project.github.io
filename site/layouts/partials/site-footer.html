@@ -1,0 +1,5 @@
+<footer class="footer">
+  <div class="content">
+    <p>&copy; {{ with .Site.Copyright | default .Site.Title }} {{ . | safeHTML }} {{ now.Format "2006"}} {{ end }}</p>
+  </div>
+</footer>

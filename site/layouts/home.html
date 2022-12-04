@@ -1,0 +1,16 @@
+{{ define "main" }}
+
+{{ partial "site-data" . }}
+
+<section class="hero is-primary">
+  <div class="hero-body">
+    <p class="title">{{.Site.Title}}</p>
+    <p class="sibtitle">{{ .Site.Params.description }}</p>
+  </div>
+</section>
+
+<main class="container my-6 px-4">
+  <p>{{ .Content }}</p>
+</main>
+
+{{ end }}

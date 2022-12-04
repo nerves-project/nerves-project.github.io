@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="{{ $.Site.LanguageCode | default "en" }}">
+  {{ partial "head" . }}
+
+  <body>
+    {{ block "header" . }}{{ partial "site-header" . }}{{end}}
+
+    {{ block "main" . }}{{ end }}
+
+    {{ block "footer" . }}{{ partial "site-footer" . }}{{end}}
+  </body>
+</html>

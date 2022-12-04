@@ -1,0 +1,6 @@
+{{/*
+
+  Make all the static JSON data be available in JavaScript.
+
+*/}}
+<script>window.siteData = JSON.parse({{ $.Site.Data | jsonify }})</script>

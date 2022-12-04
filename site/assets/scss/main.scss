@@ -1,0 +1,27 @@
+// https://bulma.io/documentation/customize/with-node-sass/
+@charset "utf-8";
+
+// Set your brand colors
+$nerves-blue: #42a7c6;
+
+// Update Bulma's global variables
+$primary: $nerves-blue;
+$link: $primary;
+
+// Update some of Bulma's component variables
+// $body-background-color: $grey-lighter;
+
+// Import only what you need from Bulma
+// https://github.com/jgthms/bulma/tree/master/sass
+@import '../../node_modules/bulma/sass/utilities/_all';
+@import '../../node_modules/bulma/sass/base/_all';
+@import '../../node_modules/bulma/sass/elements/_all';
+@import '../../node_modules/bulma/sass/form/_all';
+@import '../../node_modules/bulma/sass/components/_all';
+@import '../../node_modules/bulma/sass/grid/_all';
+@import '../../node_modules/bulma/sass/helpers/_all';
+@import '../../node_modules/bulma/sass/layout/_all';
+
+main {
+  min-height: 50vh;
+}

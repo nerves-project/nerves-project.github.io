@@ -1,0 +1,17 @@
+{{ define "main" }}
+
+<!-- https://gohugo.io/templates/404/ -->
+<section class="hero is-primary">
+  <div class="hero-body">
+    <p class="title">{{ .Title }}</p>
+  </div>
+</section>
+
+<main class="container my-6">
+  <p>Nothing Here...
+    <br>
+    <a href="{{ " /" | relURL }}">Go Home</a>
+  </p>
+</main>
+
+{{ end }}

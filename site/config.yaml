@@ -1,0 +1,20 @@
+# https://gohugo.io/getting-started/configuration/#all-configuration-settings
+baseURL: 'https://mnishiguchi.github.io/hugo-gh-example'
+languageCode: 'en-us'
+title: 'My New Hugo Site'
+
+# https://gohugo.io/variables/site/#the-siteparams-variable
+params:
+  description: Sit fugiat ut velit irure elit voluptate veniam.
+
+# https://gohugo.io/content-management/menus/
+menu:
+  main:
+    - identifier: posts
+      name: Posts
+      url: '/posts/'
+      weight: 2
+    - identifier: about
+      name: About
+      url: '/about/'
+      weight: 3
