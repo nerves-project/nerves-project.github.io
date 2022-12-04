@@ -28,8 +28,8 @@
               {{ range $data }}
                 <div class="column is-4">
                   <div class="box">
-                    <a href="https://youtu.be/{{ .videoId }}" target="_blank">
-                      <img src="https://img.youtube.com/vi/{{ .videoId }}/maxresdefault.jpg" alt="">
+                    <a href="{{ .url }}" target="_blank">
+                      <img src="{{ .thumbnail }}" alt="">
                     </a>
                     <center class="subtitle">{{ .title }}</center>
                   </div>
