@@ -5,59 +5,84 @@ current_year: 2022
 videos:
   2022:
     - title: Workflows for Nerves
-      videoId: qoSNsmOp2zU
+      url: https://youtu.be/qoSNsmOp2zU
+      thumbnail: https://img.youtube.com/vi/qoSNsmOp2zU/maxresdefault.jpg
     - title: Cellular Connectivity With Nerves
-      videoId: 1IXrNKE6KOo
+      url: https://youtu.be/1IXrNKE6KOo
+      thumbnail: https://img.youtube.com/vi/1IXrNKE6KOo/maxresdefault.jpg
     - title: Gettin' tipsy with Nerves 🍻
-      videoId: BtUmxoccZGE
+      url: https://youtu.be/BtUmxoccZGE
+      thumbnail: https://img.youtube.com/vi/BtUmxoccZGE/maxresdefault.jpg
     - title: An Ode to Firmware Design
-      videoId: pn5fC12RVjQ
+      url: https://youtu.be/pn5fC12RVjQ
+      thumbnail: https://img.youtube.com/vi/pn5fC12RVjQ/maxresdefault.jpg
     - title: Keeping your IoT fleet afloat with Sink
-      videoId: BxTIUvyZHKw
+      url: https://youtu.be/BxTIUvyZHKw
+      thumbnail: https://img.youtube.com/vi/BxTIUvyZHKw/maxresdefault.jpg
   2021:
     - title: Embedded Elixir with Nerves Livebook
-      videoId: dZzM-rLu-zo
+      url: https://youtu.be/dZzM-rLu-zo
+      thumbnail: https://img.youtube.com/vi/dZzM-rLu-zo/maxresdefault.jpg
     - title: My Scenic Companion
-      videoId: wCxMSo3TZjw
+      url: https://youtu.be/wCxMSo3TZjw
+      thumbnail: https://img.youtube.com/vi/wCxMSo3TZjw/maxresdefault.jpg
     - title: "Sink: A protocol for distributed, fault-tolerant, BW sensitive systems"
-      videoId: DJRL86mO4ks
+      url: https://youtu.be/DJRL86mO4ks
+      thumbnail: https://img.youtube.com/vi/DJRL86mO4ks/maxresdefault.jpg
     - title: "Printer Perfect: A Case Study in Building a 3D printer UI"
-      videoId: jxiZ_K39-dw
+      url: https://youtu.be/jxiZ_K39-dw
+      thumbnail: https://img.youtube.com/vi/jxiZ_K39-dw/maxresdefault.jpg
     - title: Metrics in the Small - Telemetry for Nerves Devices
-      videoId: KDrNru8XXQo
+      url: https://youtu.be/KDrNru8XXQo
+      thumbnail: https://img.youtube.com/vi/KDrNru8XXQo/maxresdefault.jpg
   2020:
     - title: Take Flight With Elixir
-      videoId: 4Qxg48HkJGo
+      url: https://youtu.be/4Qxg48HkJGo
+      thumbnail: https://img.youtube.com/vi/4Qxg48HkJGo/maxresdefault.jpg
   2018:
     - title: "Arduino, Elixir And Nerves: A Deep Dive Into Firmata"
-      videoId: sTOOjfUrQ0A
+      url: https://youtu.be/sTOOjfUrQ0A
+      thumbnail: https://img.youtube.com/vi/sTOOjfUrQ0A/maxresdefault.jpg
     - title: Is Security on Your Nerves
-      videoId: DP6wYYQ90QI
+      url: https://youtu.be/DP6wYYQ90QI
+      thumbnail: https://img.youtube.com/vi/DP6wYYQ90QI/maxresdefault.jpg
   2017:
     - title: Building Devices with Elixir Erlang using Nerves
-      videoId: aIGVOFwYtHE
+      url: https://youtu.be/aIGVOFwYtHE
+      thumbnail: https://img.youtube.com/vi/aIGVOFwYtHE/maxresdefault.jpg
     - title: Nerves Clustering Using Your Own Distribution
-      videoId: kMHXd_iMGRU
+      url: https://youtu.be/kMHXd_iMGRU
+      thumbnail: https://img.youtube.com/vi/kMHXd_iMGRU/maxresdefault.jpg
     - title: Building an Artificial Pancreas with Elixir and Nerves
-      videoId: ARQD4BN_5ns
+      url: https://youtu.be/ARQD4BN_5ns
+      thumbnail: https://img.youtube.com/vi/ARQD4BN_5ns/maxresdefault.jpg
     - title: Keep an Eye on the Sky with Nerves and Phoenix
-      videoId: UoSQBOP_Siw
+      url: https://youtu.be/UoSQBOP_Siw
+      thumbnail: https://img.youtube.com/vi/UoSQBOP_Siw/maxresdefault.jpg
     - title: My first Nerves Project Bioreactor
-      videoId: 1bQlc-K6vN0
+      url: https://youtu.be/1bQlc-K6vN0
+      thumbnail: https://img.youtube.com/vi/1bQlc-K6vN0/maxresdefault.jpg
     - title: Building Communities of Smart Things Takes Nerves
-      videoId: TjlbXQ88eEc
+      url: https://youtu.be/TjlbXQ88eEc
+      thumbnail: https://img.youtube.com/vi/TjlbXQ88eEc/maxresdefault.jpg
     - title: Get Cooking With Nerves
-      videoId: O39ipRsXv3Y
+      url: https://youtu.be/O39ipRsXv3Y
+      thumbnail: https://img.youtube.com/vi/O39ipRsXv3Y/maxresdefault.jpg
   2016:
     - title: Nerves + Phoenix Saves a Father's Sanity!
-      videoId: cznxe3TCevk
+      url: https://youtu.be/cznxe3TCevk
+      thumbnail: https://img.youtube.com/vi/cznxe3TCevk/maxresdefault.jpg
     - title: "Nerves: Connected Beyond the Node"
-      videoId: VhAIDmtKhO4
+      url: https://youtu.be/VhAIDmtKhO4
+      thumbnail: https://img.youtube.com/vi/VhAIDmtKhO4/maxresdefault.jpg
     - title: Enhanced Embedded Systems with Nerves
-      videoId: 118-g0ODfgg
+      url: https://youtu.be/118-g0ODfgg
+      thumbnail: https://img.youtube.com/vi/118-g0ODfgg/maxresdefault.jpg
     - title: Getting Started, and the Road Ahead
-      videoId: poWoCWDLxRU
+      url: https://youtu.be/poWoCWDLxRU
+      thumbnail: https://img.youtube.com/vi/poWoCWDLxRU/maxresdefault.jpg
   2015:
     - title: Embedded Erlang, Nerves, and SumoBots
-      videoId: tCg1LakJF3g
+      url: https://youtu.be/tCg1LakJF3g
+      thumbnail: https://img.youtube.com/vi/tCg1LakJF3g/maxresdefault.jpg
 ---
