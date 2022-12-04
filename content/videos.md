@@ -12,11 +12,19 @@ videos:
       videoId: BtUmxoccZGE
     - title: An Ode to Firmware Design
       videoId: pn5fC12RVjQ
+    - title: Keeping your IoT fleet afloat with Sink
+      videoId: BxTIUvyZHKw
   2021:
     - title: Embedded Elixir with Nerves Livebook
       videoId: dZzM-rLu-zo
     - title: My Scenic Companion
       videoId: wCxMSo3TZjw
+    - title: "Sink: A protocol for distributed, fault-tolerant, BW sensitive systems"
+      videoId: DJRL86mO4ks
+    - title: "Printer Perfect: A Case Study in Building a 3D printer UI"
+      videoId: jxiZ_K39-dw
+    - title: Metrics in the Small - Telemetry for Nerves Devices
+      videoId: KDrNru8XXQo
   2020:
     - title: Take Flight With Elixir
       videoId: 4Qxg48HkJGo
