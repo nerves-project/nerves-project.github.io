@@ -1,0 +1,58 @@
+<!doctype html><html lang=en-us><head><title>Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System at Hop | Nerves Project</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name=theme-color content="#42a7c6"><meta name=twitter:card content="summary"><meta name=twitter:title content="Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System at Hop"><meta name=twitter:description content="Hop used Nerves to build the world&rsquo;s first self-serve beer kiosk powered by
+facial recognition technology."><meta property="og:title" content="Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System at Hop"><meta property="og:description" content="Hop used Nerves to build the world&rsquo;s first self-serve beer kiosk powered by
+facial recognition technology."><meta property="og:type" content="article"><meta property="og:url" content="https://nerves-project.github.io/nerves_website_next/cases/hop/"><meta property="article:section" content="cases"><meta property="article:published_time" content="2022-01-02T00:00:00+00:00"><meta property="article:modified_time" content="2022-01-02T00:00:00+00:00"><link rel="shortcut icon" type=image/png href=/nerves_website_next/img/icon.png><link rel=stylesheet href=/nerves_website_next/css/main.min.6e6bdce04ab1c646ebcdc0f7ea70049d58977c0743d213e1f4d24b0b047f23e8.css integrity="sha256-bmvc4EqxxkbrzcD36nAEnViXfAdD0hPh9NJLCwR/I+g=" crossorigin=anonymous media=screen><script src=/nerves_website_next/js/main.min.76dc63c4231809d193d85fc590fdf9def7393a2cb28b4f7dc89806e5986f0d39.js integrity="sha256-dtxjxCMYCdGT2F/FkP353vc5Oiyyi099yJgG5ZhvDTk="></script></head><body data-type=cases data-kind=page data-is-home=false><nav class=navbar role=navigation aria-label="main navigation"><div class=navbar-brand><a class=navbar-item href=https://nerves-project.github.io/nerves_website_next><img src=/nerves_website_next/img/nerves.svg alt=Nerves style=max-height:4rem></a>
+<a role=button class=navbar-burger aria-label=menu data-target=appHeaderNavbarMenu><span aria-hidden=true></span>
+<span aria-hidden=true></span>
+<span aria-hidden=true></span></a></div><div id=appHeaderNavbarMenu class=navbar-menu><div class=navbar-start><a href=https://hexdocs.pm/nerves class='navbar-item has-text-centered'>Docs</a>
+<a href=/nerves_website_next/resources class='navbar-item has-text-centered'>Resources</a>
+<a href=/nerves_website_next/community class='navbar-item has-text-centered'>Community</a>
+<a href=/nerves_website_next/sponsors class='navbar-item has-text-centered'>Sponsors</a>
+<a href=https://github.com/nerves-project class='navbar-item has-text-centered'><svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path fill="currentcolor" d="M12 .297c-6.63.0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577.0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93.0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176.0.0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22.0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22.0 1.606-.015 2.896-.015 3.286.0.315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></div></div></nav><section class="hero is-primary"><div class=hero-body><p class=title>Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System at Hop</p></div></section><main class="container my-6 px-4"><div class=content><p>Hop used Nerves to build the world&rsquo;s first self-serve beer kiosk powered by
+facial recognition technology.</p><h2 id=the-concept>The Concept</h2><p>Hop is the world’s first beer kiosk to use automated facial recognition to
+verify identification, allowing users to purchase beer by the ounce and pour it
+themselves. Las Vegas-based Adult Beverage Co. (ABC) engaged Very, an IoT
+development firm and Nerves sponsor, to build the proprietary software and
+hardware that powers Hop, which made its debut on the Vegas Strip. Very used the
+Nerves Project and NervesHub to build Hop’s robust kiosk system and support the
+devices that make the transactions possible.</p><p>Hop asks first-time users to enter basic personal information, scan an image of
+their legal ID, take a few facial recognition reference photos, and swipe their
+credit card. When pouring a beer, a photo is taken at the tap and compared to
+the user’s reference images, giving a match rating out of 100%.</p><p>A bartender onsite reviews the rating and approves or denies service. On future
+visits, customers will be automatically recognized — which means all they have
+to do is approach the kiosk, choose a tap, and pour their beer.</p><p><img src=/nerves_website_next/img/Hop-case-1.png alt>
+<img src=/nerves_website_next/img/Hop-case-2.jpg alt></p><h2 id=how-nerves-helped--iot-prototyping--hardware>How Nerves Helped — IoT Prototyping & Hardware</h2><p>The product that ABC envisioned required complex hardware-software interactions.
+While they had a working product that was up and running, it was difficult to
+use and incredibly buggy. What’s more: critical portions of their software and
+hardware were purchased from an inflexible third party vendor, which meant
+that it couldn’t be customized to meet the needs of the product or the
+business as a whole.</p><p>Very began the project with a technical audit of ABC’s existing hardware and
+software to understand what was working and what needed improvement. While the
+system’s hardware was functioning, they identified a range of improvements
+that would enhance product performance.</p><p>To make those improvements, Very chose the Nerves Project because of the ways
+Nerves brings agility to the IoT development cycle. For example, Nerves enables:</p><ul><li>Seamless test-driven development including peripheral/sensor emulation. This
+eliminates slow hardware-in-the-loop testing on every iteration and often
+yields software that works the very first time it touches the embedded target.</li><li>Continuous delivery of tested firmware builds via common continuous delivery
+tools designed for the web.</li><li>Many compatible open-source tools for secure communication with web servers
+via HTTP and WebSockets.</li><li>Fault-tolerant and automated OTA firmware updates.</li><li>Applications that are tolerant to hardware failures/abnormalities like
+accidental shorts.</li></ul><p>While Nerves is compatible with whichever embedded languages your project is
+already written in (like C, C++, Python, or Rust), Very chose to use Elixir
+with Nerves for the Hop project because it is the language that most Nerves
+tools are written in and it is prevalent in the web development space. This
+made it possible for their web programmers to work quickly and easily in an
+embedded environment.</p><p>Very used Nerves to:</p><ul><li>Develop firmware for the IoT-powered devices</li><li>Move to a cloud-managed approach for managing all tap screens and hardware connections</li><li>Implement rolling updates to all deployed hardware</li><li>Enable real-time interaction between the hardware and software</li></ul><h2 id=the-results>The Results</h2><p>The new Hop system performs exactly the way ABC envisioned and has the potential
+to scale seamlessly.</p><p>Hop makes the beer-buying process fast and seamless for thirsty tourists. For
+vendors, it eliminates waste (as it charges by the ounce poured, not the glass)
+and allows for easy inventory analysis. The Vegas Strip was a natural location
+for a pilot due to its open-container policy and the high volume of foot
+traffic, but Hop has countless potential applications — like event venues,
+stadiums, and restaurants — which ABC plans to leverage in the near future.</p></div></main><footer class="has-background-primary-light has-text-centered pt-6 pb-2"><div class="has-text-centered mb-4"><img src=/nerves_website_next/img/nerves.svg style=height:4rem></div><div class="is-justify-content-center my-4"><a href=https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74 class=mx-2 title=Forum><img src=/nerves_website_next/img/elixir-forum.svg width=30rem></a>
+<a href=https://github.com/nerves-project class=mx-2 title=Github><img src=/nerves_website_next/img/github.svg width=30rem></a>
+<a href=https://elixir-slackin.herokuapp.com class=mx-2 title=Slack><img src=/nerves_website_next/img/slack.svg width=30rem></a>
+<a href=https://fosstodon.org/@NervesProject class=mx-2 title=Mastodon><img src=/nerves_website_next/img/mastodon.svg width=30rem></a>
+<a href=https://twitter.com/NervesProject class=mx-2 title=Twitter><img src=/nerves_website_next/img/twitter.svg width=30rem></a>
+<a href=https://www.meetup.com/nerves class=mx-2 title=Meetup><img src=/nerves_website_next/img/meetup.svg width=30rem></a></div><div class="navbar-start is-justify-content-center my-4"><a href=https://hexdocs.pm/nerves class=navbar-item>Docs</a>
+<a href=https://embedded-elixir.com/page/newsletter class=navbar-item>Newsletter</a>
+<a href=https://tips.nerves-project.org class=navbar-item>Tips</a>
+<a href=https://embedded-elixir.com class=navbar-item>Blog</a>
+<a href=/nerves_website_next/cases class=navbar-item>Cases</a></div><div class="has-text-grey is-size-6">&copy;
+The Nerves Project Authors 2022<br>Nerves and the Nerves logo are <a href=/nerves_website_next/trademarks>trademarks of the Nerves Project Authors</a></div></footer></body></html>
