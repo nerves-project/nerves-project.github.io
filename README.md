@@ -2,13 +2,17 @@
 
 ## Get started
 
-Firstly, make sure that the [Hugo][Install Hugo] static site generator and
-[Node.js] are available on your development machine.
+The website uses Hugo and Node.js. We're using `asdf` to manage versions, so
+first install the `hugo` and `nodejs` plugins if you haven't already. The
+default `hugo` plugin in `asdf` doesn't support extended Hugo versions so if you
+get an error, that might be the issue.
 
-[Install Hugo]: https://gohugo.io/getting-started/installing/
-[Node.js]: https://nodejs.org/
+```sh
+asdf plugin add hugo https://github.com/nklmilojevic/asdf-hugo.git
+asdf plugin add nodejs
+```
 
-Install dependencies.
+Then install dependencies:
 
 ```sh
 asdf install
