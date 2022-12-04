@@ -14,9 +14,50 @@
     {{ if .Site.Menus.main }}
       <div class="navbar-start">
         {{ range .Site.Menus.main }}
-          <a href="{{ .URL }}" class='navbar-item has-text-centered {{ cond (eq $.RelPermalink .URL) " is-active" "" }}'>
-            {{ cond (eq .Name "Github") (partial "github-logo" .)  .Name }}
-          </a>
+          {{ if (eq .Name "Resources") }}
+            <div class="navbar-item has-text-centered has-dropdown is-hoverable">
+              <a href="{{ .URL }}" class="navbar-link">{{ .Name }}</a>
+              <div class="navbar-dropdown">
+                <a class="navbar-item" href="{{ relURL "newsletter" }}">
+                  Newsletter
+                </a>
+                <a class="navbar-item" href="/#getting_started">
+                  Getting Started
+                </a>
+                <a class="navbar-item" href="{{ relURL "resources/#books" }}">
+                  Books
+                </a>
+                <a class="navbar-item" href="{{ relURL "videos" }}">
+                  Videos
+                </a>
+                <a class="navbar-item" href="{{ relURL "related_projects" }}">
+                  Releated Projects
+                </a>
+                <a class="navbar-item" href="{{ relURL "trademarks" }}">
+                  Trademarks Policy
+                </a>
+                <p class="menu-label">
+                  External links
+                </p>
+                <a class="navbar-item" href="https://github.com/nerves-project/nerves_examples">
+                  Example Projects
+                </a>
+                <a class="navbar-item" href="https://tips.nerves-project.org">
+                  NervesTips
+                </a>
+                <a class="navbar-item" href="https://github.com/nerves-project/nerves#nerves-projects">
+                  Project Directory
+                </a>
+                <a class="navbar-item" href="https://github.com/issues?q=is%3Aopen+is%3Aissue+org%3Anerves-project+org%3Anerves-time+org%3Anerves-networking+archived%3Afalse+">
+                  Issues Tracker
+                </a>
+              </div>
+            </div>   
+          {{ else }}
+            <a href="{{ .URL }}" class='navbar-item has-text-centered {{ cond (eq $.RelPermalink .URL) " is-active" "" }}'>
+              {{ cond (eq .Name "Github") (partial "github-logo" .)  .Name }}
+            </a>
+          {{ end }}
         {{ end }}
       </div>
     {{ end }}

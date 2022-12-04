@@ -13,32 +13,33 @@ books:
     image: https://pragprog.com/titles/passweather/build-a-weather-station-with-elixir-and-nerves/passweather-250.jpg
     description: Build and deploy a production-grade weather station sensor hub using Elixir and Nerves, all while leveraging the best practices established by the Nerves community for structuring and organizing Nerves applications.
 
-resources:
-  - name: Project Directory
-    image: img/directory.svg
-    link: https://github.com/nerves-project/nerves#nerves-projects
-  - name: NervesTips
-    image: img/lightbulb.svg
-    link: https://tips.nerves-project.org
+internal:
   - name: Newsletter
     image: img/newsletter.svg
     link: newsletter
   - name: Getting Started
     image: img/getting_started.svg
-    link: getting_started
+    link: /#getting_started
   - name: Videos
     image: img/videos.svg
     link: videos
-  - name: Example Projects
-    image: img/nerves_new.png
-    link: https://github.com/nerves-project/nerves_examples
-  - name: Issues Tracker
-    image: img/github.svg
-    link: "https://github.com/issues?q=is%3Aopen+is%3Aissue+org%3Anerves-project+org%3Anerves-time+org%3Anerves-networking+archived%3Afalse+"
   - name: Related Projects
     image: img/related_projects.svg
     link: related_projects
   - name: Trademarks Policy
     image: img/icon.png
     link: trademarks
+external:
+  - name: Project Directory
+    image: img/directory.svg
+    link: https://github.com/nerves-project/nerves#nerves-projects
+  - name: NervesTips
+    image: img/lightbulb.svg
+    link: https://tips.nerves-project.org
+  - name: Example Projects
+    image: img/nerves_new.png
+    link: https://github.com/nerves-project/nerves_examples
+  - name: Issues Tracker
+    image: img/github.svg
+    link: "https://github.com/issues?q=is%3Aopen+is%3Aissue+org%3Anerves-project+org%3Anerves-time+org%3Anerves-networking+archived%3Afalse+"
 ---

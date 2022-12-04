@@ -9,12 +9,17 @@
         <p class="panel-heading">
           Links
         </p>
-        {{ range .Params.resources }}
-          {{ $link := relURL .link }}
-          {{ if hasPrefix .link "http" }}
-            {{ $link := .link}}
-          {{ end }}
-          <a class="panel-block" href="{{ $link }}">
+        {{ range .Params.internal }}
+          <a class="panel-block" href="{{ relURL .link }}">
+            <span class="panel-icon">
+              <img src="{{ relURL .image }}" alt="">
+            </span>
+            {{ .name }}
+          </a>
+        {{ end }}
+        <label class="panel-block has-background-primary has-text-white">External</label>
+        {{ range .Params.external }}
+          <a class="panel-block" href="{{ .link }}">
             <span class="panel-icon">
               <img src="{{ relURL .image }}" alt="">
             </span>
