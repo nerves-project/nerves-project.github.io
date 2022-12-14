@@ -1,0 +1,74 @@
+{{ define "main" }}
+
+<section class="hero is-primary">
+  <div class="hero-body">
+    <p class="title">Learning Resources</p>
+  </div>
+</section>
+
+<section class="section has-background-primary-light">
+  <div class="columns">
+    <div class="column">
+      <div class="title">Official Documentation</div>
+    </div>
+    <div id="documentation" class="column">
+      <div class="columns is-multiline">
+        {{ range .Params.docs }}
+          <div class="column">
+            <a class="button is-large is-link" href="{{ .url }}" target="_blank">
+              <span>{{ .name }}</span>
+              <span class="icon">
+                <img src="{{ relURL "img/external-white.svg" }}" alt="">
+              </span>
+            </a>
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section has-background-primary-light">
+  <div class="columns">
+    <div class="column">
+      <div class="title">Book worm?</div>
+      <div class="subtitle">Try a guided project with one of these books</div>
+    </div>
+    <div id="books" class="column">
+      <div class="columns">
+        {{ range .Params.books }}
+        <div class="column">
+          <a href="{{ .linkUrl }}" target="_blank">
+            <figure class="image">
+              <img style="max-width: 250px" src="{{ .image }}">
+            </figure>
+          </a>
+        </div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section has-background-primary-light">
+  <div class="columns">
+    <div class="column is-7">
+      <div class="title">Nerves Tips</div>
+      <div class="subtitle">Explore helpful tips, gotchas, and TIL's</div>
+      <span class="icon-text">
+        <span><a href="https://tips.nerves-project.org" target="_blank">tips.nerves-project.org</a></span>
+        <span class="icon">
+          <img src="{{ relURL "img/arrow-right.svg" }}"></img>
+        </span>
+      </span>
+    </div>
+    <div id="tips" class="column">
+      <a href="https://tips.nerves-project.org" target="_blank">
+        <figure class="image" style="max-width: 200px;">
+          <img src="{{ relURL "img/tips.svg" }}" alt="">
+        </figure>
+      </a>
+    </div>
+  </div>
+</section>
+{{ end }}
