@@ -13,21 +13,21 @@ params:
 # https://gohugo.io/content-management/menus
 menu:
   main:
-    - name: 'Docs'
-      url: 'https://hexdocs.pm/nerves'
+    - name: Learn
+      url: /learn
       weight: 1
-    - name: 'Resources'
-      url: '/resources'
+    - name: Resources
+      url: /resources
       weight: 2
     - name: 'Community'
       url: '/community'
       weight: 3
     - name: 'Sponsors'
       url: '/sponsors'
-      weight: 5
-    - name: 'Github'
-      url: 'https://github.com/nerves-project'
-      weight: 6
+      weight: 4
+    - name: 'Videos'
+      url: '/videos'
+      weight: 4
   footer1:
     - name: 'Docs'
       url: 'https://hexdocs.pm/nerves'
