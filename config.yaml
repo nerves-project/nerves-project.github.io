@@ -16,8 +16,8 @@ menu:
     - name: Learn
       url: /learn
       weight: 1
-    - name: Resources
-      url: /resources
+    - name: Code
+      url: /code
       weight: 2
     - name: 'Community'
       url: '/community'

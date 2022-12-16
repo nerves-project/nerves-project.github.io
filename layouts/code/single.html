@@ -1,0 +1,78 @@
+{{ define "main" }}
+
+<header class="hero is-primary is-medium">
+  <div class="hero-body">
+    <p class="title is-2 mb-4">Explore the project</p>
+    <p class="is-size-5 mb-6" style="max-width:60%" >
+      Nerves is spread over many repositories for focus on limited scopes.
+    </p>
+    {{ range .Params.project_map }}
+    <a href="https://github.com/nerves-project/nerves#{{ .anchor }}" target="_blank" class="button is-primary is-light is-medium mb-2 mr-2">
+      {{ .name }}
+    </a>
+  {{ end }}
+  </div>
+</header>
+
+<section class="section">
+  <div class="columns">
+    <div class="column is-4">
+      <figure class="image" style="max-width: 300px;">
+        <img src="{{ relURL "img/questions.svg" }}" alt="">
+      </figure>
+    </div>
+    <div class="column">
+      <p class="title">Need help?</p>
+      <p class="subtitle">
+        Look through the <a href="{{ .Params.issue_tracker }}" target="_blank">issue tracker</a> or <a href="{{ .Params.submit_issue }}" target="_blank">submit a issue</a>
+      </p>
+      <p>You can also reach out for help on the
+        <span class="icon-text">
+          <span class="icon">
+            <img src="{{ relURL "img/elixir-forum.svg" }}"></img>
+          </span>
+          <span><a href="https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74">Nerves Forum</a></span>
+        </span>
+        or
+        <span class="icon-text">
+          <span class="icon">
+            <img src="{{ relURL "img/slack.svg" }}"></img>
+          </span>
+          <span><a href="https://elixir-slackin.herokuapp.com">#nerves</a></span>
+        </span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="related-projects" class="hero is-light py-6">
+  <div class="hero-body" style="max-width:68rem;margin:auto">
+    <div class="level">
+      <div class="level-item">
+        <p class="title is-2 pb-6">Related Projects</p>
+      </div>
+    </div>
+    <div class="columns is-gapless is-multiline">
+      {{ range .Params.related_projects }}
+        <div class="column is-half mb-2">
+          <a href="{{ .link }}" target="_blank">
+            <div class="card mx-1">
+              <div class="card-content">
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{{ relURL .image }}" class="feature-img mr-4" style="width:4.5rem">
+                  </div>
+                  <div class="media-content">
+                    <p class="title is-5">{{ .name }}</p>
+                    <p class="content">{{ .description | markdownify }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
