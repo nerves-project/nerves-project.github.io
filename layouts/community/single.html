@@ -1,28 +1,108 @@
 {{ define "main" }}
 
-{{ partial "simple-hero" . }}
+<header class="hero is-primary is-medium">
+  <div class="hero-body">
+    <p class="title is-2 mb-4">Nerves ❤️ Community</p>
+    <p class="is-size-5">
+      Nerves strives to be an open and community driven project.
+      <br>
+      We love to hear how others are building with Nerves and want to highlight others contributions whenever we can.
+    </p>
+  </div>
+</header>
 
 <main class="container my-6 px-4">
-  <div class="content mb-6">
-    {{ .Content }}
-  </div>
-
-  <section class="mb-6">
-    <div class="mb-4">
-      {{ range .Params.communities }}
-      <a href="{{.linkUrl}}" class="button is-white">
-        <span class="icon mr-2">
-          <img src="{{ relURL .image }}">
-        </span>
-        <span>{{ .name }}</span>
-      </a>
-    {{ end }}
+  <section class="section">
+    <div class="tile is-ancestor">
+      <div class="tile is-vertical is-parent is-2">
+        <div class="tile is-child is-10">
+          <a href="https://fosstodon.org/@NervesProject" target="_blank">
+            <figure class="image" style="max-width: 180px;">
+              <img src="{{ relURL "img/mastodon.svg" }}" alt="">
+            </figure>
+          </a>  
+        </div>
+        <div class="tile is-child"></div>
+        <div class="tile is-child"></div>
+        <div class="tile is-child"></div>
+        <div class="tile is-child"></div>
+      </div>
+      <div class="tile is-vertical is-parent is-2">
+        <div class="tile is-child"></div>
+        <div class="tile is-child"></div>
+        <div class="tile is-child"></div>
+        <div class="tile is-child is-8">
+          <a href="{{ relURL "newsletter" }}" target="_blank">
+            <figure class="image" style="max-width: 160px;">
+              <img src="{{ relURL "img/newsletter.svg" }}" alt="">
+            </figure>
+          </a>
+        </div>
+      </div>
+      <div class="tile">
+        <div class="content">
+          <p class="title">Want updates?</p>
+          <p class="subtitle">
+            Subscribe to the <a href="{{ relURL "newsletter" }}">newsletter</a> or
+            follow along on <a href="{{ relURL "newsletter" }}">mastodon</a>
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="mb-6" id="talks">
-    <h3 class="title">Community Talks</h3>
-    {{ partial "youtube-list" .Params.talks }}
+  <section class="section">
+    <div class="columns">
+      <div class="column is-4">
+        <a href="https://www.meetup.com/nerves" target="_blank">
+          <figure class="image" style="max-width: 300px;">
+            <img src="{{ relURL "img/meetup.svg" }}" alt="">
+          </figure>
+        </a>
+      </div>
+      <div class="column">
+        <div class="content">
+          <p class="title">Feeling social?</p>
+          <p class="subtitle">
+            Come nerd out at the monthly <a href="https://www.meetup.com/nerves">Nerves Online Meetup</a>
+          </p>
+        </div>
+      </div>
+    </div>  
+  </section>
+
+  <section class="section">
+    <div class="columns">
+      <div class="column is-4">
+        <figure class="image" style="max-width: 300px;">
+          <img src="{{ relURL "img/questions.svg" }}" alt="">
+        </figure>
+      </div>
+      <div class="column">
+        <div class="content">
+          <p class="title">Need help?</p>
+          <p class="subtitle">Use the
+            <span class="icon-text">
+              <span class="icon">
+                <img src="{{ relURL "img/elixir-forum.svg" }}"></img>
+              </span>
+              <span><a href="https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74">Nerves Forum</a></span>
+            </span>
+            find previously answered questions or ask for help.
+          </p>
+          <p class="subtitle">
+            You can also post to the
+            <span class="icon-text">
+              <span class="icon">
+                <img src="{{ relURL "img/slack.svg" }}"></img>
+              </span>
+              <span><a href="https://elixir-slackin.herokuapp.com">#nerves</a></span>
+            </span>
+            channel or <a href="https://github.com/nerves-project/nerves/issues/new" target="_blank">submit a new issue</a>
+          </p>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 
