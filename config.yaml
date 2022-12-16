@@ -33,7 +33,7 @@ menu:
       url: 'https://hexdocs.pm/nerves'
       weight: 1
     - name: 'Newsletter'
-      url: 'https://embedded-elixir.com/page/newsletter'
+      url: '/newsletter'
       weight: 2
     - name: 'Tips'
       url: 'https://tips.nerves-project.org'
