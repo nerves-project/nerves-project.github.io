@@ -33,7 +33,7 @@ end
 
 root = File.cwd!
 
-unless Path.basename(root) == "nerves_website_next" do
+unless Path.basename(root) == "nerves-project.github.io" do
   IO.puts [IO.ANSI.red(), "add_newsletter must be run from the repo root (i.e. ./bin/add_newsletter)", IO.ANSI.default_color()]
   System.halt(1)
 end
