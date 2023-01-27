@@ -7,21 +7,18 @@
 {{ partial "simple-hero" . }}
 
 <main class="container my-6 px-4">
-  <div class="content">{{ .Content }}</div>
-  {{ range $key, $value := .Data.Terms }}
-    <a href="{{ "/" | relLangURL }}{{ $.Data.Plural | urlize }}/{{ $key | urlize }}">
-      <h2 class="title is-4 mb-4">{{ $.Data.Singular | humanize }}: {{ $key }}</h2>
-    </a>
-    <ul class="mb-4">
-      {{ range $value.Pages }}
-        <li class="card mb-2">
-          <div class="card-content">
-            <a href="{{ .Permalink }}" class="title is-6">{{ .Title }}</a>
-          </div>
-        </li>
-      {{ end }}
-    </ul>
-  {{ end }}
+  <div class="columns is-multiline">
+    {{ range $key, $value := .Data.Terms.ByCount }}
+      <div class="column">
+        <a href="/tags/{{ $value.Name | urlize }}" class="button">
+          <span>{{ $value.Name }}</span>
+          <span class="tag is-rounded is-primary is-light">
+            {{ $value.Count }}
+          </span>
+        </a>
+      </div>
+    {{ end }}
+  </div>
 </main>
 
 {{ end }}

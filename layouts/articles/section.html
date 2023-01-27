@@ -1,17 +1,16 @@
 {{ define "main" }}
 
-{{/*
-  Example URL: /tags/case/
-*/}}
-
 <section class="hero is-primary">
   <div class="hero-body">
-    <p class="title">Tag: {{.Title}}</p>
+    <p class="title">Articles</p>
+    <p class="subtitle">A cultivation of community driven articles</p>
   </div>
 </section>
+
 <main class="container my-6 px-4">
   <div class="content">{{ .Content }}</div>
-  {{ partial "articles.html" . }}
+  {{ partial "articles.html" .}}
+  {{- template "_internal/pagination.html" . -}}
 </main>
 
 {{ end }}
