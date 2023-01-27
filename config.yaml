@@ -9,6 +9,7 @@ params:
   description: >
     Nerves is the open-source platform and infrastructure you need to build,
     deploy, and securely manage your fleet of IoT devices at speed and scale.
+  dateFormat: "January 2, 2006"
 
 # https://gohugo.io/content-management/menus
 menu:
@@ -27,7 +28,10 @@ menu:
       weight: 4
     - name: 'Videos'
       url: '/videos'
-      weight: 4
+      weight: 5
+    - name: 'Articles'
+      url: '/articles'
+      weight: 6
   footer1:
     - name: 'Docs'
       url: 'https://hexdocs.pm/nerves'

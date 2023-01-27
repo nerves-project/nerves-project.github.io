@@ -1,0 +1,54 @@
+<div>
+  {{ range .Paginator.Pages.ByPublishDate.Reverse }}
+  <a href="{{ .RelPermalink }}">
+    <article class="card mb-4">
+      <div class="card-content">
+        <div class="media">
+          <div class="media-content">
+            <a href="{{ if .Params.external }} {{.Params.external}} {{else}} {{.Permalink}} {{end}}">
+            <!-- <a href="{{ .Permalink }}"> -->
+              <h2 class="title mb-4">
+                {{ .Title }}
+                {{ if .Params.external }}
+                  {{ $url := urls.Parse .Params.external }}
+                  <span class="icon">
+                    <img src="{{ relURL "img/external.svg" }}" alt="{{ $url.Host }}" title="{{ $url.Host }}">
+                  </span>
+                {{ end }}
+              </h2>
+
+              {{ if .Params.subtitle }}
+                <h3 class="subtitle mt-4">
+                  {{ .Params.subtitle }}
+                </h3>
+              {{ end }}
+            </a>           
+            <p class="content has-text-primary">
+              <span class="icon-text">
+                <span class="icon">
+                  <img src="{{ relURL "/img/date.svg"}}" alt="">
+                </span>
+                <span>Posted on {{ .Date.Format .Site.Params.dateFormat }}</span>
+                <span class="icon">
+                  <img src="{{ relURL "/img/person.svg"}}" alt="">
+                </span>
+                <span>{{ .Params.author }}</span>
+              </span>
+            
+            </p> 
+          </div>
+        </div>
+        <div class="content">
+          {{ if .Params.tags }}
+          <span class="post-meta">
+            {{ range .Params.tags }}
+              <a href="/tags/{{ . | urlize }}">#{{ . }}</a>&nbsp;
+            {{ end }}
+          </span>
+        {{ end }}
+        </div>
+      </div>
+    </article>
+  </a>
+  {{ end }}
+</div>
