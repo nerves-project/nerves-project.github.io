@@ -1,4 +1,39 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nerves Project</title><link>https://nerves-project.org/</link><description>Recent content on Nerves Project</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>The Nerves Project Authors</copyright><lastBuildDate>Thu, 16 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://nerves-project.org/index.xml" rel="self" type="application/rss+xml"/><item><title>Bits and bobs</title><link>https://nerves-project.org/newsletter/2023-02-16-bits-and-bobs/</link><pubDate>Thu, 16 Feb 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-02-16-bits-and-bobs/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nerves Project</title><link>https://nerves-project.org/</link><description>Recent content on Nerves Project</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>The Nerves Project Authors</copyright><lastBuildDate>Fri, 12 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://nerves-project.org/index.xml" rel="self" type="application/rss+xml"/><item><title>Circuits I guess</title><link>https://nerves-project.org/newsletter/2023-03-30-circuits-i-guess/</link><pubDate>Fri, 12 May 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-03-30-circuits-i-guess/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+No images? Click here
+&amp;nbsp;
+This one is a bit short as I was late on the previous one and order is being restored.
+Official project updates&amp;nbsp;
+circuits_i2c, v1.2.2
+FixesAdd types.h compatibility header to hex package so that host MacOS builds work again.circuits_i2c, v1.2.1
+FixesDetect I2C controllers that don&amp;#8217;t support 0-byte writes and revert to the old detection heuristic. This fixes an issue on Beaglebones (AM335x) that caused devices to be missed and kernel warnings to be logged.</description></item><item><title>Crash dump timers and Rustler NIFs</title><link>https://nerves-project.org/newsletter/2023-03-02-crash-dump-timers-and-rustler-nifs/</link><pubDate>Fri, 12 May 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-03-02-crash-dump-timers-and-rustler-nifs/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+No images? Click here
+&amp;nbsp;
+Official project updatesnerves_system_br, v1.22.3
+This is a security/bug fix release for v1.22.2.
+Fixes
+Emit warnings rather than error out when stripping executables fails on the firmware image packing step. These can happen when using precompiled Rust executables. They still work. The more important architecture checks are not impacted by this change.
+&amp;nbsp;Package updates
+Erlang/OTP 25.2.3System updates</description></item><item><title>Edge inference with TFLite on the horizon</title><link>https://nerves-project.org/newsletter/2023-03-20-edge-inference-with-tflite-on-the-horizon/</link><pubDate>Fri, 12 May 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-03-20-edge-inference-with-tflite-on-the-horizon/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+No images? Click here
+&amp;nbsp;
+Official project updates&amp;nbsp;
+vintage_net_qmi, v0.3.4
+Add grace period on serving system disconnects since they&amp;#8217;re often followed very quickly by a reconnect when moving between cell towers. This fixes an issue where TCP connections would unnecessarily be terminated and only to reconnect a second later.circuits_i2c, v1.2.0
+ChangesImprove device detection by using 0-byte writes on some I2C addresses and 1-byte reads on others.</description></item><item><title>System updates and ElixirConf EU</title><link>https://nerves-project.org/newsletter/2023-04-14-system-updates-and-elixirconf-eu/</link><pubDate>Fri, 12 May 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-04-14-system-updates-and-elixirconf-eu/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+No images? Click here
+&amp;nbsp;
+Official project updates&amp;nbsp;
+property_table, v0.2.3
+Fix compiler warnings with Elixir 1.15
+nerves, v1.10.2
+Change&amp;nbsp;BuildRunners.Docker&amp;nbsp;to use GitHub Container Registry by default
+nerves_livebook, v0.9.0
+Update Livebook to&amp;nbsp;v0.9.1Update Nerves systems to nerves_system_br 1.22.5 versions. This includes Erlang 25.3 and fixes to the Raspberry Pi 3 to support TensorFlow Lite. (TFLite isn&amp;#8217;t built into Nerves Livebook yet)Update all dependencies to their latest versions.</description></item><item><title>System updates and ElixirConf EU</title><link>https://nerves-project.org/newsletter/2023-04-27-system-updates-and-elixirconf-eu/</link><pubDate>Fri, 12 May 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-04-27-system-updates-and-elixirconf-eu/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+&amp;nbsp;
+Official project updatesnerves_heart, v2.2.0
+ChangesAdded snooze support to turn off reboots for 15 minutes per snooze. This is super helpful for debugging issues that interact with device health checks. It&amp;#8217;s activated via either a&amp;nbsp;USR1&amp;nbsp;signal or the&amp;nbsp;&amp;quot;snooze&amp;quot;&amp;nbsp;command.Support an initial grace period to avoid hardware watchdog reboots shortly after starting up. This lets you ensure that devices are up for a short period of time to make them debuggable.</description></item><item><title>Bits and bobs</title><link>https://nerves-project.org/newsletter/2023-02-16-bits-and-bobs/</link><pubDate>Thu, 16 Feb 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-02-16-bits-and-bobs/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 No images? Click here</description></item><item><title>A great vintage</title><link>https://nerves-project.org/newsletter/2023-02-01-a-great-vintage/</link><pubDate>Wed, 01 Feb 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-02-01-a-great-vintage/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 No images? Click here</description></item><item><title>A quick one</title><link>https://nerves-project.org/newsletter/2023-01-18-a-quick-one/</link><pubDate>Wed, 18 Jan 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-01-18-a-quick-one/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> No images? Click here
 &amp;nbsp; Official project updatesThis is a Buildroot version update that appears to mostly contain bug and security fixes. It should be a low risk upgrade.
