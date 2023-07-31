@@ -122,7 +122,7 @@ featuredCases:
 getting_started:
   - name: 'Try it out'
     image: 'img/nerves_livebook.png'
-    link: https://github.com/livebook-dev/nerves_livebook/blob/main/README.md
+    link: https://github.com/nerves-livebook/nerves_livebook/blob/main/README.md
     link_text: Nerves Livebook
     description: |
       Use a prebuilt firmware image loaded with Livebook so you can start playing
