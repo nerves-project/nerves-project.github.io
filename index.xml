@@ -1,4 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nerves Project</title><link>https://nerves-project.org/</link><description>Recent content on Nerves Project</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>The Nerves Project Authors</copyright><lastBuildDate>Fri, 23 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://nerves-project.org/index.xml" rel="self" type="application/rss+xml"/><item><title>Vacation vintage</title><link>https://nerves-project.org/newsletter/2023-06-23-vacation-vintage/</link><pubDate>Fri, 23 Jun 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-06-23-vacation-vintage/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nerves Project</title><link>https://nerves-project.org/</link><description>Recent content on Nerves Project</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>The Nerves Project Authors</copyright><lastBuildDate>Mon, 16 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://nerves-project.org/index.xml" rel="self" type="application/rss+xml"/><item><title>Almost time for Clippy the Tamagotchi</title><link>https://nerves-project.org/newsletter/2023-10-16-almost-time-for-clippy-the-tamagotchi/</link><pubDate>Mon, 16 Oct 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-10-16-almost-time-for-clippy-the-tamagotchi/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+World updatesIf you've at all missed it. The Raspberry Pi 5 has been announced!
+Headline features are the invention of the power button and something called a real-time clock.
+Snark aside, whether it is worthwhile for your projects will depend on a lot of things. It seems to have a lot of improvements and be adapting a fair bit to how people have been wanting to use their Pis with expanded support PCIe and such.</description></item><item><title>Plenty of updates and new hardware to consider</title><link>https://nerves-project.org/newsletter/2023-09-28-plenty-of-updates-and-new-hardware-to-consider/</link><pubDate>Thu, 28 Sep 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-09-28-plenty-of-updates-and-new-hardware-to-consider/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Welcome back to the Nerves Newsletter. Apologies for the short break. I took the liberty of cancelling an issue as I was running a fever and suffering from logistics when I would have normally put it together. This kind of makes this one a banger though so strap in.
+&amp;nbsp;
+&amp;nbsp;
+Project updatesThere have been some in-between system releases based on the nerves_system_br 1.</description></item><item><title>Properly tabled</title><link>https://nerves-project.org/newsletter/2023-09-01-properly-tabled/</link><pubDate>Fri, 01 Sep 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-09-01-properly-tabled/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Project updatesproperty_table, v0.2.4
+Editor's note: I had not seen property_table before and you might not have either. From the README:
+In-memory key-value store with subscriptions
+PropertyTable makes it easy to set up a key-value store where users can subscribe to changes based on patterns. PropertyTable refers to keys as properties. Properties have values and are timestamped as to when they received that value.</description></item><item><title>Vacation catchup edition</title><link>https://nerves-project.org/newsletter/2023-08-17-vacation-catchup-edition/</link><pubDate>Thu, 17 Aug 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-08-17-vacation-catchup-edition/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Project updatesSystem updates
+This is a bug and security fix update. It should be a low risk upgrade.
+Fix CTRL+R over sshUpdated dependencies
+nerves_system_br v1.23.2Buildroot 2023.02.2Systems (from&amp;nbsp;nerves_system_br, v1.23.2)
+nerves_system_rpi, v1.23.1
+nerves_system_rpi2, v1.23.1
+nerves_system_rpi3, v1.23.1
+nerves_system_rpi3a, v1.23.1
+nerves_system_rpi4, v1.23.1
+nerves_system_rpi0, v1.23.1
+nerves_system_mangopi_mq_pro, v0.5.1
+nerves_system_vultr, v0.20.1
+nerves_system_x86_64, v1.23.1
+nerves_system_grisp2, v0.7.2
+nerves_system_osd32mp1, v0.14.1
+nerves_system_bbb, v2.18.1
+Additional system updates</description></item><item><title>Vacation vintage</title><link>https://nerves-project.org/newsletter/2023-06-23-vacation-vintage/</link><pubDate>Fri, 23 Jun 2023 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2023-06-23-vacation-vintage/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 ..
 No images? Click here
 &amp;nbsp;
