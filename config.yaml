@@ -57,9 +57,9 @@ menu:
       url: 'https://github.com/nerves-project'
       pre: 'img/github.svg'
       weight: 2
-    - name: 'Slack'
-      url: 'https://elixir-lang.slack.com/'
-      pre: 'img/slack.svg'
+    - name: 'Discord'
+      url: 'https://discord.gg/elixir'
+      pre: 'img/discord.svg'
       weight: 3
     - name: 'Mastodon'
       url: 'https://fosstodon.org/@NervesProject'
