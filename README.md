@@ -8,7 +8,7 @@ default `hugo` plugin in `asdf` doesn't support extended Hugo versions so if you
 get an error, that might be the issue.
 
 ```sh
-asdf plugin add hugo https://github.com/nklmilojevic/asdf-hugo.git
+asdf plugin add hugo
 asdf plugin add nodejs
 ```
 
