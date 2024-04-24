@@ -50,7 +50,7 @@ next =
       issues =
         for path <- Path.wildcard([content, "/2*"]),
             str = File.read!(path),
-            [num_str] = Regex.run(~r/aliases:\n  - (\d+)/, str, capture: :all_but_first),
+            [num_str] = Regex.run(~r/aliases:\r?\n  - (\d+)/, str, capture: :all_but_first),
             do: String.to_integer(num_str)
 
       Enum.max(issues) + 1
