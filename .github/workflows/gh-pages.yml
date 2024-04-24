@@ -15,19 +15,29 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      
+      - name: Read .tool-versions
+        uses: marocchino/tool-versions-action@v1
+        id: versions
 
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: ${{ steps.versions.outputs.nodejs }}
 
       - name: Install dependencies from NPM
         run: npm install
 
+      - name: Set Hugo version
+        id: hugo-version
+        run: |
+          ver=$(echo "${{ steps.versions.outputs.hugo }}" | tr -d 'extended_')
+          echo "HUGO_VERSION=${ver}" >> "${GITHUB_OUTPUT}"
+
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: 'latest'
+          hugo-version: ${{ steps.hugo-version.outputs.HUGO_VERSION }}
           extended: true # For SCSS
 
       - name: Build
