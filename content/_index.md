@@ -138,7 +138,7 @@ getting_started:
     examples:
       - link: https://github.com/nerves-project/nerves_examples/tree/main/hello_wifi
         image: img/wifi.svg
-      - link: https://github.com/nerves-project/nerves_examples/tree/main/hello_phoenix
+      - link: https://github.com/nerves-project/nerves_examples/tree/main/hello_live_view
         image: img/phoenix.svg
       - link: https://github.com/nerves-project/nerves_examples/tree/main/blinky
         image: img/led.svg
