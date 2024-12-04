@@ -64,13 +64,13 @@ menu:
       url: 'https://discord.gg/elixir'
       pre: 'img/discord.svg'
       weight: 3
+    - name: 'Bluesky'
+      url: 'https://bsky.app/profile/nerves-project.org'
+      pre: 'img/bsky.svg'
+      weight: 4
     - name: 'Mastodon'
       url: 'https://fosstodon.org/@NervesProject'
       pre: 'img/mastodon.svg'
-      weight: 4
-    - name: 'Twitter'
-      url: 'https://twitter.com/NervesProject'
-      pre: 'img/twitter.svg'
       weight: 4
     - name: 'Meetup'
       url: 'https://www.meetup.com/nerves'
