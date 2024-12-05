@@ -7,10 +7,10 @@ required to archive it on the website.
 It requires the URL to the newsletter source HTML, which can typically be found
 in the email at the top where it says "No images? Click here"
 
-You can optionally include the issue number. Otherwise it is inferred as the next
-incrementing number
+You can optionally include the issue number and date. Otherwise they inferred as the
+next incrementing number and todays current date.
 
-./bin/add_newsletter [URL] [ISSUE_NUMBER]
+./bin/add_newsletter [URL] --date %Y-%m-%d --number n
 """
 
 ## Dependencies
@@ -19,9 +19,9 @@ Mix.install([
   {:floki, "~> 0.34"}
 ])
 
-[url | rem] = System.argv()
+{opts, [url | _]} = OptionParser.parse!(System.argv(), strict: [date: :string, help: :boolean, number: :integer])
 
-if "--help" in System.argv() do
+if opts[:help] do
   IO.puts(usage)
   System.halt(0)
 end
@@ -41,11 +41,9 @@ end
 content = Path.join(root, "content/newsletter")
 
 next =
-  with [issue_str | _] <- rem,
-  {issue, ""} <- Integer.parse(issue_str) do
-    issue
+  if opts[:number] do
+    opts[:number]
   else
-    _ ->
       IO.puts "|- Determining next issue"
       issues =
         for path <- Path.wildcard([content, "/2*"]),
@@ -62,7 +60,11 @@ IO.puts("|- Fetching HTML")
 
 [title] = Floki.parse_document!(body) |> Floki.attribute("meta[property='og:title']", "content")
 
-date = Date.utc_today() |> Calendar.strftime("%Y-%m-%d")
+date = if opts[:date] && opts[:date] =~ ~r/^\d{4}-\d{2}-\d{2}$/ do
+  opts[:date]
+else
+  Date.utc_today() |> Calendar.strftime("%Y-%m-%d")
+end
 
 html_name = Path.join(content, [date, "-", String.replace(title, " ", "-") |> String.downcase(), ".html"])
 data = """
