@@ -1,4 +1,60 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nerves Project</title><link>https://nerves-project.org/</link><description>Recent content on Nerves Project</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>The Nerves Project Authors</copyright><lastBuildDate>Thu, 11 Apr 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://nerves-project.org/index.xml" rel="self" type="application/rss+xml"/><item><title>Simulating circuits and many system updates :)</title><link>https://nerves-project.org/newsletter/2024-04-11-simulating-circuits-and-many-system-updates-/</link><pubDate>Thu, 11 Apr 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-04-11-simulating-circuits-and-many-system-updates-/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nerves Project</title><link>https://nerves-project.org/</link><description>Recent content on Nerves Project</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>The Nerves Project Authors</copyright><lastBuildDate>Thu, 05 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://nerves-project.org/index.xml" rel="self" type="application/rss+xml"/><item><title>Tis the season for system updates..</title><link>https://nerves-project.org/newsletter/2024-12-05-tis-the-season-for-system-updates../</link><pubDate>Thu, 05 Dec 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-12-05-tis-the-season-for-system-updates../</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+.. falalala
+No images? Click here
+Project UpdatesThe Nerves Project can be followed on Bluesky&amp;nbsp;and on the Fediverse. This newsletter is probably the best place to get the official updates but we try to surface cool projects on socials. Best place to ask questions and get help is the Nerves section of the Elixir Forum.
+Updates
+nerves_hub_link, v2.6.0
+This update includes Extensions, a mechanism to handle extensions on a device for custom data and/or reporting outside the firmware update mechanism.</description></item><item><title>Did you know about the car?</title><link>https://nerves-project.org/newsletter/2024-11-21-did-you-know-about-the-car/</link><pubDate>Thu, 21 Nov 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-11-21-did-you-know-about-the-car/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Project UpdatesThere are system updates coming to match the nerves_system_br changes but I believe they are on hold as Frank found some really odd, fun problems related to GCC 14.2.0 and ARM 32-bit devices. It would have a negative impact on a bunch of RPi devices as well as many production devices in use today. That's my understanding.</description></item><item><title>Teasing the near term</title><link>https://nerves-project.org/newsletter/2024-10-24-teasing-the-near-term/</link><pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-10-24-teasing-the-near-term/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Teasers vs ReleasersWith most of the active core team being in Berlin the previous week the github-tooling to pull together a report says nothing happened. Nothing at all. Which might be accurate in terms of tagged releases but there are definitely things happening.
+One exciting teaser is this PR that heavily revamps the NervesHubCLI project to make it a standalone tool that does not require living as a dependency.</description></item><item><title>Core updates, brace for systems :)</title><link>https://nerves-project.org/newsletter/2024-10-10-core-updates-brace-for-systems-/</link><pubDate>Thu, 10 Oct 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-10-10-core-updates-brace-for-systems-/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Lost knowledgeThe Nerves core team are making the same move that Ash Framework recently did where we shift our answering of questions and troubleshooting to be on the forum. The goal of this is to build up a knowledge-base that doesn't scroll away into Slack's hidden history or Discord's app-only archive. We want Nerves to be findable via Google.</description></item><item><title>NervesHub 2.0.0, finally :)</title><link>https://nerves-project.org/newsletter/2024-09-26-nerveshub-2.0.0-finally-/</link><pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-09-26-nerveshub-2.0.0-finally-/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+NervesHub 2.x release!GitHub release: v2.0.0
+ElixirForum discussion
+Trying to create a Changelog from the previous tagged version&amp;nbsp;v1.3.0&amp;nbsp;from January 2023 is frankly a bit much.
+The fundamentals:
+Performant at scale: It is used in production with hundreds of thousands of connected devices. It works well.Remove AWS: It is now easy to run and set up on any hosting platformThere is also a lot more.</description></item><item><title>NervesHub 2? For sure :)</title><link>https://nerves-project.org/newsletter/2024-09-12-nerveshub-2-for-sure-/</link><pubDate>Thu, 12 Sep 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-09-12-nerveshub-2-for-sure-/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Repeated notice for BeagleBone Black usersThere is a critically important change in this PR. The problem happened over in Linux land. The details are in the PR and linked on from there. It affects eMMC life times and also wired ethernet doesn't work.
+Read up on and take actions accordingly.
+See &amp;quot;Project updates&amp;quot; below for systems updated with the fixes.</description></item><item><title>Check on your BBBs please</title><link>https://nerves-project.org/newsletter/2024-08-29-check-on-your-bbbs-please/</link><pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-08-29-check-on-your-bbbs-please/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Important for BeagleBone Black usersThere is a critically important change in this PR. The problem happened over in Linux land. The details are in the PR and linked on from there. It affects eMMC life times and also wired ethernet doesn't work.
+Read up on and take actions accordingly.
+Over 100 devices &amp;amp; 1 workshopWe have handily beaten what I dared hope for.</description></item><item><title>Workshop to Meetup to Conference style</title><link>https://nerves-project.org/newsletter/2024-08-15-workshop-to-meetup-to-conference-style/</link><pubDate>Thu, 15 Aug 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-08-15-workshop-to-meetup-to-conference-style/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Can we get 100?I adore this community. We have 71 devices signed up currently. For what?
+The Nerves Community Fleet
+aka. my talk for Code BEAM Berlin.
+If you can contribute 1-30 devices to stand somewhere and consume mild amounts of power and bandwidth until I've given my talk I would really appreciate it. Instructions and details are here.</description></item><item><title>How do you Nerves?</title><link>https://nerves-project.org/newsletter/2024-08-01-how-do-you-nerves/</link><pubDate>Thu, 01 Aug 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-08-01-how-do-you-nerves/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Code BEAM Europe will have Nerves flavorI and co-conspirators from the Nerves team and beyond are putting together a Nerves Workshop for the day before Code BEAM Berlin. If you are interested, read more and sign up here. More details to come.
+I will also be speaking at Code BEAM Berlin. The talk is titled &amp;quot;The Nerves Community Fleet&amp;quot; and I need community help to make it happen.</description></item><item><title>Berlin in October</title><link>https://nerves-project.org/newsletter/2024-07-04-berlin-in-october/</link><pubDate>Thu, 04 Jul 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-07-04-berlin-in-october/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+Code BEAM Europe will have Nerves flavorI and co-conspirators from the Nerves team and beyond are putting together a Nerves Workshop for the day before Code BEAM Berlin. If you are interested, read more and sign up here. More details to come.
+I will also be speaking at Code BEAM Berlin. The talk is titled &amp;quot;The Nerves Community Fleet&amp;quot; and I need community help to make it happen.</description></item><item><title>Uncle Lars wants you, well your RPi at least</title><link>https://nerves-project.org/newsletter/2024-06-20-uncle-lars-wants-you-well-your-rpi-at-least/</link><pubDate>Thu, 20 Jun 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-06-20-uncle-lars-wants-you-well-your-rpi-at-least/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+State of Nerves surveyTake this survey and help the people who build Nerves, NervesHub and more out in knowing how it is used and what it needs:&amp;nbsp;https://nerves-project.typeform.com/sotnn-2024
+The survey is open a bit longer. It will be turned into a summary report and presentation in the near future and shared widely in the community. Including here.</description></item><item><title>Extra important - we need your help</title><link>https://nerves-project.org/newsletter/2024-05-15-extra-important-we-need-your-help/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-05-15-extra-important-we-need-your-help/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+..
+No images? Click here
+State of Nerves surveyPlease&amp;nbsp;take this survey:&amp;nbsp;https://nerves-project.typeform.com/sotnn-2024
+It is put together a bunch of us that operate in the community and ecosystem to get a sense of how Nerves is used. It will inform ideas and decisions that are on the very near-term agenda for Nerves and ventures around Nerves.
+If you are using Nerves, have used Nerves, want to use Nerves we want your input.</description></item><item><title>Simulating circuits and many system updates :)</title><link>https://nerves-project.org/newsletter/2024-04-11-simulating-circuits-and-many-system-updates-/</link><pubDate>Thu, 11 Apr 2024 00:00:00 +0000</pubDate><guid>https://nerves-project.org/newsletter/2024-04-11-simulating-circuits-and-many-system-updates-/</guid><description>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 ..
 No images? Click here
 Project updates&amp;nbsp;
