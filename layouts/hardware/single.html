@@ -1,0 +1,53 @@
+{{ define "main" }}
+
+{{ partial "simple-hero" . }}
+
+<section class="section">
+  <div id="official-hardware-items" class="columns is-multiline">
+    <!-- {{ range .Params.systems }}
+      <div class="column is-half">
+        <div class="card">
+          <div class="card-content">
+
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-128x128">
+                  <img src="https://bulma.io/images/placeholders/128x128.png" alt="Placeholder image">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4">{{ .name }}</p>
+                <p class="subtitle is-6">
+                  <a href="https://hex.pm/packages/{{ .package }}"><img src="https://img.shields.io/hexpm/v/{{ .package }}.svg?label={{ .package }}" alt=""></a>
+                  <a href=""><img src="https://img.shields.io/librariesio/release/hex/{{ .package }}" alt=""></a>
+                  <span class="icon" title="Officially supported by Nerves">
+                    <img src="{{ relURL "img/icon.png" }}" alt="">
+                  </span>
+                </p>
+                <p>These are some notes from the metadata</p>
+            </div>
+        
+          </div>
+          <div class="content">
+            <div class="columns is-multiline">
+              {{ range $key, $val := .metadata }}
+                <div class="box px-1 py-1 mx-1 my-1">
+                  <strong>{{ $key }}:</strong> {{ $val }}
+                </div>
+              {{ end }}
+            </div>
+
+          </div>
+        </div>
+        </div>
+      </div>
+    {{ end }} -->
+  </div>
+</section>
+<section class="section">
+  <div class="title">User provided systems</div>
+  <div id="user-hardware-items" class="columns is-multiline">
+  </div>
+</section>
+
+{{ end }}
