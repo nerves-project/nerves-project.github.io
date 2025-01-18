@@ -50,7 +50,7 @@ menu:
       weight: 5
   footer2:
     - name: 'Forum'
-      url: 'https://elixirforum.com/c/elixir-framework-forums/nerves-forum/74'
+      url: 'https://elixirforum.com/nerves'
       pre: 'img/elixir-forum.svg'
       weight: 1
     - name: 'Github'
