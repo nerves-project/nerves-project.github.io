@@ -57,8 +57,9 @@ IO.puts("|- Adding issue #{to_string(next)}")
 
 IO.puts("|- Fetching HTML")
 %{body: body} = Req.get!(url)
-
-[title] = Floki.parse_document!(body) |> Floki.attribute("meta[property='og:title']", "content")
+parsed_html = Floki.parse_document!(body)
+[title] = Floki.attribute(parsed_html, "meta[property='og:title']", "content")
+cleansed_html = Floki.filter_out(parsed_html, "meta[name='robots']")
 
 date = if opts[:date] && opts[:date] =~ ~r/^\d{4}-\d{2}-\d{2}$/ do
   opts[:date]
@@ -77,6 +78,6 @@ aliases:
 """
 
 IO.puts(["|- Writing ", Path.relative_to(html_name, root)])
-File.write!(html_name, [data, "\n", body])
+File.write!(html_name, [data, "\n", Floki.raw_html(cleansed_html, pretty: true)])
 
 IO.puts([IO.ANSI.green(), "|- Done!", IO.ANSI.default_color()])
