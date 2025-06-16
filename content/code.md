@@ -30,7 +30,7 @@ submit_issue: https://github.com/nerves-project/nerves/issues/new
 related_projects:
   - name: AtomVM
     image: 'img/AtomVM-logo.png'
-    link: https://atomvm.net/
+    link: https://atomvm.org/
     link_text: AtomVM Homepage
     description: |
       A minimum Erlang VM that runs on microcontrollers like ESP32 and STM32 devices
