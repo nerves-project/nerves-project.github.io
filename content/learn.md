@@ -11,6 +11,10 @@ books:
     linkUrl: https://pragprog.com/titles/passweather/build-a-weather-station-with-elixir-and-nerves/
     image: https://pragprog.com/titles/passweather/build-a-weather-station-with-elixir-and-nerves/passweather-250.jpg
     description: Build and deploy a production-grade weather station sensor hub using Elixir and Nerves, all while leveraging the best practices established by the Nerves community for structuring and organizing Nerves applications.
+  - name: Programming Nerves
+    linkUrl: https://www.programmingnerves.dev/
+    image: https://www.programmingnerves.dev/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fcover.7726bbfc.png&w=2048&q=75
+    description: Discover how you can build embedded systems with Elixir and Nerves! Go from blinking LEDs to production Liveview powered kiosks, without the complexity of traditional embedded development.
 docs:
   - name: Installation
     url: https://hexdocs.pm/nerves/installation.html
