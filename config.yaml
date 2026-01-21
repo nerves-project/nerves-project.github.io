@@ -58,7 +58,7 @@ menu:
       pre: 'img/github.svg'
       weight: 2
     - name: 'Discord'
-      url: 'https://discord.gg/mJwvhHDV'
+      url: 'https://discord.gg/7TqSpepHw7'
       pre: 'img/discord.svg'
       weight: 3
     - name: 'Bluesky'
