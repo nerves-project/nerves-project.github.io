@@ -57,11 +57,8 @@ menu:
       url: 'https://github.com/nerves-project'
       pre: 'img/github.svg'
       weight: 2
-    - name: 'Slack'
-      url: 'https://elixir-slack.community/'
-      pre: 'img/slack.svg'
     - name: 'Discord'
-      url: 'https://discord.gg/elixir'
+      url: 'https://discord.gg/mJwvhHDV'
       pre: 'img/discord.svg'
       weight: 3
     - name: 'Bluesky'
