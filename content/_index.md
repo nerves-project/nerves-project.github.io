@@ -72,8 +72,8 @@ technologies:
     URL: https://en.wikipedia.org/wiki/Elixir_(programming_language)
     description: |
       - Built on top of the Erlang virtual machine (BEAM)
-      - Fun language - the second most loved programming language in
-      [Stack Overflow Developer Survey 2022](https://survey.stackoverflow.co/2022/#section-most-loved-dreaded-and-wanted-programming-scripting-and-markup-languages)
+      - Fun language - among the most admired programming languages since 2019
+      in the [Stack Overflow Developer Survey](https://survey.stackoverflow.co/2025/#technology-admired-and-desired)
       - Vibrant and friendly community
   - name: 'Linux'
     image: 'img/linux.svg'
