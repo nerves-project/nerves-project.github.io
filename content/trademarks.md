@@ -17,10 +17,10 @@ Our trademarks must be used to refer to the Nerves project.
 All examples listed next must strictly adhere to the terms outlined in the previous sections:
 
 * Usage of the Nerves logo to say a technology is "powered by Nerves" or "built with Nerves" under nominative use. Linking back to the Nerves website, if possible, is appreciated.
-* Usage of the Nerves logo to display it as a supported technology in a service, platform, or hardware device. For instance, you may say "we support Nerves" and use the Nerves logo, but you may not refer to yourself as "the Nerves platform nor imply any form of endorsement or association with Nerves.
+* Usage of the Nerves logo to display it as a supported technology in a service, platform, or hardware device. For instance, you may say "we support Nerves" and use the Nerves logo, but you may not refer to yourself as "the Nerves platform" nor imply any form of endorsement or association with Nerves.
 * Usage of the Nerves logo in non-commercial community meetups, in presentations, and in courses when referring to the language and its ecosystem under nominative use.
 * Usage of the Nerves logo in non-commercial swag (stickers, t-shirts, mugs, etc) to promote the Nerves project. The Nerves marks must be the only marks featured in the product. You need permission to make swag that include Nerves and other third party marks in them.
-* Inclusion of the Nerves logo in non-commercial icon sets. Use of the Nerves icons must still adhere to Nerves’s trademark policies.
+* Inclusion of the Nerves logo in non-commercial icon sets. Use of the Nerves icons must still adhere to Nerves’ trademark policies.
 * Usage of the "Nerves" word in book titles, meetups, conferences, and podcasts. You must not use the word to imply uniqueness or endorsement from the Nerves Project Authors. "The Nerves book" and "The Nerves podcast" are not permitted.
 * Usage of the "Nerves" word in the names of freely distributed software and hardware products is allowed when referring to use with or suitability for the Nerves project. If the product includes the Nerves project itself, then you must also respect its license.
 

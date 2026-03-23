@@ -16,9 +16,9 @@ includes a robot farming machine, software, and documentation including a
 farming data repository. FarmBot’s machines use IoT technology to make it easy
 for farmers to remotely manage their gardens.
 
-When Connor Rigby, former embedded systems engineer at Farmbot, initially
+When Connor Rigby, former embedded systems engineer at FarmBot, initially
 joined the company, his first project was to build a Farmbot application
-using Ruby. After completing the proof-of-concept, he knew that he needed a
+using Ruby. After completing the proof of concept, he knew that he needed a
 way to make the embedded development process more efficient, reliable, and
 secure. Connor had used Nerves before at a previous company and was a regular
 open-source contributor to Nerves, so he knew the platform would help him
@@ -30,7 +30,7 @@ accomplish these goals.
 
 ## How Nerves Helped
 
-Connor brought Nerves to Farmbot by porting the entire proof-of-concept Ruby
+Connor brought Nerves to FarmBot by porting the entire proof-of-concept Ruby
 application he’d created over to Nerves, which he did in his free time over
 the course of a month, taking him about 20 hours total. He also continued to
 make open-source contributions to Nerves, helping to structure the networking
@@ -42,7 +42,7 @@ enables OTA firmware update management.
 > — Connor Rigby, Embedded Systems Engineer
 
 Connor says that the Nerves Project and what eventually became NervesHub was a
-great choice for Farmbot because:
+great choice for FarmBot because:
 
 ### 1. Nerves supports lean systems and operates well in low-bandwidth areas.
 
@@ -52,8 +52,8 @@ send OTA updates more quickly and users can download them faster. (For
 comparison, an Android update generally clocks in at around 4 GB, but a
 Nerves update can be packed into as little as 12 MB.)
 
-This is especially helpful for Farmbot users who operate in more remote l
-ocations with lower bandwidth and less reliable access to WiFi. When an
+This is especially helpful for FarmBot users who operate in more remote
+locations with lower bandwidth and less reliable access to Wi-Fi. When an
 internet connection is available, NervesHub will connect and check to see if
 there’s an update, then prompt the user to install the update — all without
 Connor needing to put in extra time to make it happen, because it’s already
@@ -64,7 +64,7 @@ set up in NervesHub.
 For devices that are already connected to the internet, connecting to Nerves
 requires no additional configuration because NervesHub is compatible with the
 current public key infrastructure for device-to-cloud communication. Since
-Farmbot already had internet-connected devices when they brought Nerves onboard,
+FarmBot already had internet-connected devices when they brought Nerves onboard,
 they were able to use the same “key” to sign in to NervesHub that they use for
 their cloud service.
 
@@ -83,6 +83,6 @@ them without disruption to the user experience.
 
 FarmBot now has around **300 devices live in NervesHub**, with a different
 deployment for each of their device models. Nerves is built to scale, so as
-Farmbot continues to grow its user base and expand their product capabilities,
+FarmBot continues to grow its user base and expand their product capabilities,
 they’ll be able to continue developing and releasing reliable firmware
 updates using Nerves.
