@@ -14,7 +14,7 @@ books:
   - name: Programming Nerves
     linkUrl: https://www.programmingnerves.dev/
     image: https://www.programmingnerves.dev/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fcover.7726bbfc.png&w=2048&q=75
-    description: Discover how you can build embedded systems with Elixir and Nerves! Go from blinking LEDs to production Liveview powered kiosks, without the complexity of traditional embedded development.
+    description: Discover how you can build embedded systems with Elixir and Nerves! Go from blinking LEDs to production LiveView-powered kiosks, without the complexity of traditional embedded development.
 docs:
   - name: Installation
     url: https://hexdocs.pm/nerves/installation.html

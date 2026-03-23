@@ -50,7 +50,7 @@ features:
     image: 'img/extensible.svg'
     description: |
       Nerves is just one part of the vibrant Elixir ecosystem. Take advantage of
-      other Elixir projects like Phoenix, Nx, Livebook and more in embedded
+      other Elixir projects like Phoenix, Nx, Livebook, and more in embedded
       projects.
 technologies:
   - name: 'Erlang'
@@ -133,7 +133,7 @@ getting_started:
     link: https://hexdocs.pm/nerves/getting-started.html#nerves-examples
     link_text: See all examples
     description: |
-      Nerves maintains several common application examples. Setup your development
+      Nerves maintains several common application examples. Set up your development
       environment and use one of these as a starting point for your specific situation.
     examples:
       - link: https://github.com/nerves-project/nerves_examples/tree/main/hello_wifi
@@ -149,6 +149,6 @@ getting_started:
     link: https://hexdocs.pm/nerves/getting-started.html#creating-a-new-nerves-app
     link_text: Create a new Nerves app
     description: |
-      Installation instructions to setup your development environment and make your
+      Installation instructions to set up your development environment and make your
       own firmware from scratch.
 ---
