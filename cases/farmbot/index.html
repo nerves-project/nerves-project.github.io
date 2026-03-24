@@ -9,33 +9,33 @@
 <a href=/articles class='navbar-item has-text-centered'>Articles</a></div></div></nav><section class="hero is-primary"><div class=hero-body><p class=title>Managing Fleets of Smart Farming Devices with Nerves at Farmbot</p></div></section><main class="container my-6 px-4"><div class=content><p>FarmBot uses Nerves to manage fleets of smart farming devices.</p><h2 id=the-concept>The Concept</h2><p>FarmBot is an open-source precision agriculture CNC farming project that
 includes a robot farming machine, software, and documentation including a
 farming data repository. FarmBot’s machines use IoT technology to make it easy
-for farmers to remotely manage their gardens.</p><p>When Connor Rigby, former embedded systems engineer at Farmbot, initially
+for farmers to remotely manage their gardens.</p><p>When Connor Rigby, former embedded systems engineer at FarmBot, initially
 joined the company, his first project was to build a Farmbot application
-using Ruby. After completing the proof-of-concept, he knew that he needed a
+using Ruby. After completing the proof of concept, he knew that he needed a
 way to make the embedded development process more efficient, reliable, and
 secure. Connor had used Nerves before at a previous company and was a regular
 open-source contributor to Nerves, so he knew the platform would help him
 accomplish these goals.</p><p><img src=/img/Farmbot-case-1.jpg alt>
 <img src=/img/Farmbot-case-2.jpg alt>
-<img src=/img/Farmbot-case-3.jpg alt></p><h2 id=how-nerves-helped>How Nerves Helped</h2><p>Connor brought Nerves to Farmbot by porting the entire proof-of-concept Ruby
+<img src=/img/Farmbot-case-3.jpg alt></p><h2 id=how-nerves-helped>How Nerves Helped</h2><p>Connor brought Nerves to FarmBot by porting the entire proof-of-concept Ruby
 application he’d created over to Nerves, which he did in his free time over
 the course of a month, taking him about 20 hours total. He also continued to
 make open-source contributions to Nerves, helping to structure the networking
 functionality that is now part of NervesHub, the extensible web service that
 enables OTA firmware update management.</p><blockquote><p>“The biggest benefit of using Nerves is definitely how fast you can get up and running.”</p><p>— Connor Rigby, Embedded Systems Engineer</p></blockquote><p>Connor says that the Nerves Project and what eventually became NervesHub was a
-great choice for Farmbot because:</p><h3 id=1-nerves-supports-lean-systems-and-operates-well-in-low-bandwidth-areas>1. Nerves supports lean systems and operates well in low-bandwidth areas.</h3><p>Because Nerves bundles entire applications into relatively small archives in
+great choice for FarmBot because:</p><h3 id=1-nerves-supports-lean-systems-and-operates-well-in-low-bandwidth-areas>1. Nerves supports lean systems and operates well in low-bandwidth areas.</h3><p>Because Nerves bundles entire applications into relatively small archives in
 terms of firmware images for full Linux systems, Farmbot can use NervesHub to
 send OTA updates more quickly and users can download them faster. (For
 comparison, an Android update generally clocks in at around 4 GB, but a
-Nerves update can be packed into as little as 12 MB.)</p><p>This is especially helpful for Farmbot users who operate in more remote l
-ocations with lower bandwidth and less reliable access to WiFi. When an
+Nerves update can be packed into as little as 12 MB.)</p><p>This is especially helpful for FarmBot users who operate in more remote
+locations with lower bandwidth and less reliable access to Wi-Fi. When an
 internet connection is available, NervesHub will connect and check to see if
 there’s an update, then prompt the user to install the update — all without
 Connor needing to put in extra time to make it happen, because it’s already
 set up in NervesHub.</p><h3 id=2-nerves-adds-convenience-with-low-overhead>2. Nerves adds convenience with low overhead.</h3><p>For devices that are already connected to the internet, connecting to Nerves
 requires no additional configuration because NervesHub is compatible with the
 current public key infrastructure for device-to-cloud communication. Since
-Farmbot already had internet-connected devices when they brought Nerves onboard,
+FarmBot already had internet-connected devices when they brought Nerves onboard,
 they were able to use the same “key” to sign in to NervesHub that they use for
 their cloud service.</p><h3 id=3-nerves-has-all-the-benefits-of-elixir-and-erlang>3. Nerves has all the benefits of Elixir and Erlang.</h3><p>Because it’s written in Elixir and built within the Erlang runtime system,
 Nerves retains the qualities of that language and framework — notably that they
@@ -46,7 +46,7 @@ helping you to avoid unnecessary complexities or unforeseen security
 vulnerabilities. You can check up on devices as they&rsquo;re running and debug
 them without disruption to the user experience.</p><h2 id=the-results>The Results</h2><p>FarmBot now has around <strong>300 devices live in NervesHub</strong>, with a different
 deployment for each of their device models. Nerves is built to scale, so as
-Farmbot continues to grow its user base and expand their product capabilities,
+FarmBot continues to grow its user base and expand their product capabilities,
 they’ll be able to continue developing and releasing reliable firmware
 updates using Nerves.</p></div></main><footer class="has-background-primary-light has-text-centered pt-6 pb-2"><div class="has-text-centered mb-4"><img src=/img/nerves.svg style=height:4rem></div><div class="is-justify-content-center my-4"><a href=https://elixirforum.com/nerves class=mx-2 title=Forum><img src=/img/elixir-forum.svg width=30rem></a>
 <a href=https://github.com/nerves-project class=mx-2 title=Github><img src=/img/github.svg width=30rem></a>
