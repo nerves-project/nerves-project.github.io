@@ -42,9 +42,6 @@ $subtitle-weight: $weight-medium;
 // make the cards have equal height
 .card {
   height: 100%;
-}
-
-#features .card {
   position: relative;
   overflow: hidden;
 
