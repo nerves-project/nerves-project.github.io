@@ -42,6 +42,10 @@ main {
   }
 }
 
+.hero-gradient {
+  background: linear-gradient(135deg, rgba(51, 100, 126, 1) 0%, rgba(66, 167, 198, 0.85) 100%);
+}
+
 footer {
   border-top: 3px solid $nerves-blue-light;
 }
