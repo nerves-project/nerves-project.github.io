@@ -42,11 +42,26 @@ $subtitle-weight: $weight-medium;
 // make the cards have equal height
 .card {
   height: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+#features .card {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background: $nerves-blue-light;
+    transform: scaleX(0.4);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
   }
 }
