@@ -17,3 +17,16 @@ main {
 .navbar-item {
   font-weight: 500;
 }
+
+.hero-blurb {
+  @media screen and (min-width: 769px) {
+    max-width: 60%;
+  }
+}
+
+.hero-cta {
+  @media screen and (max-width: 768px) {
+    display: block;
+    width: 100%;
+  }
+}
