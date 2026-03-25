@@ -10,36 +10,59 @@
     </p>
     <em>Missing a video? <a href="https://github.com/nerves-project/nerves-project.github.com/blob/main/content/videos.md">Submit a PR here!</a></em>
   </div>
-  <div class="columns">
-    <div class="column">
-        <div id="video-container" class="container">
-          <div class="tabs is-boxed">
-            <ul>
-              {{ range $year, $data := .Params.videos }}
-                <li class="{{ if (hasPrefix $year $current_year) }}is-active{{end}}">
-                  <a id="{{ $year }}">{{ $year }}</a>
-                </li>
-              {{ end }}
-            </ul>
-          </div>
-          {{ range $year, $data := .Params.videos }}
-          <div id="{{ $year }}-content" style="display:{{ if (hasPrefix $year $current_year) }}block{{else}}none{{end}};">
-            <div  class="columns is-multiline">
-              {{ range $data }}
-                <div class="column is-4">
-                  <div class="box">
-                    <a href="{{ .url }}" target="_blank">
-                      <img src="{{ .thumbnail }}" alt="">
-                    </a>
-                    <center class="subtitle">{{ .title }}</center>
-                  </div>
-                </div>
-              {{ end}}
-            </div>
-          </div>
-          {{ end}}
-        </div>
+  <div id="video-container" class="container">
+    <div class="video-tabs">
+      {{ range $year, $data := .Params.videos }}
+        <a id="{{ $year }}" class="video-tab {{ if (hasPrefix $year $current_year) }}is-active{{end}}">{{ $year }}</a>
+      {{ end }}
     </div>
+    {{ range $year, $data := .Params.videos }}
+    <div id="{{ $year }}-content" style="display:{{ if (hasPrefix $year $current_year) }}block{{else}}none{{end}};">
+      {{ range $index, $video := $data }}
+        {{ if eq $index 0 }}
+        <div class="video-featured">
+          <a href="{{ .url }}" target="_blank" class="video-featured-inner">
+            <div class="video-featured-thumb">
+              <img src="{{ .thumbnail }}" alt="{{ .title }}">
+              <div class="video-play-overlay">
+                <span class="video-play-icon">&#9654;</span>
+              </div>
+            </div>
+            <div class="video-featured-info">
+              <p class="title is-4">{{ .title }}</p>
+              <span class="cta-link">
+                <span>Watch talk</span>
+                <span class="cta-arrow">&rarr;</span>
+              </span>
+            </div>
+          </a>
+        </div>
+        {{ end }}
+      {{ end }}
+      {{ if gt (len $data) 1 }}
+      <div class="columns is-multiline mt-4">
+        {{ range $index, $video := $data }}
+          {{ if gt $index 0 }}
+          <div class="column is-3">
+            <a href="{{ .url }}" target="_blank">
+              <div class="card video-card">
+                <div class="card-image">
+                  <figure class="image is-16by9">
+                    <img src="{{ .thumbnail }}" alt="{{ .title }}">
+                  </figure>
+                </div>
+                <div class="card-content">
+                  <p class="has-text-weight-medium">{{ .title }}</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          {{ end }}
+        {{ end }}
+      </div>
+      {{ end }}
+    </div>
+    {{ end }}
   </div>
 </section>
 
