@@ -45,3 +45,30 @@ main {
 footer {
   border-top: 3px solid $nerves-blue-light;
 }
+
+.cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.cta-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 50%;
+  border: 2px solid $nerves-blue-light;
+  font-size: 1em;
+  color: $nerves-blue-light;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  .cta-link:hover & {
+    background: $nerves-blue-light;
+    color: white;
+  }
+}
