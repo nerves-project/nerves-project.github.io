@@ -27,14 +27,10 @@
           <div class="content">
             <h3 class="title is-3 has-text-centered">{{ $el.name }}</h3>
             {{ $el.description }}
-            <div class="column">
-              <span class="icon-text">
-                <span><a href="{{ $el.link }}">{{ $el.link_text }}</a></span>
-                <span class="icon">
-                  <img src="{{ relURL "img/arrow-right.svg" }}"></img>
-                </span>
-              </span>
-            </div>
+            <a href="{{ $el.link }}" class="cta-link">
+              <span>{{ $el.link_text }}</span>
+              <span class="cta-arrow">&rarr;</span>
+            </a>
           </div>
         </div>
         <div class="column">
@@ -60,14 +56,10 @@
           <div class="content">
             <h3 class="title is-3 has-text-centered">{{ .name }}</h3>
             {{ .description }}
-            <div class="column">
-              <span class="icon-text">
-                <span><a href="{{ .link }}">{{ .link_text }}</a></span>
-                <span class="icon">
-                  <img src="{{ relURL "img/arrow-right.svg" }}"></img>
-                </span>
-              </span>
-            </div>
+            <a href="{{ .link }}" class="cta-link">
+              <span>{{ .link_text }}</span>
+              <span class="cta-arrow">&rarr;</span>
+            </a>
           </div>
         </div>
         {{ end }}
