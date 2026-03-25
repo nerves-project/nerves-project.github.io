@@ -76,3 +76,116 @@ footer {
     color: white;
   }
 }
+
+// Video tabs
+.video-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.video-tab {
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  color: $nerves-blue-dark;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $nerves-blue-light;
+    color: $nerves-blue-light;
+  }
+
+  &.is-active {
+    background: $nerves-blue-dark;
+    color: white;
+    border-color: $nerves-blue-dark;
+  }
+}
+
+// Featured video
+.video-featured {
+  margin-bottom: 1.5rem;
+}
+
+.video-featured-inner {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.video-featured-thumb {
+  position: relative;
+  flex: 0 0 60%;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+  }
+
+  @media screen and (max-width: 768px) {
+    flex: none;
+    width: 100%;
+  }
+}
+
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  .video-featured-inner:hover & {
+    opacity: 1;
+  }
+}
+
+.video-play-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: $nerves-blue-dark;
+  font-size: 1.5rem;
+  padding-left: 0.2rem;
+}
+
+.video-featured-info {
+  flex: 1;
+
+  .cta-link {
+    color: $nerves-blue-light;
+  }
+}
+
+// Video grid cards
+.video-card {
+  border-radius: 8px;
+
+  .card-image {
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .card-content {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
