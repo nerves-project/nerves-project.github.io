@@ -18,6 +18,17 @@ main {
   font-weight: 500;
 }
 
+.button {
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
+}
+
 .hero-blurb {
   @media screen and (min-width: 769px) {
     max-width: 60%;
