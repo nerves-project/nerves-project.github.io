@@ -12,7 +12,7 @@
 
   <div id="appHeaderNavbarMenu" class="navbar-menu">
     {{ if .Site.Menus.main }}
-      <div class="navbar-start">
+      <div class="navbar-end">
         {{ range .Site.Menus.main }}
           <a href="{{ .URL }}" class='navbar-item has-text-centered {{ cond (eq $.RelPermalink .URL) " is-active" "" }}'>
             {{ cond (eq .Name "Github") (partial "github-logo" .)  .Name }}
