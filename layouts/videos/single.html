@@ -30,6 +30,7 @@
             </div>
             <div class="video-featured-info">
               <p class="title is-4">{{ .title }}</p>
+              {{ with .duration }}<span class="video-duration">{{ . }}</span>{{ end }}
               <span class="cta-link">
                 <span>Watch talk</span>
                 <span class="cta-arrow">&rarr;</span>
@@ -53,6 +54,7 @@
                 </div>
                 <div class="card-content">
                   <p class="has-text-weight-medium">{{ .title }}</p>
+                  {{ with .duration }}<span class="video-duration">{{ . }}</span>{{ end }}
                 </div>
               </div>
             </a>

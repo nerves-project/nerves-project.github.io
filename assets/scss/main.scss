@@ -175,6 +175,17 @@ footer {
   }
 }
 
+.video-duration {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $nerves-blue-dark;
+  background: rgba($nerves-blue-light, 0.15);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+}
+
 // Video grid cards
 .video-card {
   border-radius: 8px;
