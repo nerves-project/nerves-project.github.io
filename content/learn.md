@@ -17,9 +17,9 @@ books:
     description: Discover how you can build embedded systems with Elixir and Nerves! Go from blinking LEDs to production LiveView-powered kiosks, without the complexity of traditional embedded development.
 docs:
   - name: Installation
-    url: https://hexdocs.pm/nerves/installation.html
+    url: https://nerves.hexdocs.pm/installation.html
   - name: Getting Started
-    url: https://hexdocs.pm/nerves/getting-started.html
+    url: https://nerves.hexdocs.pm/getting-started.html
   - name: FAQ
-    url: https://hexdocs.pm/nerves/faq.html
+    url: https://nerves.hexdocs.pm/faq.html
 ---
