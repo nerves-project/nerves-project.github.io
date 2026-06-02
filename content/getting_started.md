@@ -15,7 +15,7 @@ options:
       guided Nerves tutorials from the comfort of your browser.
   - name: 'Build an example'
     image: 'img/compile.svg'
-    link: https://hexdocs.pm/nerves/getting-started.html#nerves-examples
+    link: https://nerves.hexdocs.pm/getting-started.html#nerves-examples
     link_text: See all examples
     description: |
       Nerves maintains several common application examples. Setup your development
@@ -31,7 +31,7 @@ options:
         image: img/nerves_motd.png
   - name: 'Full DIY'
     image: 'img/nerves_new.png'
-    link: https://hexdocs.pm/nerves/getting-started.html#creating-a-new-nerves-app
+    link: https://nerves.hexdocs.pm/getting-started.html#creating-a-new-nerves-app
     link_text: Create a new Nerves app
     description: |
       Installation instructions to setup your development environment and make your
