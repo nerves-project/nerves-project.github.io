@@ -15,6 +15,22 @@ export const DEFAULT_LAYERS = [
   { name: 'Application', cu: 'F.Cu', text: 'Your Elixir application, unlimited possibilities', accent: '#42c6e8' },
 ];
 
+// Things that sit on top of the stack. `part` anchors to a board reference, `at` to board mm.
+export const DEFAULT_EXTRAS = {
+  apps: [ // holograms over the Application layer; glyph 0 web, 1 media, 2 tensor
+    // accents are the projects' brand colours (Nx uses the lighter tone of its logo to read on dark)
+    { name: 'Phoenix', text: 'Web UIs and APIs, served by the device', part: 'J1', glyph: 0, accent: '#f05423' },
+    { name: 'Membrane', text: 'Audio and video streaming pipelines', at: [37, 33], size: [7, 7], glyph: 1, accent: '#87cce8' },
+    { name: 'Nx', text: 'Numerical computing and machine learning', part: 'U3', glyph: 2, accent: '#b58491' },
+  ],
+  uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', part: 'U5', accent: '#9fe8ff', down: '#4fd18b' },
+  cluster: {
+    name: 'Erlang distribution',
+    text: 'Processes message each other across devices',
+    nodes: ['nerves@nerves-4f2a.local', 'nerves@nerves-91c3.local', 'nerves@nerves-0b7e.local'],
+  },
+};
+
 const CFG = {
   slab: 0.6,          // visual thickness of each layer plate (mm)
   gapIdle: 2.6,       // gap between plates at rest
@@ -28,6 +44,17 @@ const CFG = {
   pulseSpeed: 16,     // mm/s
   bloom: 0.9,
   exposure: 1.0,
+  holoHeight: 9,      // hologram tiles float this far above the top plate (mm)
+  holoSize: 7,
+  // shadow nodes of the cluster: x, y = where the node's centre lands in the hero (0..1),
+  // depth = distance from the camera in multiples of the hero board's distance, yaw in degrees
+  nodes: [
+    { x: 0.13, y: 0.22, depth: 2.8, yaw: 18 },
+    { x: 0.86, y: 0.2, depth: 3.0, yaw: -22 },
+    { x: 0.33, y: 0.09, depth: 3.7, yaw: 36 },
+  ],
+  shadow: { light: 0.14, alpha: 0.8, emit: 0.45, haze: 0.55 },
+  ports: [[14, 37], [26, 40], [38, 36]], // where cluster links land on the runtime plate (board mm)
 };
 
 // ---------------------------------------------------------------------------
@@ -133,6 +160,25 @@ struct Scene {
 };
 @group(0) @binding(0) var<uniform> S: Scene;
 
+// one board of the cluster: the hero board or a shadow node in the distance
+struct Node {
+  xf: vec4f,    // offset xyz, yaw (radians)
+  look: vec4f,  // light, alpha, emission, haze amount
+  haze: vec4f,  // haze rgb, time offset
+};
+@group(1) @binding(0) var<uniform> NODE: Node;
+
+fn rotY(p: vec3f) -> vec3f {
+  let c = cos(NODE.xf.w); let s = sin(NODE.xf.w);
+  return vec3f(p.x * c + p.z * s, p.y, -p.x * s + p.z * c);
+}
+fn toWorld(p: vec3f) -> vec3f { return rotY(p) + NODE.xf.xyz; }
+fn finish(col: vec3f, emit: vec3f) -> vec4f {
+  let L = NODE.look;
+  let c = mix(col * L.x + emit * L.z, NODE.haze.rgb, L.w);
+  return vec4f(c * L.y, L.y);
+}
+
 fn env(r: vec3f) -> vec3f {
   let t = clamp(r.y * 0.5 + 0.5, 0.0, 1.0);
   var c = mix(vec3f(0.015, 0.02, 0.03), vec3f(0.30, 0.38, 0.48), smoothstep(0.3, 1.0, t));
@@ -173,14 +219,16 @@ struct VOut {
   @location(3) @interpolate(flat) layer: u32,
   @location(4) @interpolate(flat) face: u32,
   @location(5) depth01: f32,
+  @location(6) lp: vec3f,
 };
 
 @vertex fn vs(@location(0) p: vec3f, @location(1) n: vec3f, @location(2) uv: vec2f,
               @location(3) face: f32, @builtin(instance_index) li: u32) -> VOut {
   var o: VOut;
-  let wp = vec3f(p.x, S.layerY[li] + p.y * S.params.z, p.z);
+  let lp = vec3f(p.x, S.layerY[li] + p.y * S.params.z, p.z);
+  let wp = toWorld(lp);
   o.pos = S.viewProj * vec4f(wp, 1.0);
-  o.uv = uv; o.n = n; o.wp = wp; o.layer = li; o.face = u32(face + 0.5);
+  o.uv = uv; o.n = rotY(n); o.wp = wp; o.lp = lp; o.layer = li; o.face = u32(face + 0.5);
   o.depth01 = -p.y;
   return o;
 }
@@ -199,7 +247,7 @@ struct VOut {
   let dim = S.dim[li];
   let accent = S.accents[li].rgb;
   let inner = li == 1u || li == 2u;
-  let t = S.params.x;
+  let t = S.params.x + NODE.haze.w;
 
   var col = vec3f(0.0);
   var emit = vec3f(0.0);
@@ -208,7 +256,7 @@ struct VOut {
     let hgt = vec3f(0.6, 0.35, 0.5);
     let h0 = dot(m.rgb, hgt); let hx = dot(mx.rgb, hgt); let hz = dot(mz.rgb, hgt);
     let bump = select(1.4, 0.6, inner);
-    let n = normalize(vec3f(-(hx - h0) * bump, 1.0, -(hz - h0) * bump));
+    let n = rotY(normalize(vec3f(-(hx - h0) * bump, 1.0, -(hz - h0) * bump)));
     var metal = m.g;
     var rough = mix(0.32, 0.2, m.g);
     if (inner) {
@@ -221,7 +269,7 @@ struct VOut {
     let cpu = vec2f(S.params2.y, S.params2.z);
     if (inner) {
       // energy rippling out across the plane from the CPU
-      let d = length(in.wp.xz - cpu);
+      let d = length(in.lp.xz - cpu);
       let wave = pow(0.5 + 0.5 * sin(d * 0.5 - t * 2.6), 28.0);
       emit = accent * m.r * (0.03 + wave * 1.1) * focus;
       emit += accent * (1.0 - m.r) * (1.0 - m.g) * 0.015 * focus;
@@ -237,7 +285,7 @@ struct VOut {
     col = vec3f(0.01);
   }
   var o: FragOut;
-  o.color = vec4f(col * dim + emit, 1.0);
+  o.color = finish(col * dim, emit);
   o.glow = vec4f(0.0);
   return o;
 }
@@ -261,9 +309,9 @@ struct VOut {
   let c = cos(ipos.w); let s = sin(ipos.w);
   let rp = vec3f(lp.x * c + lp.z * s, lp.y, -lp.x * s + lp.z * c);
   let li = u32(isize.w + 0.5);
-  let wp = vec3f(ipos.x, S.layerY[li] + ipos.y, ipos.z) + rp;
+  let wp = toWorld(vec3f(ipos.x, S.layerY[li] + ipos.y, ipos.z) + rp);
   o.pos = S.viewProj * vec4f(wp, 1.0);
-  o.n = vec3f(n.x * c + n.z * s, n.y, -n.x * s + n.z * c);
+  o.n = rotY(vec3f(n.x * c + n.z * s, n.y, -n.x * s + n.z * c));
   o.wp = wp; o.col = icol; o.mat = imat; o.layer = li;
   return o;
 }
@@ -275,11 +323,11 @@ struct VOut {
   var e = in.col.a;
   if (in.mat.z > 0.5) {
     // status LED: slow heartbeat
-    let t = fract(S.params.x * 0.6);
+    let t = fract((S.params.x + NODE.haze.w) * 0.6);
     e *= 0.25 + 0.75 * (exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t));
   }
   var o: FragOut;
-  o.color = vec4f(col + S.accents[3].rgb * e, 1.0);
+  o.color = finish(col, S.accents[3].rgb * e);
   o.glow = vec4f(0.0);
   return o;
 }
@@ -307,7 +355,7 @@ struct VOut {
   let p = a + dir * along + nrm * across;
   let li = u32(prm.w + 0.5);
   var o: VOut;
-  o.pos = S.viewProj * vec4f(p.x, S.layerY[li] + 0.015, p.y, 1.0);
+  o.pos = S.viewProj * vec4f(toWorld(vec3f(p.x, S.layerY[li] + 0.015, p.y)), 1.0);
   o.local = vec2f(along, across);
   o.seg = vec4f(L, prm.x * 0.5, prm.y, prm.z);
   o.layer = li;
@@ -326,7 +374,7 @@ struct VOut {
   let comet = pow(u, 9.0) * smoothstep(1.0, 0.985, u);
   let focus = S.focus[in.layer];
   let level = mix(0.12, 1.0, focus) * S.dim[in.layer];
-  let I = (0.06 + comet * 7.0) * level * core;
+  let I = (0.06 + comet * 7.0) * level * core * NODE.look.z;
   var o: FragOut;
   o.color = vec4f(0.0);
   o.glow = vec4f(S.accents[in.layer].rgb * I, 1.0);
@@ -347,7 +395,7 @@ struct VOut {
   let c = corners[vi];
   let y0 = S.layerY[0] - S.params.z;
   let y1 = S.layerY[3];
-  let base = vec3f(via.x, 0.0, via.y);
+  let base = toWorld(vec3f(via.x, 0.0, via.y));
   let toCam = S.camPos.xyz - base;
   let right = normalize(vec3f(toCam.z, 0.0, -toCam.x));
   let w = 0.32;
@@ -373,6 +421,158 @@ struct VOut {
   var o: FragOut;
   o.color = vec4f(0.0);
   o.glow = vec4f(col * I, 1.0);
+  return o;
+}
+`;
+
+// Emissive quads whose world-space corners are built on the CPU each frame:
+// holograms over the top layer, the NervesHub uplink and the distribution links.
+const FX = { link: 0, uplink: 1, footprint: 2, cone: 3, tile: 4, flare: 5 };
+const FX_WGSL = SCENE_WGSL + /* wgsl */ `
+struct VOut {
+  @builtin(position) pos: vec4f,
+  @location(0) uv: vec2f,
+  @location(1) @interpolate(flat) prm: vec4f,   // mode, intensity, d0, d1
+  @location(2) @interpolate(flat) col: vec4f,   // rgb, kind / seed
+  @location(3) @interpolate(flat) ext: vec4f,   // mode specific
+};
+
+@vertex fn vs(@builtin(vertex_index) vi: u32,
+              @location(0) c0: vec4f, @location(1) c1: vec4f, @location(2) c2: vec4f, @location(3) c3: vec4f,
+              @location(4) col: vec4f, @location(5) ext: vec4f) -> VOut {
+  var uvs = array<vec2f, 6>(vec2f(0.0, 0.0), vec2f(1.0, 0.0), vec2f(1.0, 1.0),
+                            vec2f(0.0, 0.0), vec2f(1.0, 1.0), vec2f(0.0, 1.0));
+  var p = c3.xyz;
+  if (vi == 0u || vi == 3u) { p = c0.xyz; } else if (vi == 1u) { p = c1.xyz; } else if (vi == 2u || vi == 4u) { p = c2.xyz; }
+  var o: VOut;
+  o.pos = S.viewProj * vec4f(p, 1.0);
+  o.uv = uvs[vi];
+  o.prm = vec4f(c0.w, c1.w, c2.w, c3.w);
+  o.col = col; o.ext = ext;
+  return o;
+}
+
+fn sdBox(p: vec2f, b: vec2f, r: f32) -> f32 {
+  let q = abs(p) - b + vec2f(r);
+  return length(max(q, vec2f(0.0))) + min(max(q.x, q.y), 0.0) - r;
+}
+fn line(d: f32, w: f32, aa: f32) -> f32 { return 1.0 - smoothstep(w - aa, w + aa, d); }
+fn fill(d: f32, aa: f32) -> f32 { return 1.0 - smoothstep(-aa, aa, d); }
+fn hash2(p: vec2f) -> f32 { return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453); }
+fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
+
+// glyphs live in -1..1 with y up
+fn glyphWeb(p: vec2f, t: f32, aa: f32) -> f32 {
+  var g = line(abs(sdBox(p, vec2f(0.95, 0.78), 0.14)), 0.05, aa);
+  g = max(g, line(abs(p.y - 0.42), 0.04, aa) * step(abs(p.x), 0.95));
+  for (var i = 0; i < 3; i++) {
+    g = max(g, fill(length(p - vec2f(-0.74 + f32(i) * 0.19, 0.6)) - 0.065, aa));
+  }
+  for (var i = 0; i < 3; i++) {
+    let fi = f32(i);
+    let len = 0.35 + 1.1 * fract(t * 0.22 + fi * 0.37);
+    let y = 0.12 - fi * 0.3;
+    g = max(g, fill(sdBox(p - vec2f(-0.72 + len * 0.5, y), vec2f(len * 0.5, 0.055), 0.05), aa) * 0.85);
+  }
+  return g;
+}
+fn glyphWave(p: vec2f, t: f32, aa: f32) -> f32 {
+  var g = 0.0;
+  for (var i = 0; i < 9; i++) {
+    let fi = f32(i);
+    let x = -0.84 + fi * 0.21;
+    let hgt = 0.12 + 0.72 * abs(sin(t * 2.1 + fi * 0.9) * sin(t * 0.83 + fi * 0.45 + 1.0));
+    g = max(g, fill(sdBox(p - vec2f(x, 0.0), vec2f(0.065, hgt), 0.06), aa));
+  }
+  return g;
+}
+fn glyphTensor(p: vec2f, t: f32, aa: f32) -> f32 {
+  let cell = clamp(floor((p + 1.0) / 0.5), vec2f(0.0), vec2f(3.0));
+  let c = -0.75 + cell * 0.5;
+  let b = 0.3 + 0.7 * pow(0.5 + 0.5 * sin(t * 2.2 - (cell.x + cell.y) * 0.85 + hash2(cell) * 2.0), 3.0);
+  return fill(sdBox(p - c, vec2f(0.19), 0.06), aa) * b;
+}
+
+@fragment fn fs(in: VOut) -> FragOut {
+  let aa = fwidth(in.uv);
+  let mode = u32(in.prm.x + 0.5);
+  let t = S.params.x;
+  var rgb = in.col.rgb;
+  var I = 0.0;
+  var extra = vec3f(0.0);
+
+  if (mode == 0u) {
+    // distribution link: messages travel both ways
+    let x = in.uv.y * 2.0 - 1.0;
+    let along = mix(in.prm.z, in.prm.w, in.uv.x);
+    let seed = in.col.w;
+    let f = fract((along - t * 20.0) / 24.0 + seed);
+    let b = fract((along + t * 15.0) / 31.0 + seed * 1.7);
+    let msg = comet(f, 12.0) + comet(1.0 - b, 12.0);
+    let core = exp(-x * x * 26.0);
+    let haze = exp(-x * x * 3.5);
+    I = core * (0.35 + msg * 3.5) + haze * (0.08 + msg * 0.5);
+    rgb = mix(rgb, vec3f(1.0), clamp(msg, 0.0, 1.0) * 0.45);
+  } else if (mode == 1u) {
+    // uplink beam: telemetry rises, firmware comes down
+    let x = in.uv.x * 2.0 - 1.0;
+    let along = mix(in.prm.z, in.prm.w, in.uv.y);
+    let fade = 1.0 / (1.0 + along / 70.0);
+    let core = exp(-x * x * 160.0);
+    let haze = exp(-x * x * 7.0);
+    let up = comet(fract((along - t * 26.0) / 15.0), 10.0);
+    let dn = comet(1.0 - fract((along + t * 38.0) / 120.0), 16.0);
+    let base = exp(-along * 0.35);
+    I = (core * (0.7 + up * 2.4) + haze * (0.07 + up * 0.25 + base * 0.6)) * fade;
+    extra = in.ext.rgb * dn * (core * 4.0 + haze * 0.7) * fade;
+  } else if (mode == 2u) {
+    // footprint on the board: corner brackets, faint fill, sweeping scan line
+    let hs = in.ext.xy * 0.5;
+    let pm = (in.uv * 2.0 - 1.0) * hs;
+    let am = max(aa.x * in.ext.x, aa.y * in.ext.y);
+    let inset = hs - vec2f(0.3);
+    let d = sdBox(pm, inset, 0.4);
+    let ap = abs(pm);
+    let arm = min(1.6, min(inset.x, inset.y) * 0.45);
+    let corner = step(inset.x - arm, ap.x) * step(inset.y - arm, ap.y);
+    I = line(abs(d), 0.11, am) * corner + line(abs(d), 0.035, am) * 0.4;
+    let inside = fill(d, am);
+    let sweep = mix(-inset.y, inset.y, fract(t * 0.3 + in.col.w * 0.37));
+    I += inside * (0.05 + exp(-abs(pm.y - sweep) * 5.0) * 0.3);
+  } else if (mode == 3u) {
+    // light cone from the footprint up to the tile
+    let x = in.uv.x * 2.0 - 1.0;
+    let hgt = in.uv.y;
+    let edge = exp(-(1.0 - abs(x)) * 12.0);
+    let rays = 0.5 + 0.5 * sin(x * 21.0 + t * 1.3) * sin(x * 7.0 - t * 0.6 + in.col.w);
+    let rise = comet(fract(hgt * 2.2 - t * 0.8 + in.col.w * 0.3), 10.0);
+    let k = (1.0 - hgt);
+    I = k * k * (0.06 + 0.1 * rays + 0.45 * edge) + rise * 0.2 * k;
+  } else if (mode == 4u) {
+    // floating tile with an animated glyph
+    let q = in.uv * 2.0 - 1.0;
+    let aq = max(aa.x, aa.y) * 2.0;
+    let b = sdBox(q, vec2f(0.95), 0.24);
+    I = line(abs(b), 0.03, aq) + fill(b, aq) * 0.12;
+    let kind = u32(in.col.w + 0.5);
+    let gq = q / 0.6;
+    let ga = aq / 0.6;
+    var g = 0.0;
+    if (kind == 0u) { g = glyphWeb(gq, t, ga); }
+    else if (kind == 1u) { g = glyphWave(gq, t, ga); }
+    else { g = glyphTensor(gq, t, ga); }
+    I += g * 1.1;
+    I *= (0.82 + 0.18 * sin(in.uv.y * 80.0 - t * 5.0)) * (0.94 + 0.06 * sin(t * 31.0 + in.col.w * 5.0));
+  } else {
+    // flare where the uplink leaves the board
+    let q = in.uv * 2.0 - 1.0;
+    let r = length(q);
+    let ring = fract(r * 1.6 - t * 0.6);
+    I = (pow(ring, 6.0) * 0.35 + exp(-r * r * 30.0) * 0.5) * smoothstep(1.0, 0.55, r);
+  }
+  var o: FragOut;
+  o.color = vec4f(0.0);
+  o.glow = vec4f((rgb * I + extra) * in.prm.y, 1.0);
   return o;
 }
 `;
@@ -633,7 +833,31 @@ export async function mountPcbHero(root, opts = {}) {
     svg.appendChild(path);
     leaders[i] = path;
   }
-  root.append(canvas, svg, list);
+  // callouts for the holograms, the uplink and the cluster
+  const extras = opts.extras || DEFAULT_EXTRAS;
+  const tagBox = document.createElement('div');
+  tagBox.className = 'pcb-hero__tags';
+  tagBox.setAttribute('aria-hidden', 'true');
+  const mkTag = (name, text, accent, mod = '') => {
+    const el = document.createElement('div');
+    el.className = `pcb-hero__tag ${mod}`;
+    el.style.setProperty('--accent', accent);
+    el.innerHTML = `<b class="pcb-hero__tag-name"></b>${text ? '<span class="pcb-hero__tag-text"></span>' : ''}`;
+    el.firstChild.textContent = name;
+    if (text) el.lastChild.textContent = text;
+    tagBox.appendChild(el);
+    return { el, vis: 0 };
+  };
+  // the top plate carries the apps, the one below it (the runtime) the cluster links
+  const TOP = layerDefs.length - 1;
+  const RUNTIME = Math.max(0, layerDefs.length - 2);
+  const appAccent = layerDefs[TOP].accent;
+  const runtimeAccent = layerDefs[RUNTIME].accent;
+  const appTags = extras.apps.map((a) => mkTag(a.name, a.text, a.accent || appAccent, 'is-app'));
+  const uplinkTag = extras.uplink && mkTag(extras.uplink.name, extras.uplink.text, extras.uplink.accent || appAccent, 'is-uplink');
+  const clusterTag = extras.cluster && mkTag(extras.cluster.name, extras.cluster.text, runtimeAccent, 'is-cluster');
+  const nodeTags = (extras.cluster?.nodes || []).map((n) => mkTag(n, '', runtimeAccent, 'is-node'));
+  root.append(canvas, svg, list, tagBox);
 
   if (!navigator.gpu) return fail('WebGPU is not available in this browser.');
   const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
@@ -696,6 +920,16 @@ export async function mountPcbHero(root, opts = {}) {
   const viaBuf = mkBuf(viaData, GPUBufferUsage.VERTEX);
   const sceneUBO = device.createBuffer({ size: 256, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
 
+  // the hero board is node 0; shadow nodes follow, one 256-byte slot each (dynamic offsets)
+  const NODE_STRIDE = 256;
+  const shadowNodes = cfg.nodes.slice(0, Math.max(0, extras.cluster?.nodes?.length ?? cfg.nodes.length));
+  const nodeCount = 1 + shadowNodes.length;
+  const nodeUBO = device.createBuffer({ size: NODE_STRIDE * nodeCount, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const MAX_FX = 512;
+  const FX_FLOATS = 24;
+  const fxData = new Float32Array(MAX_FX * FX_FLOATS);
+  const fxBuf = device.createBuffer({ size: fxData.byteLength, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST });
+
   // --- pipelines
   const SAMPLES = 4;
   const HDR = 'rgba16float';
@@ -722,7 +956,11 @@ export async function mountPcbHero(root, opts = {}) {
       { binding: 3, resource: matTex.createView({ dimension: '2d-array' }) },
     ],
   });
-  const sceneLayout = device.createPipelineLayout({ bindGroupLayouts: [sceneBGL] });
+  const nodeBGL = device.createBindGroupLayout({
+    entries: [{ binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { hasDynamicOffset: true, minBindingSize: 48 } }],
+  });
+  const nodeBG = device.createBindGroup({ layout: nodeBGL, entries: [{ binding: 0, resource: { buffer: nodeUBO, size: 48 } }] });
+  const sceneLayout = device.createPipelineLayout({ bindGroupLayouts: [sceneBGL, nodeBGL] });
   const depthOpaque = { format: 'depth24plus', depthWriteEnabled: true, depthCompare: 'less' };
   const depthGlow = { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'less-equal' };
   const ms = { count: SAMPLES };
@@ -788,6 +1026,18 @@ export async function mountPcbHero(root, opts = {}) {
       buffers: [{ arrayStride: 16, stepMode: 'instance', attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x4' }] }],
     },
     fragment: { module: beamMod, entryPoint: 'fs', targets: sceneTargets(true) },
+    primitive: { topology: 'triangle-list' },
+    depthStencil: depthGlow, multisample: ms,
+  });
+  const fxMod = mod(FX_WGSL);
+  const fxPipe = device.createRenderPipeline({
+    layout: sceneLayout,
+    vertex: {
+      module: fxMod, entryPoint: 'vs',
+      buffers: [{ arrayStride: FX_FLOATS * 4, stepMode: 'instance', attributes: [0, 1, 2, 3, 4, 5].map((i) => (
+        { shaderLocation: i, offset: i * 16, format: 'float32x4' })) }],
+    },
+    fragment: { module: fxMod, entryPoint: 'fs', targets: sceneTargets(true) },
     primitive: { topology: 'triangle-list' },
     depthStencil: depthGlow, multisample: ms,
   });
@@ -976,12 +1226,235 @@ export async function mountPcbHero(root, opts = {}) {
     root.classList.toggle('is-narrow', narrow);
     const eye = [target[0] + Math.sin(az) * Math.cos(el) * dist, target[1] + Math.sin(el) * dist, target[2] + Math.cos(az) * Math.cos(el) * dist];
     const shift = -labelCol / W;
-    const proj = perspective(fov, aspect, dist * 0.5, dist * 2, shift);
+    const proj = perspective(fov, aspect, dist * 0.5, dist * 6, shift);
     const view = lookAt(eye, target, [0, 1, 0]);
     state.viewProj = mul(proj, view);
     state.invViewProj = invert(state.viewProj);
     state.eye = eye;
+    state.camRight = [view[0], view[4], view[8]];
+    state.camUp = [view[1], view[5], view[9]];
     state.labelCol = labelCol;
+    const key = `${W}x${H}`;
+    if (key !== state.nodesFor) { state.nodesFor = key; placeNodes(dist); }
+  }
+
+  // the hero board is node 0; shadow nodes are placed along the view rays through their
+  // configured spots, so they stay in frame whatever the hero's aspect ratio
+  const sh = cfg.shadow;
+  const nodes = [{ x: 0, y: 0, z: 0, yaw: 0, look: [1, 1, 1, 0], t0: 0 }].concat(shadowNodes.map((n, i) => ({
+    spec: n, x: 0, y: 0, z: 0, yaw: ((n.yaw || 0) * Math.PI) / 180, look: [sh.light, sh.alpha, sh.emit, sh.haze], t0: 0.37 + i * 0.61,
+  })));
+  const haze = hexLinear('#0d2230');
+  function placeNodes(dist) {
+    const stackMid = 1.5 * (cfg.slab + cfg.gapIdle);
+    for (const n of nodes) {
+      if (!n.spec) continue;
+      const nx = n.spec.x * 2 - 1, ny = 1 - n.spec.y * 2;
+      const dir = v3.norm(v3.sub(xform(state.invViewProj, [nx, ny, 1]), xform(state.invViewProj, [nx, ny, 0])));
+      const p = add(state.eye, dir, n.spec.depth * dist);
+      n.x = p[0]; n.y = p[1] - stackMid; n.z = p[2];
+    }
+    const buf = new Float32Array((NODE_STRIDE / 4) * nodeCount);
+    nodes.forEach((n, i) => buf.set([n.x, n.y, n.z, n.yaw, ...n.look, ...haze, n.t0], i * (NODE_STRIDE / 4)));
+    device.queue.writeBuffer(nodeUBO, 0, buf);
+  }
+  const nodeToWorld = (n, x, y, z) => {
+    const c = Math.cos(n.yaw), s = Math.sin(n.yaw);
+    return [x * c + z * s + n.x, y + n.y, -x * s + z * c + n.z];
+  };
+  // where a link leaves node n toward a world point: on the plate edge that faces it, slid
+  // along that edge toward the target but kept clear of the corners. Returns point + normal.
+  function edgeAnchor(n, toward, y) {
+    const dx = toward[0] - n.x, dz = toward[2] - n.z;
+    const c = Math.cos(n.yaw), s = Math.sin(n.yaw);
+    const lx = dx * c - dz * s, lz = dx * s + dz * c; // inverse yaw
+    const e = h - 0.3, maxSlide = e * 0.55;
+    let px, pz, nx, nz;
+    if (Math.abs(lx) >= Math.abs(lz)) {
+      nx = Math.sign(lx); nz = 0; px = nx * e;
+      pz = Math.max(-maxSlide, Math.min(maxSlide, (lz / Math.abs(lx)) * e * 0.6));
+    } else {
+      nz = Math.sign(lz); nx = 0; pz = nz * e;
+      px = Math.max(-maxSlide, Math.min(maxSlide, (lx / Math.abs(lz)) * e * 0.6));
+    }
+    return { p: nodeToWorld(n, px, y, pz), n: [nx * c + nz * s, 0, -nx * s + nz * c] };
+  }
+
+  // --- holograms, uplink and cluster links (emissive quads rebuilt every frame)
+  const partTop = (p) => ({ usbc: 3.2, button: 1.35, ind: 1.0, xtal: 0.7 })[p.kind] ?? (p.kind === 'ic' ? (p.w >= 10 ? 1.5 : p.w >= 6 ? 0.9 : 1.0) : 0.6);
+  const anchorOf = (spec) => {
+    const p = spec.part && data.parts.find((q) => q.ref === spec.part);
+    if (p) {
+      const swap = Math.abs(Math.sin((p.rot * Math.PI) / 180)) > 0.5;
+      return { x: p.x - h, z: p.y - h, w: swap ? p.h : p.w, d: swap ? p.w : p.h, top: partTop(p) };
+    }
+    const [x, y] = spec.at || [h, h];
+    const [w, d] = spec.size || [6, 6];
+    return { x: x - h, z: y - h, w, d, top: 0 };
+  };
+  const glowRgb = (hex) => { const c = hexLinear(hex); const m = Math.max(...c, 1e-3); return c.map((v) => v / m); };
+  const apps = extras.apps.map((a) => ({ ...a, anchor: anchorOf(a), rgb: glowRgb(a.accent || appAccent) }));
+  const uplink = extras.uplink && {
+    ...extras.uplink, anchor: anchorOf(extras.uplink),
+    rgb: hexLinear(extras.uplink.accent || appAccent), down: hexLinear(extras.uplink.down || '#ffffff'),
+  };
+  const runtimeRgb = hexLinear(runtimeAccent);
+  const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
+  const fxState = { holo: 0, uplink: 0, links: 0 };
+  const geo = { tiles: [], beam: null, links: [] }; // world anchors for the callouts
+  let fxN = 0;
+  function fxPush(c0, c1, c2, c3, mode, I, d0, d1, rgb, kind, ext = [0, 0, 0, 0]) {
+    if (fxN >= MAX_FX || I <= 0.002) return;
+    const o = fxN++ * FX_FLOATS;
+    fxData.set(c0, o); fxData[o + 3] = mode;
+    fxData.set(c1, o + 4); fxData[o + 7] = I;
+    fxData.set(c2, o + 8); fxData[o + 11] = d0;
+    fxData.set(c3, o + 12); fxData[o + 15] = d1;
+    fxData.set(rgb, o + 16); fxData[o + 19] = kind;
+    fxData.set(ext, o + 20);
+  }
+  function ribbon(pts, width, I, rgb, seed) {
+    let dist = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const dir = v3.sub(b, a);
+      const len = Math.hypot(...dir);
+      const mid = add(a, dir, 0.5);
+      const side = v3.norm(v3.cross(dir, v3.sub(state.eye, mid)));
+      const s = width / 2;
+      fxPush(add(a, side, -s), add(b, side, -s), add(b, side, s), add(a, side, s), FX.link, I, dist, dist + len, rgb, seed);
+      dist += len;
+    }
+  }
+  function cubic(p0, p1, p2, p3, segs) {
+    const out = [];
+    for (let i = 0; i <= segs; i++) {
+      const t = i / segs, u = 1 - t;
+      out.push([0, 1, 2].map((k) => u * u * u * p0[k] + 3 * u * u * t * p1[k] + 3 * u * t * t * p2[k] + t * t * t * p3[k]));
+    }
+    return out;
+  }
+
+  function buildFx(focus, k) {
+    fxN = 0;
+    const ease = (key, target) => { fxState[key] += (target - fxState[key]) * k; return fxState[key]; };
+    const holoI = ease('holo', focus === TOP ? 1 : focus < 0 ? 0.6 : 0.1);
+    const upI = ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.8 : 0.3);
+    const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.22 : 0.08);
+    const R = state.camRight, U = state.camUp;
+    const topY = state.y[TOP];
+
+    geo.tiles = apps.map((app, i) => {
+      const A = app.anchor;
+      const fw = A.w + 1.8, fd = A.d + 1.8;
+      const y0 = topY + 0.03;
+      fxPush([A.x - fw / 2, y0, A.z + fd / 2], [A.x + fw / 2, y0, A.z + fd / 2], [A.x + fw / 2, y0, A.z - fd / 2], [A.x - fw / 2, y0, A.z - fd / 2],
+        FX.footprint, holoI, 0, 0, app.rgb, i, [fw, fd, 0, 0]);
+      const s = cfg.holoSize / 2;
+      const C = [A.x, topY + cfg.holoHeight + Math.sin(time * 1.1 + i * 2.1) * 0.35, A.z];
+      fxPush(add(add(C, R, -s), U, -s), add(add(C, R, s), U, -s), add(add(C, R, s), U, s), add(add(C, R, -s), U, s),
+        FX.tile, holoI, 0, 0, app.rgb, app.glyph ?? i);
+      const B = [A.x, topY + A.top + 0.05, A.z];
+      const Cb = add(C, U, -s);
+      const bw = Math.max(fw, fd) * 0.42, tw = s * 0.92;
+      fxPush(add(B, R, -bw), add(B, R, bw), add(Cb, R, tw), add(Cb, R, -tw), FX.cone, holoI, 0, 0, app.rgb, i);
+      return add(C, U, s);
+    });
+
+    if (uplink) {
+      const A = uplink.anchor;
+      const B = [A.x, topY + A.top + 0.05, A.z];
+      const L = 320, w = 10;
+      fxPush(add(B, R, -w / 2), add(B, R, w / 2), add(add(B, R, w / 2), [0, L, 0]), add(add(B, R, -w / 2), [0, L, 0]),
+        FX.uplink, upI, 0, L, uplink.rgb, 0, [...uplink.down, 0]);
+      const f = 7;
+      fxPush([B[0] - f, B[1], B[2] + f], [B[0] + f, B[1], B[2] + f], [B[0] + f, B[1], B[2] - f], [B[0] - f, B[1], B[2] - f],
+        FX.flare, upI, 0, 0, uplink.rgb, 0);
+      geo.beam = B;
+    }
+
+    // Erlang distribution: a full mesh between the runtime plates of all nodes. On the hero
+    // board each link lands on a pad on the runtime plate, rising from it and running back
+    // through the gap under the plate above; between shadow nodes links leave square to an edge.
+    geo.links = [];
+    const y = state.y[RUNTIME] - cfg.slab * 0.5;
+    const yTop = state.y[RUNTIME] + 0.04;
+    const across = (p) => p[0] * R[0] + p[2] * R[2];
+    const ports = cfg.ports.map(([x, z]) => [x - h, yTop, z - h]).sort((a, b) => across(a) - across(b));
+    const byScreen = nodes.slice(1).map((n, i) => i + 1).sort((a, b) => across([nodes[a].x, 0, nodes[a].z]) - across([nodes[b].x, 0, nodes[b].z]));
+    const portOf = new Map(byScreen.map((ni, k) => [ni, ports[Math.min(k, ports.length - 1)]]));
+    for (let a = 0; a < nodes.length; a++)
+      for (let b = a + 1; b < nodes.length; b++) {
+        const na = nodes[a], nb = nodes[b];
+        const hero = a === 0;
+        const B = edgeAnchor(nb, hero ? [0, 0, 0] : [na.x, na.y, na.z], y);
+        let pts;
+        if (hero) {
+          const P = portOf.get(b);
+          const len = Math.hypot(B.p[0] - P[0], B.p[2] - P[2]);
+          pts = cubic(P, add(P, [0, 6, 0]), add(add(B.p, B.n, len * 0.3), [0, len * 0.04, 0]), B.p, 56);
+          const f = 2.2;
+          fxPush([P[0] - f, P[1], P[2] + f], [P[0] + f, P[1], P[2] + f], [P[0] + f, P[1], P[2] - f], [P[0] - f, P[1], P[2] - f],
+            FX.flare, linkI * 0.9, 0, 0, runtimeRgb, 0);
+        } else {
+          const A = edgeAnchor(na, [nb.x, nb.y, nb.z], y);
+          const len = Math.hypot(B.p[0] - A.p[0], B.p[2] - A.p[2]);
+          const lift = [0, len * 0.05, 0];
+          pts = cubic(A.p, add(add(A.p, A.n, len * 0.22), lift), add(add(B.p, B.n, len * 0.22), lift), B.p, 44);
+        }
+        ribbon(pts, hero ? 1.8 : 1.4, linkI * (hero ? 1 : 0.45), runtimeRgb, a * 0.37 + b * 0.19);
+        if (hero) geo.links[b - 1] = pts;
+      }
+    device.queue.writeBuffer(fxBuf, 0, fxData, 0, fxN * FX_FLOATS);
+  }
+
+  function layoutTags(focus, k) {
+    const W = state.cssW, H = state.cssH;
+    // mode 'above': centred above the anchor; 'right' / 'left': beside it, vertically centred
+    const place = (tag, target, x, y, mode, active = false) => {
+      tag.vis += (target - tag.vis) * k;
+      const s = tag.el.style;
+      s.opacity = tag.vis.toFixed(3);
+      s.visibility = tag.vis < 0.01 ? 'hidden' : 'visible';
+      tag.el.classList.toggle('is-active', active);
+      if (tag.vis < 0.01) return;
+      const w = tag.el.offsetWidth, hh = tag.el.offsetHeight;
+      let left = mode === 'above' ? x - w / 2 : mode === 'left' ? x - w : x;
+      let top = mode === 'above' ? y - hh : y - hh / 2;
+      left = Math.min(Math.max(6, left), W - w - 6);
+      top = Math.min(Math.max(6, top), H - hh - 6);
+      s.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`;
+    };
+    const appVis = focus === TOP ? 1 : focus < 0 ? 0.75 : 0;
+    appTags.forEach((tag, i) => {
+      const [x, y] = project(geo.tiles[i]);
+      place(tag, appVis, x, y - 4, 'above', focus === TOP);
+    });
+    if (uplinkTag && geo.beam) {
+      // where the beam leaves the top of the hero
+      const [bx, by] = project(geo.beam);
+      const [tx, ty] = project(add(geo.beam, [0, 200, 0]));
+      const yT = Math.min(by - 40, 64);
+      const t = (yT - by) / (ty - by || 1);
+      place(uplinkTag, appVis, bx + (tx - bx) * t + 14, yT, 'right', focus === TOP);
+    }
+    const clusterVis = focus === RUNTIME ? 1 : 0;
+    if (clusterTag && geo.links.length) {
+      // on the link to the right-most node, where the mesh is most visible
+      let best = null, bx = -Infinity;
+      for (const pts of geo.links) {
+        const end = project(pts[pts.length - 1]);
+        if (pts && end[0] > bx) { bx = end[0]; best = pts; }
+      }
+      const [x, y] = project(best[best.length - 1]);
+      place(clusterTag, clusterVis, x - 16, y - 24, 'left', true);
+    }
+    nodeTags.forEach((tag, i) => {
+      const n = nodes[i + 1];
+      if (!n) return;
+      const [x, y] = project([n.x, n.y + state.y[TOP] + 4, n.z]);
+      place(tag, clusterVis, x, y, 'above');
+    });
   }
 
   // --- frame
@@ -1014,6 +1487,7 @@ export async function mountPcbHero(root, opts = {}) {
     }
     state.explode += ((open ? 1 : 0.25) - state.explode) * k;
     camera();
+    buildFx(focus, k);
 
     sceneData.set(state.viewProj, 0);
     sceneData.set([...state.eye, 1], 16);
@@ -1036,19 +1510,32 @@ export async function mountPcbHero(root, opts = {}) {
       depthStencilAttachment: { view: T.depth.createView(), depthClearValue: 1, depthLoadOp: 'clear', depthStoreOp: 'discard' },
     });
     pass.setBindGroup(0, sceneBG);
-    pass.setPipeline(slabPipe);
-    pass.setVertexBuffer(0, slabBuf);
-    pass.draw(slabVerts.length / 9, N);
-    pass.setPipeline(boxPipe);
-    pass.setVertexBuffer(0, cubeBuf);
-    pass.setVertexBuffer(1, partBuf);
-    pass.draw(36, partData.length / 16);
+    // hero board first so the shadow nodes behind it fail the depth test early
+    for (let n = 0; n < nodeCount; n++) {
+      pass.setBindGroup(1, nodeBG, [n * NODE_STRIDE]);
+      pass.setPipeline(slabPipe);
+      pass.setVertexBuffer(0, slabBuf);
+      pass.draw(slabVerts.length / 9, N);
+      pass.setPipeline(boxPipe);
+      pass.setVertexBuffer(0, cubeBuf);
+      pass.setVertexBuffer(1, partBuf);
+      pass.draw(36, partData.length / 16);
+    }
     pass.setPipeline(pulsePipe);
     pass.setVertexBuffer(0, pulseBuf);
-    pass.draw(6, pulseData.length / 8);
+    for (let n = 0; n < nodeCount; n++) {
+      pass.setBindGroup(1, nodeBG, [n * NODE_STRIDE]);
+      pass.draw(6, pulseData.length / 8);
+    }
+    pass.setBindGroup(1, nodeBG, [0]);
     pass.setPipeline(beamPipe);
     pass.setVertexBuffer(0, viaBuf);
     pass.draw(6, viaData.length / 4);
+    if (fxN) {
+      pass.setPipeline(fxPipe);
+      pass.setVertexBuffer(0, fxBuf);
+      pass.draw(6, fxN);
+    }
     pass.end();
 
     for (const p of T.passes) {
@@ -1066,6 +1553,7 @@ export async function mountPcbHero(root, opts = {}) {
     device.queue.submit([enc.finish()]);
 
     layoutLabels(focus);
+    layoutTags(focus, k);
     requestAnimationFrame(frame);
   }
 
