@@ -5,7 +5,7 @@
 //   import { mountPcbHero } from './pcb-hero.js';
 //   mountPcbHero(document.querySelector('#hero-stack'), { dataUrl: '/hero-pcb/pcb.json' });
 
-import { buildLayerCanvases } from './textures.js';
+import { buildLayerCanvases, LAYER_SOURCES } from './textures.js';
 import { drawLogo } from './logos.js';
 
 export const DEFAULT_LAYERS = [
@@ -27,11 +27,19 @@ export const DEFAULT_EXTRAS = {
     { name: 'Nx', text: 'Inference at the edge', part: 'U3', logo: 'nx', accent: '#b58491' },
     { name: 'BEAM Bots', text: 'Declarative robotics', at: [8.5, 24], size: [6, 7], image: 'logos/beam-bots.svg', accent: '#af4bf9' },
   ],
-  // technology slots on the runtime layer
+  // technology slots, on the layer named by its copper (board mm; size is x by y)
   slots: [
-    { name: 'VintageNet', text: 'Networking APIs from Elixir', at: [12, 43], size: [9, 4.5] },
-    { name: 'RingLogger', text: 'Flash-safe, memory-resilient logging', at: [24, 43], size: [9, 4.5] },
-    { name: 'fwup', text: 'A/B updates and recovery', at: [36, 43], size: [9, 4.5] },
+    { layer: 'In1.Cu', name: 'VintageNet', text: 'Networking APIs from Elixir', at: [9, 44], size: [9, 4.2] },
+    { layer: 'In1.Cu', name: 'RingLogger', text: 'Flash-safe, memory-resilient logging', at: [20, 44], size: [9, 4.2] },
+    { layer: 'In1.Cu', name: 'fwup', text: 'A/B updates and recovery', at: [31, 44], size: [9, 4.2] },
+    { layer: 'In1.Cu', name: 'Nerves Heart', at: [44.5, 40], size: [4.2, 9] },
+    { layer: 'In1.Cu', name: 'Watchdog', at: [44.5, 29.5], size: [4.2, 9] },
+    { layer: 'In1.Cu', name: 'KV store', at: [44.5, 19], size: [4.2, 9] },
+    { layer: 'In1.Cu', name: 'PubSub', at: [44.5, 9.5], size: [4.2, 9] },
+    { layer: 'In2.Cu', name: 'SquashFS/EroFS', text: 'Read-only root filesystem', at: [8, 43], size: [9.5, 4.2] },
+    { layer: 'In2.Cu', name: 'Data partition', text: 'Separate data and system', at: [18.5, 43], size: [9.5, 4.2] },
+    { layer: 'In2.Cu', name: 'A/B partitions', text: 'Safe updates', at: [29, 43], size: [9.5, 4.2] },
+    { layer: 'In2.Cu', name: 'Minimal OS', text: 'Small attack surface, low complexity', at: [39.5, 43], size: [9.5, 4.2] },
   ],
   uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', part: 'U5', accent: '#9fe8ff', down: '#4fd18b' },
   cluster: {
@@ -64,7 +72,7 @@ const CFG = {
     { x: 0.33, y: 0.09, depth: 3.7, yaw: 36 },
   ],
   shadow: { light: 0.14, alpha: 0.8, emit: 0.45, haze: 0.55 },
-  ports: [[42, 12], [43, 24], [42, 35]], // where cluster links land on the runtime plate (board mm)
+  ports: [[22, 34], [31, 31], [36, 22]], // where cluster links land on the runtime plate (board mm)
 };
 
 // ---------------------------------------------------------------------------
@@ -837,12 +845,18 @@ export async function mountPcbHero(root, opts = {}) {
   const appAccent = layerDefs[TOP].accent;
   const runtimeAccent = layerDefs[RUNTIME].accent;
   const appTags = extras.apps.map((a) => mkTag(a.name, a.text, a.accent || appAccent, 'is-app'));
-  const slotTags = (extras.slots || []).map((sl) => mkTag(sl.name, sl.text, sl.accent || runtimeAccent, 'is-slot'));
+  const slotLayer = (sl) => { const i = layerDefs.findIndex((L) => L.cu === sl.layer); return i >= 0 ? i : RUNTIME; };
+  const slotTags = (extras.slots || []).map((sl) => mkTag(sl.name, sl.text, sl.accent || layerDefs[slotLayer(sl)].accent, 'is-slot'));
   // hoverable things: hovering one shows its callout and focuses its layer
   const items = [
     ...appTags.map((tag, i) => ({ tag, i, layer: TOP, sx: -1e9, sy: -1e9, r: 0 })),
-    ...slotTags.map((tag, i) => ({ tag, i, layer: RUNTIME, sx: -1e9, sy: -1e9, r: 0 })),
+    ...slotTags.map((tag, i) => ({ tag, i, layer: slotLayer(extras.slots[i]), sx: -1e9, sy: -1e9, r: 0 })),
   ];
+  // logo art on the layers (LAYER_SOURCES runs bottom to top like layerDefs) with hover callouts
+  const artItems = LAYER_SOURCES.flatMap((src, li) => (li < layerDefs.length ? src.art || [] : [])
+    .filter((a) => a.callout)
+    .map((a) => ({ ...a.callout, layer: li, tag: mkTag(a.callout.name, a.callout.text, layerDefs[li].accent, 'is-art'), sx: -1e9, sy: -1e9, r: 0 })));
+  items.push(...artItems);
   items.forEach((it) => {
     it.tag.el.addEventListener('pointerenter', () => { state.hotTag = it; state.hover = true; });
     it.tag.el.addEventListener('pointerleave', () => { if (state.hotTag === it) state.hotTag = null; });
@@ -877,7 +891,14 @@ export async function mountPcbHero(root, opts = {}) {
 
   // --- textures
   const pxPerMm = opts.pxPerMm || (devicePixelRatio > 1.5 ? 40 : 32);
-  const { size: texSize, layers: canvases } = buildLayerCanvases(data, pxPerMm);
+  // logo files used as layer art are loaded up front; the canvases are drawn synchronously
+  const artImages = new Map();
+  await Promise.all(LAYER_SOURCES.flatMap((src) => src.art || []).filter((a) => a.image).map(async (a) => {
+    const img = new Image();
+    img.src = new URL(a.image, import.meta.url).href;
+    try { await img.decode(); artImages.set(a.image, img); } catch (e) { console.warn('[pcb-hero] art failed to load', a.image); }
+  }));
+  const { size: texSize, layers: canvases } = buildLayerCanvases(data, pxPerMm, artImages);
   const mipLevels = Math.floor(Math.log2(texSize)) + 1;
   const mkArray = (format) => device.createTexture({
     size: [texSize, texSize, 4], format, mipLevelCount: mipLevels,
@@ -1200,7 +1221,7 @@ export async function mountPcbHero(root, opts = {}) {
     const x = clientX - r.left, y = clientY - r.top;
     let best = null, bd = Infinity;
     for (const it of items) {
-      if (it.tag.vis < 0.3) continue;
+      if (!it.live) continue;
       const d = Math.hypot(x - it.sx, y - it.sy);
       if (d < it.r && d < bd) { bd = d; best = it; }
     }
@@ -1336,10 +1357,14 @@ export async function mountPcbHero(root, opts = {}) {
   };
   const runtimeRgb = hexLinear(runtimeAccent);
   const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
-  const fxState = { holo: 0, uplink: 0, links: 0, slots: 0 };
+  const fxState = { holo: 0, uplink: 0, links: 0 };
   const hotW = items.map(() => 0);
   const geo = { tiles: [], tileR: [], beam: null, links: [], slots: [] }; // world anchors for the callouts
-  const slots = (extras.slots || []).map((sl) => ({ ...sl, anchor: anchorOf(sl), rgb: glowRgb(sl.accent || '#d2b4ff') }));
+  const slots = (extras.slots || []).map((sl) => {
+    const layer = slotLayer(sl);
+    const rgb = glowRgb(sl.accent || layerDefs[layer].accent).map((c) => c + (1 - c) * 0.3); // a touch lighter than the layer
+    return { ...sl, layer, anchor: anchorOf(sl), rgb, w: 0 };
+  });
   let fxN = 0;
   function fxPush(c0, c1, c2, c3, mode, I, d0, d1, rgb, kind, ext = [0, 0, 0, 0]) {
     if (fxN >= MAX_FX || I <= 0.002) return;
@@ -1379,7 +1404,6 @@ export async function mountPcbHero(root, opts = {}) {
     const holoI = ease('holo', focus === TOP ? 1 : focus < 0 ? 0.6 : 0.1);
     const upI = ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.8 : 0.3);
     const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.22 : 0.08);
-    const slotI = ease('slots', focus === RUNTIME ? 1 : 0);
     const hot = hotItem();
     items.forEach((it, j) => { hotW[j] += ((hot === it ? 1 : 0) - hotW[j]) * k; });
     const R = state.camRight, U = state.camUp;
@@ -1404,11 +1428,12 @@ export async function mountPcbHero(root, opts = {}) {
       return add(C, U, s);
     });
 
-    // technology slots on the runtime plate
+    // technology slots, shown while their layer is in focus
     geo.slots = slots.map((sl, j) => {
+      sl.w += ((focus === sl.layer ? 1 : 0) - sl.w) * k;
       const A = sl.anchor;
-      const yS = state.y[RUNTIME] + 0.04;
-      const I = slotI * (0.8 + hotW[apps.length + j] * 0.9);
+      const yS = state.y[sl.layer] + 0.04;
+      const I = sl.w * (0.8 + hotW[apps.length + j] * 0.9);
       fxPush([A.x - A.w / 2, yS, A.z + A.d / 2], [A.x + A.w / 2, yS, A.z + A.d / 2], [A.x + A.w / 2, yS, A.z - A.d / 2], [A.x - A.w / 2, yS, A.z - A.d / 2],
         FX.footprint, I, 0, 0, sl.rgb, j + 5, [A.w, A.d, 0, 0]);
       return [A.x, yS, A.z];
@@ -1484,15 +1509,22 @@ export async function mountPcbHero(root, opts = {}) {
       const [x, y] = project(geo.tiles[i]);
       place(tag, appVis, x, y - 4, 'above', hot === items[i]);
       const [cx, cy] = project(geo.tileR[i]);
-      Object.assign(items[i], { sx: cx, sy: cy, r: Math.max(18, (y - cy) * -1 + 6) });
+      Object.assign(items[i], { sx: cx, sy: cy, r: Math.max(18, (y - cy) * -1 + 6), live: tag.vis > 0.3 });
     });
-    const slotVis = focus === RUNTIME ? 1 : 0;
     slotTags.forEach((tag, j) => {
       const it = items[appTags.length + j];
       const [x, y] = project(geo.slots[j]);
-      place(tag, slotVis, x, y - 12, 'above', hot === it);
-      Object.assign(it, { sx: x, sy: y, r: 26 });
+      place(tag, focus === it.layer ? 1 : 0, x, y - 12, 'above', hot === it);
+      Object.assign(it, { sx: x, sy: y, r: 26, live: focus === it.layer });
     });
+    for (const it of artItems) {
+      const p = [it.at[0] - h, state.y[it.layer] + 0.05, it.at[1] - h];
+      const [x, y] = project(p);
+      const [ex] = project(add(p, state.camRight, it.size / 2));
+      const r = Math.abs(ex - x);
+      place(it.tag, hot === it ? 1 : 0, x, y - r * 0.45, 'above', true);
+      Object.assign(it, { sx: x, sy: y, r, live: focus === it.layer });
+    }
     if (uplinkTag && geo.beam) {
       // where the beam leaves the top of the hero
       const [bx, by] = project(geo.beam);

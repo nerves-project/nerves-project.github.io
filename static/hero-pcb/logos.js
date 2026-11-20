@@ -74,17 +74,6 @@ export const LOGOS = {
     },
   },
 
-  // an original hard hat, after Buildroot's: dome with ridge grooves over a separate brim
-  hardhat: {
-    box: [0, 0, 100, 60],
-    draw: (op) => {
-      op.ink(shape((p) => {
-        p.moveTo(14, 44); p.bezierCurveTo(14, 18, 31, 6, 50, 6); p.bezierCurveTo(69, 6, 86, 18, 86, 44); p.closePath();
-        p.roundRect(39, 11, 3.2, 31, 1.6); p.roundRect(57.8, 11, 3.2, 31, 1.6);
-        p.roundRect(4, 47, 92, 9, 4.5);
-      }), 'evenodd');
-    },
-  },
 };
 
 // Draws `name` centred on (cx, cy), scaled so its larger side is `size` (in ctx units).

@@ -20,7 +20,8 @@
     .hero__copy a { display: inline-block; padding: 0.7rem 1.3rem; border-radius: 6px; background: #42a7c6; color: #04121a; font-weight: 700; text-decoration: none; margin-right: 0.5rem; }
     .hero__copy a + a { background: transparent; color: #e8f1f5; box-shadow: inset 0 0 0 1px rgba(232, 241, 245, 0.35); }
     .hero__stack { position: relative; min-height: 520px; background: none; }
-    .credit { position: absolute; z-index: 2; left: 50%; bottom: 1rem; transform: translateX(-50%); margin: 0; font-size: 0.8rem; color: #6f8894; white-space: nowrap; }
+    .credit { position: absolute; z-index: 2; left: 50%; bottom: 0.9rem; transform: translateX(-50%); width: min(92%, 46rem); margin: 0; font-size: 0.8rem; line-height: 1.45; color: #6f8894; text-align: center; }
+    .credit__more { display: block; font-size: 0.7rem; }
     .credit a { color: #9fb6c1; text-decoration: underline; text-underline-offset: 2px; }
     .credit a:hover { color: #e8f1f5; }
     @media (max-width: 860px) {
@@ -40,7 +41,12 @@
     </div>
     <div class="hero__stack" id="stack">
       <p class="credit">Concept illustration using open hardware:
-        <a href="https://github.com/protolux-electronics/trellis_core">Trellis</a></p>
+        <a href="https://github.com/protolux-electronics/trellis_core">Trellis</a>.
+        <span class="credit__more">Logos:
+          <a href="https://buildroot.org">Buildroot</a>;
+          <a href="https://source.denx.de/u-boot/u-boot/-/tree/master/tools/logos">U-Boot</a> by Heinrich Schuchardt,
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, adapted.
+          Linux&reg; is the registered trademark of Linus Torvalds.</span></p>
     </div>
   </header>
 
