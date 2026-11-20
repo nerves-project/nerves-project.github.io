@@ -977,7 +977,7 @@ export async function mountPcbHero(root, opts = {}) {
   const h = data.board.w / 2;
   const viaData = new Float32Array(data.vias.flatMap(([x, y, s, d]) => [x - h, y - h, s, d]));
   const viaBuf = mkBuf(viaData, GPUBufferUsage.VERTEX);
-  const sceneUBO = device.createBuffer({ size: 512, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const sceneUBO = device.createBuffer({ size: 256, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
 
   // the hero board is node 0; shadow nodes follow, one 256-byte slot each (dynamic offsets)
   const NODE_STRIDE = 256;
@@ -1578,7 +1578,7 @@ export async function mountPcbHero(root, opts = {}) {
 
   // --- frame
   const accents = layerDefs.map((L) => hexLinear(L.accent));
-  const sceneData = new Float32Array(68);
+  const sceneData = new Float32Array(64);
   let last = performance.now();
   let time = 0;
   let running = true;
@@ -1626,7 +1626,7 @@ export async function mountPcbHero(root, opts = {}) {
     apps.forEach((app, j) => { if (hotW[j] > 0.001) tint = tint.map((c, k) => c + (app.rgb[k] - c) * hotW[j]); });
     sceneData.set([cfg.pulseSpeed, ...tint], 40);
     accents.forEach((a, i) => sceneData.set([...a, 1], 44 + i * 4));
-    sceneData[64] = reduceMotion ? 0 : 1;
+    sceneData[60] = reduceMotion ? 0 : 1; // Scene.motion follows the four accents
     device.queue.writeBuffer(sceneUBO, 0, sceneData);
     device.queue.writeBuffer(compUBO, 0, new Float32Array([cfg.bloom, cfg.exposure, hdrOut ? 4.0 : 1.0, hdrOut ? 0 : 1]));
 
