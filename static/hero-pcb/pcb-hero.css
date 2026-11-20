@@ -1,0 +1,97 @@
+.pcb-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 35% 50%, #10293a 0%, #04090d 75%);
+  color: #e8f1f5;
+  font-family: inherit;
+}
+
+.pcb-hero__canvas,
+.pcb-hero__leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pcb-hero__canvas { opacity: 0; transition: opacity 600ms ease; }
+.pcb-hero.is-ready .pcb-hero__canvas { opacity: 1; }
+
+.pcb-hero__leaders { pointer-events: none; overflow: visible; }
+.pcb-hero__leaders path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0.45;
+  transition: opacity 250ms ease, stroke-width 250ms ease;
+}
+.pcb-hero__leaders path.is-active { opacity: 1; stroke-width: 1.5; }
+.pcb-hero__leaders path.is-dim { opacity: 0.15; }
+
+.pcb-hero__labels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pcb-hero__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: auto;
+  cursor: default;
+  padding: 0.35rem 0 0.35rem 0.75rem;
+  border-left: 2px solid var(--accent);
+  opacity: 0;
+  transition: opacity 300ms ease, border-color 250ms ease;
+  outline: none;
+}
+.pcb-hero.is-ready .pcb-hero__label { opacity: 0.8; }
+.pcb-hero.is-ready .pcb-hero__label.is-active { opacity: 1; }
+.pcb-hero.is-ready .pcb-hero__label.is-dim { opacity: 0.35; }
+.pcb-hero__label:focus-visible { box-shadow: -2px 0 0 0 var(--accent), 0 0 0 1px rgba(255, 255, 255, 0.25); }
+
+.pcb-hero__cu {
+  display: block;
+  font: 500 0.68rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  opacity: 0.85;
+}
+.pcb-hero__name {
+  display: block;
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+.pcb-hero__text {
+  display: block;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: #b9cbd4;
+  max-width: 26ch;
+}
+.pcb-hero__label.is-active .pcb-hero__name { color: #fff; text-shadow: 0 0 18px var(--accent); }
+.pcb-hero__label.is-active .pcb-hero__text { color: #e8f1f5; }
+
+/* Without WebGPU: show the layers as a plain list */
+.pcb-hero.is-fallback .pcb-hero__canvas,
+.pcb-hero.is-fallback .pcb-hero__leaders { display: none; }
+.pcb-hero.is-fallback .pcb-hero__labels {
+  position: static;
+  display: grid;
+  gap: 1rem;
+  padding: 2rem;
+}
+.pcb-hero.is-fallback .pcb-hero__label { position: static; opacity: 1; transform: none !important; width: auto !important; }
+
+/* narrow: only the active layer shows its description */
+.pcb-hero.is-narrow .pcb-hero__name { font-size: 0.95rem; }
+.pcb-hero.is-narrow .pcb-hero__text { display: none; font-size: 0.75rem; }
+.pcb-hero.is-narrow .pcb-hero__label.is-active .pcb-hero__text { display: block; }

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nerves stackup hero — prototype</title>
+  <link rel="stylesheet" href="pcb-hero.css">
+  <style>
+    html, body { margin: 0; background: #04090d; font-family: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.8fr) 1.6fr;
+      min-height: min(760px, 100vh);
+      background: radial-gradient(ellipse at 65% 50%, #10293a 0%, #04090d 70%);
+      color: #e8f1f5;
+    }
+    .hero__copy { align-self: center; padding: 3rem 0 3rem clamp(1.5rem, 5vw, 5rem); }
+    .hero__copy h1 { font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.1; margin: 0 0 1rem; }
+    .hero__copy p { font-size: 1.15rem; line-height: 1.5; color: #b9cbd4; max-width: 34ch; margin: 0 0 2rem; }
+    .hero__copy a { display: inline-block; padding: 0.7rem 1.3rem; border-radius: 6px; background: #42a7c6; color: #04121a; font-weight: 700; text-decoration: none; margin-right: 0.5rem; }
+    .hero__copy a + a { background: transparent; color: #e8f1f5; box-shadow: inset 0 0 0 1px rgba(232, 241, 245, 0.35); }
+    .hero__stack { position: relative; min-height: 520px; background: none; }
+    .hint { position: absolute; left: 50%; bottom: 1rem; transform: translateX(-50%); font-size: 0.8rem; color: #6f8894; pointer-events: none; }
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero__copy { padding: 2.5rem 1.5rem 0; }
+      .hero__stack { min-height: 480px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__copy">
+      <h1>Elixir ❤️ Embedded</h1>
+      <p><strong>Nerves</strong> is an open-source platform that combines the rock-solid BEAM virtual machine
+        and Elixir ecosystem to easily build and deploy production embedded systems.</p>
+      <a href="#">Get started</a><a href="#">Features</a>
+    </div>
+    <div class="hero__stack" id="stack">
+      <span class="hint">Hover a layer</span>
+    </div>
+  </header>
+
+  <script type="module">
+    import { mountPcbHero } from './pcb-hero.js';
+    const el = document.getElementById('stack');
+    el.style.background = 'none';
+    window.hero = await mountPcbHero(el, { dataUrl: './pcb.json' });
+  </script>
+</body>
+</html>
