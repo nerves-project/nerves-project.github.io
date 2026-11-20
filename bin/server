@@ -1,2 +1,4 @@
 #!/bin/sh
-hugo server
+# Hugo needs Dart Sass, which is installed by bin/setup (sass-embedded npm package)
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+PATH="$ROOT/node_modules/.bin:$PATH" exec hugo server "$@"

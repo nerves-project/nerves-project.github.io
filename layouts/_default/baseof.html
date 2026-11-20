@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ $.Site.LanguageCode | default "en" }}">
+<html lang="{{ $.Site.Language.Locale | default "en" }}">
   {{ partial "head" . }}
 
   <body data-type="{{.Type}}" data-kind="{{.Kind}}" data-is-home="{{.IsHome}}">

@@ -1,6 +1,6 @@
 # https://gohugo.io/getting-started/configuration/#all-configuration-settings
 baseURL: 'https://nerves-project.org/'
-languageCode: 'en-us'
+locale: 'en-us'
 title: 'Nerves Project'
 Copyright: 'The Nerves Project Authors'
 
@@ -83,3 +83,13 @@ markup:
   goldmark:
     renderer:
       unsafe: true
+
+# HTML content files (sponsors page, newsletter archive) are denied by default
+# since Hugo v0.162.0. Allow them, but keep the default deny for Org.
+# https://gohugo.io/configuration/security/
+security:
+  allowContent:
+    - '! ^text/org$'
+
+# Keep tag names as written (e.g. "ssh", not "Ssh"), like older Hugo versions did.
+capitalizeListTitles: false

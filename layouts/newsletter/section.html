@@ -41,7 +41,7 @@
               <p class="title is-4">{{ .Title }}</p>
             </div>
           </div>
-          <div class="content">{{ .Date.Format "January 2, 2006" }} &bull; <em>Issue {{ index .Aliases 0 }}</em></div>
+          <div class="content">{{ .Date.Format "January 2, 2006" }} &bull; <em>Issue {{ index .Aliases 0 | path.Base }}</em></div>
         </div>
       </article>
     </a>
