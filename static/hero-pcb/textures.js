@@ -33,7 +33,7 @@ export const LAYER_SOURCES = [
     { text: 'Buildroot', at: [21, 25.4], size: 4.6, align: 'left' },
   ] },
   { cu: 'In2.Cu', kind: 'inner', art: [
-    { logo: 'penguin', at: [11.5, 26.5], size: 10.5, callout: { name: 'Linux', text: 'I run Nerves actually..', at: [11.5, 28], size: 13 } },
+    { image: "logos/tux.svg", color: true, at: [11.5, 26.5], size: 10.5, callout: { name: 'Linux', text: 'I run Nerves actually..', at: [11.5, 28], size: 13 } },
     { text: 'Linux', at: [11.5, 33.6], size: 2.6 },
     { logo: 'uboot', at: [35, 26], size: 14, callout: { name: 'U-Boot', text: 'The standard in booting embedded Linux', at: [35, 28], size: 15 } },
     { text: 'U-Boot', at: [35, 32.6], size: 2.6 },
