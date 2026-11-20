@@ -40,6 +40,8 @@ export const DEFAULT_EXTRAS = {
     { layer: 'In2.Cu', name: 'Data partition', text: 'Separate data and system', at: [18.5, 43], size: [9.5, 4.2] },
     { layer: 'In2.Cu', name: 'A/B partitions', text: 'Safe updates', at: [29, 43], size: [9.5, 4.2] },
     { layer: 'In2.Cu', name: 'Minimal OS', text: 'Small attack surface, low complexity', at: [39.5, 43], size: [9.5, 4.2] },
+    { layer: 'B.Cu', name: 'Mix tooling', text: 'Integrates with standard Elixir tooling', at: [44.5, 29], size: [4.2, 10] },
+    { layer: 'B.Cu', name: 'fwup', text: 'Builds firmware and updates devices', at: [44.5, 40.5], size: [4.2, 10] },
   ],
   uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', part: 'U5', accent: '#9fe8ff', down: '#4fd18b' },
   cluster: {
