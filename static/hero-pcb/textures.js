@@ -2,7 +2,9 @@
 //
 // Two canvases per copper layer:
 //   albedo   - sRGB colour, alpha = board coverage (holes/outside are transparent)
-//   material - R: copper present, G: exposed metal (pads, rings), B: silkscreen
+//   material - R: copper present, G: exposed metal (pads, rings), B: silkscreen / logo art
+
+import { drawLogo } from './logos.js';
 
 export const PALETTE = {
   mask: '#173f2a',          // soldermask over bare laminate
@@ -16,12 +18,39 @@ export const PALETTE = {
 };
 
 // Layer order is bottom -> top, matching the visual stack.
+// art: logos drawn on the layer (board mm) - etched into inner copper, silkscreen on outer layers.
 export const LAYER_SOURCES = [
-  { cu: 'B.Cu', kind: 'outer', side: 'B' },
-  { cu: 'In2.Cu', kind: 'inner' },
+  { cu: 'B.Cu', kind: 'outer', side: 'B', art: [
+    { logo: 'hardhat', at: [15.5, 25], size: 9 },
+    { text: 'Buildroot', at: [21, 25.4], size: 4.6, align: 'left' },
+  ] },
+  { cu: 'In2.Cu', kind: 'inner', art: [
+    { logo: 'penguin', at: [11.5, 26.5], size: 10.5 },
+    { text: 'Linux', at: [11.5, 33.6], size: 2.6 },
+    { logo: 'uboot', at: [35, 26], size: 14 },
+    { text: 'U-Boot', at: [35, 32.6], size: 2.6 },
+  ] },
   { cu: 'In1.Cu', kind: 'inner' },
   { cu: 'F.Cu', kind: 'outer', side: 'F' },
 ];
+
+const ART_FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+
+// style: { ink, clear } fill styles (clear null erases)
+function drawArt(ctx, art = [], style) {
+  for (const a of art) {
+    if (a.logo) drawLogo(ctx, a.logo, a.at[0], a.at[1], a.size, style);
+    if (a.text) {
+      ctx.save();
+      ctx.fillStyle = style.ink;
+      ctx.font = `700 ${a.size}px ${ART_FONT}`;
+      ctx.textAlign = a.align || 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(a.text, a.at[0], a.at[1]);
+      ctx.restore();
+    }
+  }
+}
 
 function roundedRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -169,11 +198,18 @@ export function buildLayerCanvases(data, pxPerMm) {
         drawSilk(a, data.silk, PALETTE.silk);
         drawSilk(m, data.silk, '#0000ff');
       }
+      drawArt(a, src.art, { ink: PALETTE.silk, clear: null });
+      drawArt(m, src.art, { ink: '#0000ff', clear: null });
     } else {
       a.fillStyle = PALETTE.laminate;
       a.fillRect(0, 0, board.w, board.h);
       drawZones(a, zones, PALETTE.copper);
       drawZones(m, zones, '#ff0000');
+      // copper art: the logo is etched out of the plane, its details stay copper
+      drawArt(a, src.art, { ink: PALETTE.laminate, clear: PALETTE.copper });
+      m.globalCompositeOperation = 'source-over';
+      drawArt(m, src.art, { ink: '#0000ff', clear: '#ff0000' });
+      m.globalCompositeOperation = 'lighter';
       circles(a, viaRings, PALETTE.copperRing);
       circles(m, viaRings, '#ffff00');
       circles(a, holeRings, PALETTE.copperRing);

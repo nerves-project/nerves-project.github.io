@@ -27,3 +27,21 @@ Only the Python standard library is needed.
 Trellis Core is Copyright 2025 Protolux Electronics, licensed under CERN-OHL-P v2.
 Modification: the board geometry is converted to JSON and the Protolux Electronics
 logo (board-level silkscreen) is left out, per the repository's trademark notice.
+
+### Logos
+
+Project logos are trademarks of their owners, shown to refer to those projects.
+Check with each project before publishing.
+
+- **Phoenix**: mark path from the Phoenix installer templates
+  ([phoenixframework/phoenix](https://github.com/phoenixframework/phoenix), MIT), drawn monochrome in Phoenix orange.
+- **Membrane**: from `assets/logo.svg` in
+  [membraneframework/membrane_core](https://github.com/membraneframework/membrane_core) (Apache-2.0), monochrome.
+- **Nx**: the "Nx" wordmark redrawn as thin strokes after the
+  [elixir-nx/nx](https://github.com/elixir-nx/nx) logo; the mascot is not used.
+- **BEAM Bots**: `static/hero-pcb/logos/beam-bots.svg`, unmodified, from
+  [beam-bots/bb](https://github.com/beam-bots/bb) © 2025 James Harton (LicenseRef-Beam-Bots-Logo), used with permission.
+- **U-Boot**: monochrome adaptation of `tools/logos/u-boot_logo.svg` from
+  [u-boot/u-boot](https://github.com/u-boot/u-boot), © 2018 Heinrich Schuchardt, CC-BY-SA-4.0.
+  The adaptation (in `static/hero-pcb/logos.js`) is shared under the same licence.
+- **Linux** penguin and **Buildroot** hard hat: original drawings made for this hero.

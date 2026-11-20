@@ -141,3 +141,13 @@
 .pcb-hero.is-narrow .pcb-hero__label.is-active .pcb-hero__text { display: block; }
 .pcb-hero__tag.is-cluster { text-align: right; }
 .pcb-hero__tag.is-cluster .pcb-hero__tag-text { margin: 0 0 0 auto; }
+.pcb-hero__tag.is-app,
+.pcb-hero__tag.is-slot { pointer-events: auto; cursor: default; }
+.pcb-hero__tag.is-slot .pcb-hero__tag-name {
+  font: 600 0.7rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.04em;
+  color: #eadcff;
+  text-shadow: 0 0 10px var(--accent), 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+.pcb-hero__tag.is-slot .pcb-hero__tag-text { white-space: normal; width: 11rem; margin: 0 auto; }
+.pcb-hero.is-narrow .pcb-hero__tag-text { display: none; }

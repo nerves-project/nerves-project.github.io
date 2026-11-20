@@ -6,6 +6,7 @@
 //   mountPcbHero(document.querySelector('#hero-stack'), { dataUrl: '/hero-pcb/pcb.json' });
 
 import { buildLayerCanvases } from './textures.js';
+import { drawLogo } from './logos.js';
 
 export const DEFAULT_LAYERS = [
   // bottom -> top
@@ -17,11 +18,20 @@ export const DEFAULT_LAYERS = [
 
 // Things that sit on top of the stack. `part` anchors to a board reference, `at` to board mm.
 export const DEFAULT_EXTRAS = {
-  apps: [ // holograms over the Application layer; glyph 0 web, 1 media, 2 tensor
-    // accents are the projects' brand colours (Nx uses the lighter tone of its logo to read on dark)
-    { name: 'Phoenix', text: 'Web UIs and APIs, served by the device', part: 'J1', glyph: 0, accent: '#f05423' },
-    { name: 'Membrane', text: 'Audio and video streaming pipelines', at: [37, 33], size: [7, 7], glyph: 1, accent: '#87cce8' },
-    { name: 'Nx', text: 'Numerical computing and machine learning', part: 'U3', glyph: 2, accent: '#b58491' },
+  // holograms over the Application layer: `logo` names a mark in logos.js drawn in the accent
+  // colour, `image` a full-colour logo file. Accents are the projects' brand colours (Nx uses
+  // the lighter tone of its logo to read on dark).
+  apps: [
+    { name: 'Phoenix', text: 'Web services', part: 'J1', logo: 'phoenix', accent: '#f05423' },
+    { name: 'Membrane', text: 'Media processing and streaming', at: [37, 33], size: [7, 7], logo: 'membrane', accent: '#87cce8' },
+    { name: 'Nx', text: 'Inference at the edge', part: 'U3', logo: 'nx', accent: '#b58491' },
+    { name: 'BEAM Bots', text: 'Declarative robotics', at: [8.5, 24], size: [6, 7], image: 'logos/beam-bots.svg', accent: '#af4bf9' },
+  ],
+  // technology slots on the runtime layer
+  slots: [
+    { name: 'VintageNet', text: 'Networking APIs from Elixir', at: [12, 43], size: [9, 4.5] },
+    { name: 'RingLogger', text: 'Flash-safe, memory-resilient logging', at: [24, 43], size: [9, 4.5] },
+    { name: 'fwup', text: 'A/B updates and recovery', at: [36, 43], size: [9, 4.5] },
   ],
   uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', part: 'U5', accent: '#9fe8ff', down: '#4fd18b' },
   cluster: {
@@ -45,7 +55,7 @@ const CFG = {
   bloom: 0.9,
   exposure: 1.0,
   holoHeight: 9,      // hologram tiles float this far above the top plate (mm)
-  holoSize: 7,
+  holoSize: 6.4,
   // shadow nodes of the cluster: x, y = where the node's centre lands in the hero (0..1),
   // depth = distance from the camera in multiples of the hero board's distance, yaw in degrees
   nodes: [
@@ -54,7 +64,7 @@ const CFG = {
     { x: 0.33, y: 0.09, depth: 3.7, yaw: 36 },
   ],
   shadow: { light: 0.14, alpha: 0.8, emit: 0.45, haze: 0.55 },
-  ports: [[14, 37], [26, 40], [38, 36]], // where cluster links land on the runtime plate (board mm)
+  ports: [[42, 12], [43, 24], [42, 35]], // where cluster links land on the runtime plate (board mm)
 };
 
 // ---------------------------------------------------------------------------
@@ -155,7 +165,7 @@ struct Scene {
   focus: vec4f,
   dim: vec4f,
   params: vec4f,   // time, explode 0..1, slab thickness, pulse period
-  params2: vec4f,  // pulse speed, cpu x, cpu z, unused
+  params2: vec4f,  // pulse speed, top-layer pulse colour (rgb)
   accents: array<vec4f, 4>,
 };
 @group(0) @binding(0) var<uniform> S: Scene;
@@ -266,16 +276,13 @@ struct VOut {
       rough = mix(rough, 0.85, m.b);
     }
     col = shade(a.rgb, n, v, metal, rough);
-    let cpu = vec2f(S.params2.y, S.params2.z);
     if (inner) {
-      // energy rippling out across the plane from the CPU
-      let d = length(in.lp.xz - cpu);
-      let wave = pow(0.5 + 0.5 * sin(d * 0.5 - t * 2.6), 28.0);
-      emit = accent * m.r * (0.03 + wave * 1.1) * focus;
-      emit += accent * (1.0 - m.r) * (1.0 - m.g) * 0.015 * focus;
+      emit = accent * (m.r * 0.06 + (1.0 - m.r) * (1.0 - m.g) * 0.015) * focus;
     } else {
       emit = accent * m.r * 0.05 * focus;
     }
+    // logo art on the inner and bottom layers (B channel; on the top layer it is silkscreen)
+    if (li != 3u) { emit += accent * m.b * 0.55 * focus; }
   } else if (in.face == 1u) {
     let base = select(vec3f(0.03, 0.07, 0.045), vec3f(0.16, 0.14, 0.07), inner);
     let cu = select(0.0, 1.0, in.depth01 < 0.14);
@@ -375,9 +382,11 @@ struct VOut {
   let focus = S.focus[in.layer];
   let level = mix(0.12, 1.0, focus) * S.dim[in.layer];
   let I = (0.06 + comet * 7.0) * level * core * NODE.look.z;
+  // the top layer's pulses take the colour of the hovered project
+  let col = select(S.accents[in.layer].rgb, S.params2.yzw, in.layer == 3u);
   var o: FragOut;
   o.color = vec4f(0.0);
-  o.glow = vec4f(S.accents[in.layer].rgb * I, 1.0);
+  o.glow = vec4f(col * I, 1.0);
   return o;
 }
 `;
@@ -429,6 +438,9 @@ struct VOut {
 // holograms over the top layer, the NervesHub uplink and the distribution links.
 const FX = { link: 0, uplink: 1, footprint: 2, cone: 3, tile: 4, flare: 5 };
 const FX_WGSL = SCENE_WGSL + /* wgsl */ `
+@group(0) @binding(1) var samp: sampler;
+@group(0) @binding(4) var logoTex: texture_2d_array<f32>;
+
 struct VOut {
   @builtin(position) pos: vec4f,
   @location(0) uv: vec2f,
@@ -461,40 +473,12 @@ fn fill(d: f32, aa: f32) -> f32 { return 1.0 - smoothstep(-aa, aa, d); }
 fn hash2(p: vec2f) -> f32 { return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453); }
 fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
 
-// glyphs live in -1..1 with y up
-fn glyphWeb(p: vec2f, t: f32, aa: f32) -> f32 {
-  var g = line(abs(sdBox(p, vec2f(0.95, 0.78), 0.14)), 0.05, aa);
-  g = max(g, line(abs(p.y - 0.42), 0.04, aa) * step(abs(p.x), 0.95));
-  for (var i = 0; i < 3; i++) {
-    g = max(g, fill(length(p - vec2f(-0.74 + f32(i) * 0.19, 0.6)) - 0.065, aa));
-  }
-  for (var i = 0; i < 3; i++) {
-    let fi = f32(i);
-    let len = 0.35 + 1.1 * fract(t * 0.22 + fi * 0.37);
-    let y = 0.12 - fi * 0.3;
-    g = max(g, fill(sdBox(p - vec2f(-0.72 + len * 0.5, y), vec2f(len * 0.5, 0.055), 0.05), aa) * 0.85);
-  }
-  return g;
-}
-fn glyphWave(p: vec2f, t: f32, aa: f32) -> f32 {
-  var g = 0.0;
-  for (var i = 0; i < 9; i++) {
-    let fi = f32(i);
-    let x = -0.84 + fi * 0.21;
-    let hgt = 0.12 + 0.72 * abs(sin(t * 2.1 + fi * 0.9) * sin(t * 0.83 + fi * 0.45 + 1.0));
-    g = max(g, fill(sdBox(p - vec2f(x, 0.0), vec2f(0.065, hgt), 0.06), aa));
-  }
-  return g;
-}
-fn glyphTensor(p: vec2f, t: f32, aa: f32) -> f32 {
-  let cell = clamp(floor((p + 1.0) / 0.5), vec2f(0.0), vec2f(3.0));
-  let c = -0.75 + cell * 0.5;
-  let b = 0.3 + 0.7 * pow(0.5 + 0.5 * sin(t * 2.2 - (cell.x + cell.y) * 0.85 + hash2(cell) * 2.0), 3.0);
-  return fill(sdBox(p - c, vec2f(0.19), 0.06), aa) * b;
-}
-
 @fragment fn fs(in: VOut) -> FragOut {
   let aa = fwidth(in.uv);
+  // tiles show a logo inset in the frame; sampled up front to keep derivatives uniform
+  let luv = (in.uv - 0.5) / 0.74 + 0.5;
+  let layer = min(u32(max(in.col.w, 0.0) + 0.5), textureNumLayers(logoTex) - 1u);
+  let logo = textureSample(logoTex, samp, vec2f(luv.x, 1.0 - luv.y), layer);
   let mode = u32(in.prm.x + 0.5);
   let t = S.params.x;
   var rgb = in.col.rgb;
@@ -511,7 +495,7 @@ fn glyphTensor(p: vec2f, t: f32, aa: f32) -> f32 {
     let msg = comet(f, 12.0) + comet(1.0 - b, 12.0);
     let core = exp(-x * x * 26.0);
     let haze = exp(-x * x * 3.5);
-    I = core * (0.35 + msg * 3.5) + haze * (0.08 + msg * 0.5);
+    I = core * (0.55 + msg * 3.5) + haze * (0.1 + msg * 0.5);
     rgb = mix(rgb, vec3f(1.0), clamp(msg, 0.0, 1.0) * 0.45);
   } else if (mode == 1u) {
     // uplink beam: telemetry rises, firmware comes down
@@ -549,20 +533,19 @@ fn glyphTensor(p: vec2f, t: f32, aa: f32) -> f32 {
     let k = (1.0 - hgt);
     I = k * k * (0.06 + 0.1 * rays + 0.45 * edge) + rise * 0.2 * k;
   } else if (mode == 4u) {
-    // floating tile with an animated glyph
+    // floating tile with the project's logo and a light sweep across it
     let q = in.uv * 2.0 - 1.0;
     let aq = max(aa.x, aa.y) * 2.0;
     let b = sdBox(q, vec2f(0.95), 0.24);
-    I = line(abs(b), 0.03, aq) + fill(b, aq) * 0.12;
-    let kind = u32(in.col.w + 0.5);
-    let gq = q / 0.6;
-    let ga = aq / 0.6;
-    var g = 0.0;
-    if (kind == 0u) { g = glyphWeb(gq, t, ga); }
-    else if (kind == 1u) { g = glyphWave(gq, t, ga); }
-    else { g = glyphTensor(gq, t, ga); }
-    I += g * 1.1;
-    I *= (0.82 + 0.18 * sin(in.uv.y * 80.0 - t * 5.0)) * (0.94 + 0.06 * sin(t * 31.0 + in.col.w * 5.0));
+    I = line(abs(b), 0.03, aq) + fill(b, aq) * 0.08;
+    let sweep = exp(-pow(in.uv.x * 0.6 + in.uv.y - fract(t * 0.16 + in.ext.y) * 2.8 + 0.4, 2.0) * 28.0);
+    let shimmer = (0.86 + 0.14 * sin(in.uv.y * 80.0 - t * 5.0)) * (0.95 + 0.05 * sin(t * 31.0 + in.col.w * 5.0));
+    if (in.ext.x > 0.5) {
+      extra = logo.rgb * logo.a * (1.0 + sweep * 0.7) * shimmer;   // full-colour logo
+    } else {
+      I += logo.a * (1.15 + sweep * 0.8);
+    }
+    I *= shimmer;
   } else {
     // flare where the uplink leaves the board
     let q = in.uv * 2.0 - 1.0;
@@ -854,6 +837,16 @@ export async function mountPcbHero(root, opts = {}) {
   const appAccent = layerDefs[TOP].accent;
   const runtimeAccent = layerDefs[RUNTIME].accent;
   const appTags = extras.apps.map((a) => mkTag(a.name, a.text, a.accent || appAccent, 'is-app'));
+  const slotTags = (extras.slots || []).map((sl) => mkTag(sl.name, sl.text, sl.accent || runtimeAccent, 'is-slot'));
+  // hoverable things: hovering one shows its callout and focuses its layer
+  const items = [
+    ...appTags.map((tag, i) => ({ tag, i, layer: TOP, sx: -1e9, sy: -1e9, r: 0 })),
+    ...slotTags.map((tag, i) => ({ tag, i, layer: RUNTIME, sx: -1e9, sy: -1e9, r: 0 })),
+  ];
+  items.forEach((it) => {
+    it.tag.el.addEventListener('pointerenter', () => { state.hotTag = it; state.hover = true; });
+    it.tag.el.addEventListener('pointerleave', () => { if (state.hotTag === it) state.hotTag = null; });
+  });
   const uplinkTag = extras.uplink && mkTag(extras.uplink.name, extras.uplink.text, extras.uplink.accent || appAccent, 'is-uplink');
   const clusterTag = extras.cluster && mkTag(extras.cluster.name, extras.cluster.text, runtimeAccent, 'is-cluster');
   const nodeTags = (extras.cluster?.nodes || []).map((n) => mkTag(n, '', runtimeAccent, 'is-node'));
@@ -901,6 +894,32 @@ export async function mountPcbHero(root, opts = {}) {
   generateMips(device, matTex, 'rgba8unorm', 4, mipLevels, linearClamp);
   const aniso = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', maxAnisotropy: 8, addressModeU: 'clamp-to-edge', addressModeV: 'clamp-to-edge' });
 
+  // hologram logos: one layer per app, white masks for marks, full colour for images
+  const LOGO_PX = 256, logoMips = Math.log2(LOGO_PX) + 1;
+  const logoCanvases = await Promise.all(extras.apps.map(async (a) => {
+    const c = new OffscreenCanvas(LOGO_PX, LOGO_PX);
+    const g = c.getContext('2d');
+    if (a.image) {
+      const img = new Image();
+      img.src = new URL(a.image, import.meta.url).href;
+      try {
+        await img.decode();
+        const k = (LOGO_PX * 0.96) / Math.max(img.naturalWidth, img.naturalHeight);
+        const w = img.naturalWidth * k, hh = img.naturalHeight * k;
+        g.drawImage(img, (LOGO_PX - w) / 2, (LOGO_PX - hh) / 2, w, hh);
+      } catch (e) { console.warn('[pcb-hero] logo failed to load', a.image); }
+    } else if (a.logo) {
+      drawLogo(g, a.logo, LOGO_PX / 2, LOGO_PX / 2, LOGO_PX * 0.92, { ink: '#fff', clear: null });
+    }
+    return c;
+  }));
+  const logoTex = device.createTexture({
+    size: [LOGO_PX, LOGO_PX, Math.max(1, logoCanvases.length)], format: 'rgba8unorm', mipLevelCount: logoMips,
+    usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+  });
+  logoCanvases.forEach((c, i) => device.queue.copyExternalImageToTexture({ source: c }, { texture: logoTex, origin: [0, 0, i] }, [LOGO_PX, LOGO_PX]));
+  generateMips(device, logoTex, 'rgba8unorm', Math.max(1, logoCanvases.length), logoMips, linearClamp);
+
   // --- buffers
   const mkBuf = (arr, usage) => {
     const b = device.createBuffer({ size: Math.max(16, arr.byteLength), usage: usage | GPUBufferUsage.COPY_DST });
@@ -945,6 +964,7 @@ export async function mountPcbHero(root, opts = {}) {
       { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: {} },
       { binding: 2, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: '2d-array' } },
       { binding: 3, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: '2d-array' } },
+      { binding: 4, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: '2d-array' } },
     ],
   });
   const sceneBG = device.createBindGroup({
@@ -954,6 +974,7 @@ export async function mountPcbHero(root, opts = {}) {
       { binding: 1, resource: aniso },
       { binding: 2, resource: albedoTex.createView({ dimension: '2d-array' }) },
       { binding: 3, resource: matTex.createView({ dimension: '2d-array' }) },
+      { binding: 4, resource: logoTex.createView({ dimension: '2d-array' }) },
     ],
   });
   const nodeBGL = device.createBindGroupLayout({
@@ -1138,13 +1159,14 @@ export async function mountPcbHero(root, opts = {}) {
   // --- interaction state
   const N = layerDefs.length;
   const state = {
-    hover: false, pointerFocus: -1, labelFocus: -1, candidate: -1, candidateSince: 0,
+    hover: false, pointerFocus: -1, labelFocus: -1, candidate: -1, candidateSince: 0, hot: null, hotTag: null,
     y: [...Array(N)].map((_, i) => i * (cfg.slab + cfg.gapIdle)),
     focusW: new Array(N).fill(0), dim: new Array(N).fill(1), explode: 0,
     viewProj: null, invViewProj: null, cssW: 1, cssH: 1,
   };
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const focusTarget = () => (state.labelFocus >= 0 ? state.labelFocus : state.pointerFocus);
+  const hotItem = () => state.hotTag || state.hot;
+  const focusTarget = () => (state.labelFocus >= 0 ? state.labelFocus : hotItem() ? hotItem().layer : state.pointerFocus);
   const targetY = (i, focus, open) => i * (cfg.slab + (open ? cfg.gapOpen : cfg.gapIdle)) + (focus >= 0 && i > focus ? cfg.lift : 0);
 
   function pick(clientX, clientY) {
@@ -1171,17 +1193,31 @@ export async function mountPcbHero(root, opts = {}) {
   root.addEventListener('pointerenter', () => { state.hover = true; });
   root.addEventListener('pointerleave', (e) => {
     if (e.pointerType !== 'mouse') return; // touch keeps its tapped focus
-    state.hover = false; state.candidate = -1; state.pointerFocus = -1;
+    state.hover = false; state.candidate = -1; state.pointerFocus = -1; state.hot = null;
   });
+  function hitItem(clientX, clientY) {
+    const r = root.getBoundingClientRect();
+    const x = clientX - r.left, y = clientY - r.top;
+    let best = null, bd = Infinity;
+    for (const it of items) {
+      if (it.tag.vis < 0.3) continue;
+      const d = Math.hypot(x - it.sx, y - it.sy);
+      if (d < it.r && d < bd) { bd = d; best = it; }
+    }
+    return best;
+  }
   canvas.addEventListener('pointermove', (e) => {
-    const c = pick(e.clientX, e.clientY);
+    state.hot = hitItem(e.clientX, e.clientY);
+    const c = state.hot ? state.hot.layer : pick(e.clientX, e.clientY);
     if (c !== state.candidate) { state.candidate = c; state.candidateSince = performance.now(); }
   });
   canvas.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse') return;
     state.hover = true;
-    const c = pick(e.clientX, e.clientY);
-    state.pointerFocus = c === state.pointerFocus ? -1 : c;
+    const hit = hitItem(e.clientX, e.clientY);
+    state.hot = hit && hit !== state.hot ? hit : null;
+    const c = state.hot ? state.hot.layer : pick(e.clientX, e.clientY);
+    state.pointerFocus = state.hot ? c : c === state.pointerFocus ? -1 : c;
     state.candidate = state.pointerFocus; state.candidateSince = -1e9;
   });
   labels.forEach((el, i) => {
@@ -1300,8 +1336,10 @@ export async function mountPcbHero(root, opts = {}) {
   };
   const runtimeRgb = hexLinear(runtimeAccent);
   const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
-  const fxState = { holo: 0, uplink: 0, links: 0 };
-  const geo = { tiles: [], beam: null, links: [] }; // world anchors for the callouts
+  const fxState = { holo: 0, uplink: 0, links: 0, slots: 0 };
+  const hotW = items.map(() => 0);
+  const geo = { tiles: [], tileR: [], beam: null, links: [], slots: [] }; // world anchors for the callouts
+  const slots = (extras.slots || []).map((sl) => ({ ...sl, anchor: anchorOf(sl), rgb: glowRgb(sl.accent || '#d2b4ff') }));
   let fxN = 0;
   function fxPush(c0, c1, c2, c3, mode, I, d0, d1, rgb, kind, ext = [0, 0, 0, 0]) {
     if (fxN >= MAX_FX || I <= 0.002) return;
@@ -1341,24 +1379,39 @@ export async function mountPcbHero(root, opts = {}) {
     const holoI = ease('holo', focus === TOP ? 1 : focus < 0 ? 0.6 : 0.1);
     const upI = ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.8 : 0.3);
     const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.22 : 0.08);
+    const slotI = ease('slots', focus === RUNTIME ? 1 : 0);
+    const hot = hotItem();
+    items.forEach((it, j) => { hotW[j] += ((hot === it ? 1 : 0) - hotW[j]) * k; });
     const R = state.camRight, U = state.camUp;
     const topY = state.y[TOP];
 
     geo.tiles = apps.map((app, i) => {
+      const I = holoI * (1 + hotW[i] * 0.7);
       const A = app.anchor;
       const fw = A.w + 1.8, fd = A.d + 1.8;
       const y0 = topY + 0.03;
       fxPush([A.x - fw / 2, y0, A.z + fd / 2], [A.x + fw / 2, y0, A.z + fd / 2], [A.x + fw / 2, y0, A.z - fd / 2], [A.x - fw / 2, y0, A.z - fd / 2],
-        FX.footprint, holoI, 0, 0, app.rgb, i, [fw, fd, 0, 0]);
+        FX.footprint, I, 0, 0, app.rgb, i, [fw, fd, 0, 0]);
       const s = cfg.holoSize / 2;
       const C = [A.x, topY + cfg.holoHeight + Math.sin(time * 1.1 + i * 2.1) * 0.35, A.z];
       fxPush(add(add(C, R, -s), U, -s), add(add(C, R, s), U, -s), add(add(C, R, s), U, s), add(add(C, R, -s), U, s),
-        FX.tile, holoI, 0, 0, app.rgb, app.glyph ?? i);
+        FX.tile, I, 0, 0, app.rgb, i, [app.image ? 1 : 0, i * 0.37, 0, 0]);
+      geo.tileR[i] = C;
       const B = [A.x, topY + A.top + 0.05, A.z];
       const Cb = add(C, U, -s);
       const bw = Math.max(fw, fd) * 0.42, tw = s * 0.92;
-      fxPush(add(B, R, -bw), add(B, R, bw), add(Cb, R, tw), add(Cb, R, -tw), FX.cone, holoI, 0, 0, app.rgb, i);
+      fxPush(add(B, R, -bw), add(B, R, bw), add(Cb, R, tw), add(Cb, R, -tw), FX.cone, I, 0, 0, app.rgb, i);
       return add(C, U, s);
+    });
+
+    // technology slots on the runtime plate
+    geo.slots = slots.map((sl, j) => {
+      const A = sl.anchor;
+      const yS = state.y[RUNTIME] + 0.04;
+      const I = slotI * (0.8 + hotW[apps.length + j] * 0.9);
+      fxPush([A.x - A.w / 2, yS, A.z + A.d / 2], [A.x + A.w / 2, yS, A.z + A.d / 2], [A.x + A.w / 2, yS, A.z - A.d / 2], [A.x - A.w / 2, yS, A.z - A.d / 2],
+        FX.footprint, I, 0, 0, sl.rgb, j + 5, [A.w, A.d, 0, 0]);
+      return [A.x, yS, A.z];
     });
 
     if (uplink) {
@@ -1393,9 +1446,9 @@ export async function mountPcbHero(root, opts = {}) {
           const P = portOf.get(b);
           const len = Math.hypot(B.p[0] - P[0], B.p[2] - P[2]);
           pts = cubic(P, add(P, [0, 6, 0]), add(add(B.p, B.n, len * 0.3), [0, len * 0.04, 0]), B.p, 56);
-          const f = 2.2;
+          const f = 3;
           fxPush([P[0] - f, P[1], P[2] + f], [P[0] + f, P[1], P[2] + f], [P[0] + f, P[1], P[2] - f], [P[0] - f, P[1], P[2] - f],
-            FX.flare, linkI * 0.9, 0, 0, runtimeRgb, 0);
+            FX.flare, linkI * 2.4, 0, 0, runtimeRgb, 0);
         } else {
           const A = edgeAnchor(na, [nb.x, nb.y, nb.z], y);
           const len = Math.hypot(B.p[0] - A.p[0], B.p[2] - A.p[2]);
@@ -1426,9 +1479,19 @@ export async function mountPcbHero(root, opts = {}) {
       s.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`;
     };
     const appVis = focus === TOP ? 1 : focus < 0 ? 0.75 : 0;
+    const hot = hotItem();
     appTags.forEach((tag, i) => {
       const [x, y] = project(geo.tiles[i]);
-      place(tag, appVis, x, y - 4, 'above', focus === TOP);
+      place(tag, appVis, x, y - 4, 'above', hot === items[i]);
+      const [cx, cy] = project(geo.tileR[i]);
+      Object.assign(items[i], { sx: cx, sy: cy, r: Math.max(18, (y - cy) * -1 + 6) });
+    });
+    const slotVis = focus === RUNTIME ? 1 : 0;
+    slotTags.forEach((tag, j) => {
+      const it = items[appTags.length + j];
+      const [x, y] = project(geo.slots[j]);
+      place(tag, slotVis, x, y - 12, 'above', hot === it);
+      Object.assign(it, { sx: x, sy: y, r: 26 });
     });
     if (uplinkTag && geo.beam) {
       // where the beam leaves the top of the hero
@@ -1460,7 +1523,6 @@ export async function mountPcbHero(root, opts = {}) {
   // --- frame
   const accents = layerDefs.map((L) => hexLinear(L.accent));
   const sceneData = new Float32Array(64);
-  const cpu = data.parts.find((p) => p.ref === 'U3') || { x: h, y: h };
   let last = performance.now();
   let time = 0;
   let running = true;
@@ -1496,7 +1558,9 @@ export async function mountPcbHero(root, opts = {}) {
     sceneData.set(state.focusW, 28);
     sceneData.set(state.dim, 32);
     sceneData.set([time, state.explode, cfg.slab, cfg.pulsePeriod], 36);
-    sceneData.set([cfg.pulseSpeed, cpu.x - h, cpu.y - h, 0], 40);
+    let tint = accents[TOP];
+    apps.forEach((app, j) => { if (hotW[j] > 0.001) tint = tint.map((c, k) => c + (app.rgb[k] - c) * hotW[j]); });
+    sceneData.set([cfg.pulseSpeed, ...tint], 40);
     accents.forEach((a, i) => sceneData.set([...a, 1], 44 + i * 4));
     device.queue.writeBuffer(sceneUBO, 0, sceneData);
     device.queue.writeBuffer(compUBO, 0, new Float32Array([cfg.bloom, cfg.exposure, hdrOut ? 4.0 : 1.0, hdrOut ? 0 : 1]));
