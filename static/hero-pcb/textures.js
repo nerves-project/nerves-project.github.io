@@ -23,6 +23,7 @@ export const PALETTE = {
 //   { image, at, size } a logo file (path relative to this module), drawn monochrome by its alpha;
 //                       with `threshold`, pixels darker than it are left out; with `halftone` (cell mm)
 //                       a shaded logo becomes a dot screen, as silkscreen would print it
+//                       with `color: true` the file is printed as is, in its own colours, matte
 //   callout: { name, text, at, size } shows a callout when the art is hovered
 //   { text, at, size }  a label
 export const LAYER_SOURCES = [
@@ -43,9 +44,25 @@ export const LAYER_SOURCES = [
 
 const ART_FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 
-function drawImageArt(ctx, img, a, ink, pxPerMm) {
+function drawImageArt(ctx, img, a, ink, pxPerMm, isMaterial) {
   const k = a.size / Math.max(img.naturalWidth, img.naturalHeight);
   const w = img.naturalWidth * k, h = img.naturalHeight * k;
+  if (a.color) {
+    // printed decal: the image itself on the albedo; on the material map it is matte and
+    // takes no copper, metal or glow, so it keeps its own colours
+    if (!isMaterial) { ctx.drawImage(img, a.at[0] - w / 2, a.at[1] - h / 2, w, h); return; }
+    const c = new OffscreenCanvas(Math.max(1, Math.ceil(w * pxPerMm)), Math.max(1, Math.ceil(h * pxPerMm)));
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, 0, c.width, c.height);
+    g.globalCompositeOperation = 'source-in';
+    g.fillStyle = '#000';
+    g.fillRect(0, 0, c.width, c.height);
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(c, a.at[0] - w / 2, a.at[1] - h / 2, w, h);
+    ctx.restore();
+    return;
+  }
   const c = new OffscreenCanvas(Math.max(1, Math.ceil(w * pxPerMm)), Math.max(1, Math.ceil(h * pxPerMm)));
   const g = c.getContext('2d');
   g.drawImage(img, 0, 0, c.width, c.height);
@@ -86,10 +103,10 @@ function drawImageArt(ctx, img, a, ink, pxPerMm) {
 }
 
 // style: { ink, clear } fill styles (clear null erases)
-function drawArt(ctx, art = [], style, images, pxPerMm) {
+function drawArt(ctx, art = [], style, images, pxPerMm, isMaterial = false) {
   for (const a of art) {
     if (a.logo) drawLogo(ctx, a.logo, a.at[0], a.at[1], a.size, style);
-    if (a.image && images?.get(a.image)) drawImageArt(ctx, images.get(a.image), a, style.ink, pxPerMm);
+    if (a.image && images?.get(a.image)) drawImageArt(ctx, images.get(a.image), a, style.ink, pxPerMm, isMaterial);
     if (a.text) {
       ctx.save();
       ctx.fillStyle = style.ink;
@@ -249,7 +266,7 @@ export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
         drawSilk(m, data.silk, '#0000ff');
       }
       drawArt(a, src.art, { ink: PALETTE.silk, clear: null }, images, pxPerMm);
-      drawArt(m, src.art, { ink: '#0000ff', clear: null }, images, pxPerMm);
+      drawArt(m, src.art, { ink: '#0000ff', clear: null }, images, pxPerMm, true);
     } else {
       a.fillStyle = PALETTE.laminate;
       a.fillRect(0, 0, board.w, board.h);
@@ -258,7 +275,7 @@ export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
       // copper art: the logo is etched out of the plane, its details stay copper
       drawArt(a, src.art, { ink: PALETTE.laminate, clear: PALETTE.copper }, images, pxPerMm);
       m.globalCompositeOperation = 'source-over';
-      drawArt(m, src.art, { ink: '#0000ff', clear: '#ff0000' }, images, pxPerMm);
+      drawArt(m, src.art, { ink: '#0000ff', clear: '#ff0000' }, images, pxPerMm, true);
       m.globalCompositeOperation = 'lighter';
       circles(a, viaRings, PALETTE.copperRing);
       circles(m, viaRings, '#ffff00');
