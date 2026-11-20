@@ -12,11 +12,11 @@
   </div>
   <div id="video-container" class="container">
     <div class="video-tabs">
-      {{ range $year, $data := .Params.videos }}
+      {{ range $year, $data := .Params.videos_by_year }}
         <a id="{{ $year }}" class="video-tab {{ if (hasPrefix $year $current_year) }}is-active{{end}}">{{ $year }}</a>
       {{ end }}
     </div>
-    {{ range $year, $data := .Params.videos }}
+    {{ range $year, $data := .Params.videos_by_year }}
     <div id="{{ $year }}-content" style="display:{{ if (hasPrefix $year $current_year) }}block{{else}}none{{end}};">
       {{ range $index, $video := $data }}
         {{ if eq $index 0 }}

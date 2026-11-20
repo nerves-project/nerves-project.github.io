@@ -2,7 +2,7 @@
 type: videos
 title: Videos
 current_year: 2026
-videos:
+videos_by_year:
   2026:
     # 95 views
     - title: "Sneak Peak: Official Nerves Hardware Starter Kit"
