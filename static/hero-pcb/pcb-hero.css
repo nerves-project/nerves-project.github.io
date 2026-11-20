@@ -152,3 +152,9 @@
 .pcb-hero__tag.is-slot .pcb-hero__tag-text { white-space: normal; width: 11rem; margin: 0 auto; }
 .pcb-hero.is-narrow .pcb-hero__tag-text { display: none; }
 .pcb-hero__tag.is-art .pcb-hero__tag-text { white-space: normal; width: 11rem; margin: 0 auto; }
+
+/* reduced motion: no animated transitions in the overlay either */
+.pcb-hero.is-still .pcb-hero__canvas,
+.pcb-hero.is-still .pcb-hero__label,
+.pcb-hero.is-still .pcb-hero__leaders path,
+.pcb-hero.is-still .pcb-hero__tag-text { transition: none; }

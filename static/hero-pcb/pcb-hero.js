@@ -179,6 +179,7 @@ struct Scene {
   params: vec4f,   // time, explode 0..1, slab thickness, pulse period
   params2: vec4f,  // pulse speed, top-layer pulse colour (rgb)
   accents: array<vec4f, 4>,
+  motion: vec4f,   // x: 1 animated, 0 reduced motion (moving accents settle into a steady glow)
 };
 @group(0) @binding(0) var<uniform> S: Scene;
 
@@ -343,7 +344,7 @@ struct VOut {
   if (in.mat.z > 0.5) {
     // status LED: slow heartbeat
     let t = fract((S.params.x + NODE.haze.w) * 0.6);
-    e *= 0.25 + 0.75 * (exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t));
+    e *= mix(0.6, 0.25 + 0.75 * (exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t)), S.motion.x);
   }
   var o: FragOut;
   o.color = finish(col, S.accents[3].rgb * e);
@@ -393,7 +394,8 @@ struct VOut {
   let comet = pow(u, 9.0) * smoothstep(1.0, 0.985, u);
   let focus = S.focus[in.layer];
   let level = mix(0.12, 1.0, focus) * S.dim[in.layer];
-  let I = (0.06 + comet * 7.0) * level * core * NODE.look.z;
+  let m = S.motion.x;
+  let I = (0.06 + 0.1 * (1.0 - m) + comet * 7.0 * m) * level * core * NODE.look.z;
   // the top layer's pulses take the colour of the hovered project
   let col = select(S.accents[in.layer].rgb, S.params2.yzw, in.layer == 3u);
   var o: FragOut;
@@ -438,7 +440,7 @@ struct VOut {
   let k = h * 3.0;
   let i0 = u32(clamp(floor(k), 0.0, 2.0));
   let col = mix(S.accents[i0].rgb, S.accents[i0 + 1u].rgb, clamp(k - f32(i0), 0.0, 1.0));
-  let I = S.params.y * across * (0.05 + pulse * 2.2);
+  let I = S.params.y * across * (0.05 + 0.12 * (1.0 - S.motion.x) + pulse * 2.2 * S.motion.x);
   var o: FragOut;
   o.color = vec4f(0.0);
   o.glow = vec4f(col * I, 1.0);
@@ -492,6 +494,7 @@ fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
   let layer = min(u32(max(in.col.w, 0.0) + 0.5), textureNumLayers(logoTex) - 1u);
   let logo = textureSample(logoTex, samp, vec2f(luv.x, 1.0 - luv.y), layer);
   let mode = u32(in.prm.x + 0.5);
+  let m = S.motion.x;
   let t = S.params.x;
   var rgb = in.col.rgb;
   var I = 0.0;
@@ -504,10 +507,10 @@ fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
     let seed = in.col.w;
     let f = fract((along - t * 20.0) / 24.0 + seed);
     let b = fract((along + t * 15.0) / 31.0 + seed * 1.7);
-    let msg = comet(f, 12.0) + comet(1.0 - b, 12.0);
+    let msg = (comet(f, 12.0) + comet(1.0 - b, 12.0)) * m;
     let core = exp(-x * x * 26.0);
     let haze = exp(-x * x * 3.5);
-    I = core * (0.55 + msg * 3.5) + haze * (0.1 + msg * 0.5);
+    I = core * (0.55 + 0.25 * (1.0 - m) + msg * 3.5) + haze * (0.1 + msg * 0.5);
     rgb = mix(rgb, vec3f(1.0), clamp(msg, 0.0, 1.0) * 0.45);
   } else if (mode == 1u) {
     // uplink beam: telemetry rises, firmware comes down
@@ -516,10 +519,10 @@ fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
     let fade = 1.0 / (1.0 + along / 70.0);
     let core = exp(-x * x * 160.0);
     let haze = exp(-x * x * 7.0);
-    let up = comet(fract((along - t * 26.0) / 15.0), 10.0);
-    let dn = comet(1.0 - fract((along + t * 38.0) / 120.0), 16.0);
+    let up = comet(fract((along - t * 26.0) / 15.0), 10.0) * m;
+    let dn = comet(1.0 - fract((along + t * 38.0) / 120.0), 16.0) * m;
     let base = exp(-along * 0.35);
-    I = (core * (0.7 + up * 2.4) + haze * (0.07 + up * 0.25 + base * 0.6)) * fade;
+    I = (core * (0.7 + 0.4 * (1.0 - m) + up * 2.4) + haze * (0.07 + up * 0.25 + base * 0.6)) * fade;
     extra = in.ext.rgb * dn * (core * 4.0 + haze * 0.7) * fade;
   } else if (mode == 2u) {
     // footprint on the board: corner brackets, faint fill, sweeping scan line
@@ -534,14 +537,14 @@ fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
     I = line(abs(d), 0.11, am) * corner + line(abs(d), 0.035, am) * 0.4;
     let inside = fill(d, am);
     let sweep = mix(-inset.y, inset.y, fract(t * 0.3 + in.col.w * 0.37));
-    I += inside * (0.05 + exp(-abs(pm.y - sweep) * 5.0) * 0.3);
+    I += inside * (0.05 + exp(-abs(pm.y - sweep) * 5.0) * 0.3 * m);
   } else if (mode == 3u) {
     // light cone from the footprint up to the tile
     let x = in.uv.x * 2.0 - 1.0;
     let hgt = in.uv.y;
     let edge = exp(-(1.0 - abs(x)) * 12.0);
     let rays = 0.5 + 0.5 * sin(x * 21.0 + t * 1.3) * sin(x * 7.0 - t * 0.6 + in.col.w);
-    let rise = comet(fract(hgt * 2.2 - t * 0.8 + in.col.w * 0.3), 10.0);
+    let rise = comet(fract(hgt * 2.2 - t * 0.8 + in.col.w * 0.3), 10.0) * m;
     let k = (1.0 - hgt);
     I = k * k * (0.06 + 0.1 * rays + 0.45 * edge) + rise * 0.2 * k;
   } else if (mode == 4u) {
@@ -550,7 +553,7 @@ fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
     let aq = max(aa.x, aa.y) * 2.0;
     let b = sdBox(q, vec2f(0.95), 0.24);
     I = line(abs(b), 0.03, aq) + fill(b, aq) * 0.08;
-    let sweep = exp(-pow(in.uv.x * 0.6 + in.uv.y - fract(t * 0.16 + in.ext.y) * 2.8 + 0.4, 2.0) * 28.0);
+    let sweep = exp(-pow(in.uv.x * 0.6 + in.uv.y - fract(t * 0.16 + in.ext.y) * 2.8 + 0.4, 2.0) * 28.0) * m;
     let shimmer = (0.86 + 0.14 * sin(in.uv.y * 80.0 - t * 5.0)) * (0.95 + 0.05 * sin(t * 31.0 + in.col.w * 5.0));
     if (in.ext.x > 0.5) {
       extra = logo.rgb * logo.a * (1.0 + sweep * 0.7) * shimmer;   // full-colour logo
@@ -563,7 +566,7 @@ fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
     let q = in.uv * 2.0 - 1.0;
     let r = length(q);
     let ring = fract(r * 1.6 - t * 0.6);
-    I = (pow(ring, 6.0) * 0.35 + exp(-r * r * 30.0) * 0.5) * smoothstep(1.0, 0.55, r);
+    I = (pow(ring, 6.0) * 0.35 * m + exp(-r * r * 30.0) * 0.5) * smoothstep(1.0, 0.55, r);
   }
   var o: FragOut;
   o.color = vec4f(0.0);
@@ -974,7 +977,7 @@ export async function mountPcbHero(root, opts = {}) {
   const h = data.board.w / 2;
   const viaData = new Float32Array(data.vias.flatMap(([x, y, s, d]) => [x - h, y - h, s, d]));
   const viaBuf = mkBuf(viaData, GPUBufferUsage.VERTEX);
-  const sceneUBO = device.createBuffer({ size: 256, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const sceneUBO = device.createBuffer({ size: 512, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
 
   // the hero board is node 0; shadow nodes follow, one 256-byte slot each (dynamic offsets)
   const NODE_STRIDE = 256;
@@ -1201,7 +1204,12 @@ export async function mountPcbHero(root, opts = {}) {
     focusW: new Array(N).fill(0), dim: new Array(N).fill(1), explode: 0,
     viewProj: null, invViewProj: null, cssW: 1, cssH: 1,
   };
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // reduced motion: time stops, transitions are instant, moving accents become a steady glow
+  // and frames are only drawn when something changes
+  const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
+  let reduceMotion = motionQuery.matches;
+  motionQuery.addEventListener('change', (e) => { reduceMotion = e.matches; root.classList.toggle('is-still', reduceMotion); });
+  root.classList.toggle('is-still', reduceMotion);
   const hotItem = () => state.hotTag || state.hot;
   const focusTarget = () => (state.labelFocus >= 0 ? state.labelFocus : hotItem() ? hotItem().layer : state.pointerFocus);
   const targetY = (i, focus, open) => i * (cfg.slab + (open ? cfg.gapOpen : cfg.gapIdle)) + (focus >= 0 && i > focus ? cfg.lift : 0);
@@ -1570,18 +1578,26 @@ export async function mountPcbHero(root, opts = {}) {
 
   // --- frame
   const accents = layerDefs.map((L) => hexLinear(L.accent));
-  const sceneData = new Float32Array(64);
+  const sceneData = new Float32Array(68);
   let last = performance.now();
   let time = 0;
   let running = true;
   let visible = true;
   new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible) requestAnimationFrame(frame); }).observe(root);
 
+  let lastSig = '', settle = 0;
   function frame(now) {
     if (!running || !visible) return;
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     if (!reduceMotion) time += dt;
+    if (reduceMotion) {
+      // nothing moves on its own, so redraw only after input, resizes or hover changes
+      const hot = hotItem();
+      const sig = [focusTarget(), state.hover, state.candidate, hot ? items.indexOf(hot) : -1, state.cssW, state.cssH].join();
+      if (sig !== lastSig) { lastSig = sig; settle = 3; }
+      if (settle-- <= 0) { requestAnimationFrame(frame); return; }
+    }
 
     if (state.candidate !== state.pointerFocus) {
       const wait = state.candidate === -1 ? 260 : 90;
@@ -1610,6 +1626,7 @@ export async function mountPcbHero(root, opts = {}) {
     apps.forEach((app, j) => { if (hotW[j] > 0.001) tint = tint.map((c, k) => c + (app.rgb[k] - c) * hotW[j]); });
     sceneData.set([cfg.pulseSpeed, ...tint], 40);
     accents.forEach((a, i) => sceneData.set([...a, 1], 44 + i * 4));
+    sceneData[64] = reduceMotion ? 0 : 1;
     device.queue.writeBuffer(sceneUBO, 0, sceneData);
     device.queue.writeBuffer(compUBO, 0, new Float32Array([cfg.bloom, cfg.exposure, hdrOut ? 4.0 : 1.0, hdrOut ? 0 : 1]));
 
