@@ -1,7 +1,7 @@
 <head>
   <title>
-    {{- if and .Params.Title (not (eq .Params.Title .Site.Title)) -}}
-      {{ .Params.Title }} | {{ .Site.Title }}
+    {{- if and .Title (not (eq .Title .Site.Title)) -}}
+      {{ .Title }} | {{ .Site.Title }}
     {{- else -}}
       {{ .Site.Title }}
     {{- end -}}
@@ -16,19 +16,22 @@
 
   <link rel="shortcut icon" type="image/png" href="{{ relURL "img/icon.png" }}">
 
-  {{/* https://gohugo.io/hugo-pipes/scss-sass */}}
-  {{ if .Site.IsServer }}
-    {{ $cssOpts := (dict "targetPath" "css/main.css" "enableSourceMap" true ) }}
-    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | toCSS $cssOpts }}
+  {{/* https://gohugo.io/functions/css/sass/ */}}
+  {{/* Dart Sass is provided by the sass-embedded npm package (see bin/server). */}}
+  {{/* The silenced deprecations come from Bulma 0.9 and our use of @import. */}}
+  {{ $silence := slice "import" "global-builtin" "color-functions" "if-function" }}
+  {{ if hugo.IsServer }}
+    {{ $cssOpts := (dict "targetPath" "css/main.css" "enableSourceMap" true "silenceDeprecations" $silence) }}
+    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | css.Sass $cssOpts }}
     <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
   {{ else }}
-    {{ $cssOpts := (dict "targetPath" "css/main.css" ) }}
-    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | toCSS $cssOpts | minify | fingerprint }}
+    {{ $cssOpts := (dict "targetPath" "css/main.css" "silenceDeprecations" $silence) }}
+    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | css.Sass $cssOpts | minify | fingerprint }}
     <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}" crossorigin="anonymous" media="screen" />
   {{ end }}
 
   {{/* https://gohugo.io/hugo-pipes/js */}}
-  {{ if .Site.IsServer }}
+  {{ if hugo.IsServer }}
     {{ $script := resources.Get "js/main.js" | js.Build }}
     <script src="{{ $script.RelPermalink }}"></script>
   {{ else }}

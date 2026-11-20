@@ -3,9 +3,7 @@
 ## Get started
 
 The website uses Hugo and Node.js. We're using `asdf` to manage versions, so
-first install the `hugo` and `nodejs` plugins if you haven't already. The
-default `hugo` plugin in `asdf` doesn't support extended Hugo versions so if you
-get an error, that might be the issue.
+first install the `hugo` and `nodejs` plugins if you haven't already.
 
 ```sh
 asdf plugin add hugo
@@ -24,6 +22,10 @@ Run the development server.
 ```sh
 bin/server
 ```
+
+The stylesheets are compiled with Dart Sass, which `bin/setup` installs through
+the `sass-embedded` npm package. `bin/server` puts it on the `PATH` for Hugo, so
+use it rather than running `hugo server` directly.
 
 Visit [localhost:1313](http://localhost:1313).
 
