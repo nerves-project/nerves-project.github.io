@@ -19,13 +19,15 @@ export const DEFAULT_LAYERS = [
 // Things that sit on top of the stack. `part` anchors to a board reference, `at` to board mm.
 export const DEFAULT_EXTRAS = {
   // holograms over the Application layer: `logo` names a mark in logos.js drawn in the accent
-  // colour, `image` a full-colour logo file. Accents are the projects' brand colours (Nx uses
+  // colour, `image` a full-colour logo file; with `mono` the file's lighter parts become the
+  // mark (for dark-on-light logos). Accents are the projects' brand colours (Nx uses
   // the lighter tone of its logo to read on dark).
   apps: [
     { name: 'Phoenix', text: 'Web services', part: 'J1', logo: 'phoenix', accent: '#f05423' },
     { name: 'Membrane', text: 'Media processing and streaming', at: [37, 33], size: [7, 7], logo: 'membrane', accent: '#87cce8' },
     { name: 'Nx', text: 'Inference at the edge', part: 'U3', logo: 'nx', accent: '#b58491' },
     { name: 'BEAM Bots', text: 'Declarative robotics', at: [8.5, 24], size: [6, 7], image: 'logos/beam-bots.svg', accent: '#af4bf9' },
+    { name: 'Elixir Circuits', text: 'GPIO, SPI, I2C, UART, the usual suspects', at: [46.5, 9], size: [5.5, 5.5], image: 'logos/elixir-circuits.png', mono: true, accent: '#6b5487' },
   ],
   // technology slots, on the layer named by its copper (board mm; size is x by y)
   slots: [
@@ -930,6 +932,18 @@ export async function mountPcbHero(root, opts = {}) {
         const k = (LOGO_PX * 0.96) / Math.max(img.naturalWidth, img.naturalHeight);
         const w = img.naturalWidth * k, hh = img.naturalHeight * k;
         g.drawImage(img, (LOGO_PX - w) / 2, (LOGO_PX - hh) / 2, w, hh);
+        if (a.mono) {
+          // white mask from how light each pixel looks over white: fills glow, dark lines cut out
+          const px = g.getImageData(0, 0, LOGO_PX, LOGO_PX);
+          const d = px.data;
+          for (let i = 0; i < d.length; i += 4) {
+            const al = d[i + 3] / 255;
+            const lw = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255 * al + (1 - al);
+            d[i] = d[i + 1] = d[i + 2] = 255;
+            d[i + 3] = al > 0.15 ? 255 * Math.min(1, Math.max(0, (lw - 0.12) / 0.18)) : 0;
+          }
+          g.putImageData(px, 0, 0);
+        }
       } catch (e) { console.warn('[pcb-hero] logo failed to load', a.image); }
     } else if (a.logo) {
       drawLogo(g, a.logo, LOGO_PX / 2, LOGO_PX / 2, LOGO_PX * 0.92, { ink: '#fff', clear: null });
@@ -1421,7 +1435,7 @@ export async function mountPcbHero(root, opts = {}) {
       const s = cfg.holoSize / 2;
       const C = [A.x, topY + cfg.holoHeight + Math.sin(time * 1.1 + i * 2.1) * 0.35, A.z];
       fxPush(add(add(C, R, -s), U, -s), add(add(C, R, s), U, -s), add(add(C, R, s), U, s), add(add(C, R, -s), U, s),
-        FX.tile, I, 0, 0, app.rgb, i, [app.image ? 1 : 0, i * 0.37, 0, 0]);
+        FX.tile, I, 0, 0, app.rgb, i, [app.image && !app.mono ? 1 : 0, i * 0.37, 0, 0]);
       geo.tileR[i] = C;
       const B = [A.x, topY + A.top + 0.05, A.z];
       const Cb = add(C, U, -s);

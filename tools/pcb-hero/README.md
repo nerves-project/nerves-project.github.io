@@ -41,6 +41,8 @@ Check with each project before publishing.
   [elixir-nx/nx](https://github.com/elixir-nx/nx) logo; the mascot is not used.
 - **BEAM Bots**: `static/hero-pcb/logos/beam-bots.svg`, unmodified, from
   [beam-bots/bb](https://github.com/beam-bots/bb) © 2025 James Harton (LicenseRef-Beam-Bots-Logo), used with permission.
+- **Elixir Circuits**: `static/hero-pcb/logos/elixir-circuits.png`, the logo from
+  [elixir-circuits.github.io](https://elixir-circuits.github.io/); the hologram glows its light parts in the logo's purple.
 - **U-Boot**: monochrome adaptation of `tools/logos/u-boot_logo.svg` from
   [u-boot/u-boot](https://github.com/u-boot/u-boot), © 2018 Heinrich Schuchardt, CC-BY-SA-4.0.
   The adaptation (in `static/hero-pcb/logos.js`) is shared under the same licence.
