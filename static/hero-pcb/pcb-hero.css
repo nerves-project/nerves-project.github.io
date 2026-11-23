@@ -2,8 +2,11 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: radial-gradient(ellipse at 35% 50%, #10293a 0%, #04090d 75%);
-  color: #e8f1f5;
+  --paper: #f4efe4;
+  --ink: #26221f;
+  --ink-soft: #5b5650;
+  background: var(--paper);
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -22,12 +25,12 @@
 .pcb-hero__leaders { pointer-events: none; overflow: visible; }
 .pcb-hero__leaders path {
   fill: none;
-  stroke: var(--accent);
-  stroke-width: 1;
-  opacity: 0.45;
+  stroke: color-mix(in srgb, var(--accent) 70%, var(--ink));
+  stroke-width: 1.25;
+  opacity: 0.55;
   transition: opacity 250ms ease, stroke-width 250ms ease;
 }
-.pcb-hero__leaders path.is-active { opacity: 1; stroke-width: 1.5; }
+.pcb-hero__leaders path.is-active { opacity: 1; stroke-width: 2; }
 .pcb-hero__leaders path.is-dim { opacity: 0.15; }
 
 .pcb-hero__labels {
@@ -51,17 +54,16 @@
   transition: opacity 300ms ease, border-color 250ms ease;
   outline: none;
 }
-.pcb-hero.is-ready .pcb-hero__label { opacity: 0.8; }
+.pcb-hero.is-ready .pcb-hero__label { opacity: 0.9; }
 .pcb-hero.is-ready .pcb-hero__label.is-active { opacity: 1; }
-.pcb-hero.is-ready .pcb-hero__label.is-dim { opacity: 0.35; }
-.pcb-hero__label:focus-visible { box-shadow: -2px 0 0 0 var(--accent), 0 0 0 1px rgba(255, 255, 255, 0.25); }
+.pcb-hero.is-ready .pcb-hero__label.is-dim { opacity: 0.45; }
+.pcb-hero__label:focus-visible { box-shadow: -2px 0 0 0 var(--accent), 0 0 0 1px rgba(38, 34, 31, 0.3); }
 
 .pcb-hero__cu {
   display: block;
   font: 500 0.68rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   letter-spacing: 0.06em;
-  color: var(--accent);
-  opacity: 0.85;
+  color: color-mix(in srgb, var(--accent) 60%, var(--ink));
 }
 .pcb-hero__name {
   display: block;
@@ -74,11 +76,15 @@
   display: block;
   font-size: 0.85rem;
   line-height: 1.35;
-  color: #b9cbd4;
+  color: var(--ink-soft);
   max-width: 26ch;
 }
-.pcb-hero__label.is-active .pcb-hero__name { color: #fff; text-shadow: 0 0 18px var(--accent); }
-.pcb-hero__label.is-active .pcb-hero__text { color: #e8f1f5; }
+.pcb-hero__name { justify-self: start; width: fit-content; padding: 0 0.15em; margin-left: -0.15em; }
+/* the active layer gets a swipe of highlighter */
+.pcb-hero__label.is-active .pcb-hero__name {
+  background: linear-gradient(176deg, transparent 52%, color-mix(in srgb, var(--accent) 55%, transparent) 52% 90%, transparent 90%);
+}
+.pcb-hero__label.is-active .pcb-hero__text { color: var(--ink); }
 
 /* callouts that float with the scene: holograms, uplink, cluster */
 .pcb-hero__tags { position: absolute; inset: 0; pointer-events: none; }
@@ -97,15 +103,15 @@
   font-size: 0.85rem;
   line-height: 1.2;
   letter-spacing: 0.02em;
-  color: #fff;
-  text-shadow: 0 0 12px var(--accent), 0 1px 3px rgba(0, 0, 0, 0.8);
+  color: var(--ink);
+  text-shadow: 0 0 3px var(--paper), 0 0 6px var(--paper);
 }
 .pcb-hero__tag-text {
   display: block;
   font-size: 0.72rem;
   line-height: 1.3;
-  color: #c9dbe3;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  color: var(--ink-soft);
+  text-shadow: 0 0 3px var(--paper), 0 0 6px var(--paper);
   max-height: 0;
   opacity: 0;
   overflow: hidden;
@@ -119,8 +125,8 @@
 .pcb-hero__tag.is-node .pcb-hero__tag-name {
   font: 500 0.66rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   letter-spacing: 0.03em;
-  color: var(--accent);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  color: color-mix(in srgb, var(--accent) 60%, var(--ink));
+  text-shadow: 0 0 3px var(--paper), 0 0 6px var(--paper);
 }
 
 /* Without WebGPU: show the layers as a plain list */
@@ -146,8 +152,8 @@
 .pcb-hero__tag.is-slot .pcb-hero__tag-name {
   font: 600 0.7rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--accent) 30%, white);
-  text-shadow: 0 0 10px var(--accent), 0 1px 3px rgba(0, 0, 0, 0.9);
+  color: color-mix(in srgb, var(--accent) 55%, var(--ink));
+  text-shadow: 0 0 3px var(--paper), 0 0 6px var(--paper);
 }
 .pcb-hero__tag.is-slot .pcb-hero__tag-text { white-space: normal; width: 11rem; margin: 0 auto; }
 .pcb-hero.is-narrow .pcb-hero__tag-text { display: none; }

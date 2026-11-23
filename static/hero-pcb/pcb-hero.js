@@ -6,7 +6,6 @@
 //   mountPcbHero(document.querySelector('#hero-stack'), { dataUrl: '/hero-pcb/pcb.json' });
 
 import { buildLayerCanvases, LAYER_SOURCES } from './textures.js';
-import { drawLogo } from './logos.js';
 
 export const DEFAULT_LAYERS = [
   // bottom -> top
@@ -18,10 +17,9 @@ export const DEFAULT_LAYERS = [
 
 // Things that sit on top of the stack. `part` anchors to a board reference, `at` to board mm.
 export const DEFAULT_EXTRAS = {
-  // holograms over the Application layer: `logo` names a mark in logos.js drawn in the accent
-  // colour, `image` a full-colour logo file; with `mono` the file's lighter parts become the
-  // mark (for dark-on-light logos). Accents are the projects' brand colours (Nx uses
-  // the lighter tone of its logo to read on dark).
+  // projects on the Application layer: `logo` names a mark in logos.js, `image` a logo file;
+  // with `mono` the file's lighter parts become the mark (for dark-on-light logos).
+  // Accents are the projects' brand colours.
   apps: [
     { name: 'Phoenix', text: 'Web services', part: 'J1', logo: 'phoenix', accent: '#f05423' },
     { name: 'Membrane', text: 'Media processing and streaming', at: [37, 33], size: [7, 7], logo: 'membrane', accent: '#87cce8' },
@@ -64,10 +62,8 @@ const CFG = {
   labelColumn: 300,   // css px reserved to the right for callouts
   pulsePeriod: 14,    // mm between pulses along a trace
   pulseSpeed: 16,     // mm/s
-  bloom: 0.9,
-  exposure: 1.0,
-  holoHeight: 9,      // hologram tiles float this far above the top plate (mm)
-  holoSize: 6.4,
+  paper: '#f4efe4',   // the page colour; distant boards and unfocused plates fade into it
+  ink: 1.6,           // outline width in css px
   // shadow nodes of the cluster: x, y = where the node's centre lands in the hero (0..1),
   // depth = distance from the camera in multiples of the hero board's distance, yaw in degrees
   nodes: [
@@ -75,7 +71,7 @@ const CFG = {
     { x: 0.86, y: 0.2, depth: 3.0, yaw: -22 },
     { x: 0.33, y: 0.09, depth: 3.7, yaw: 36 },
   ],
-  shadow: { light: 0.14, alpha: 0.8, emit: 0.45, haze: 0.55 },
+  shadowFade: 0.7,    // how far the boards in the distance fade into the paper
   ports: [[22, 34], [31, 31], [36, 22]], // where cluster links land on the runtime plate (board mm)
 };
 
@@ -179,54 +175,58 @@ struct Scene {
   params: vec4f,   // time, explode 0..1, slab thickness, pulse period
   params2: vec4f,  // pulse speed, top-layer pulse colour (rgb)
   accents: array<vec4f, 4>,
-  motion: vec4f,   // x: 1 animated, 0 reduced motion (moving accents settle into a steady glow)
+  motion: vec4f,   // x: 1 animated, 0 reduced motion
 };
 @group(0) @binding(0) var<uniform> S: Scene;
 
 // one board of the cluster: the hero board or a shadow node in the distance
 struct Node {
   xf: vec4f,    // offset xyz, yaw (radians)
-  look: vec4f,  // light, alpha, emission, haze amount
-  haze: vec4f,  // haze rgb, time offset
+  look: vec4f,  // -, alpha, -, how far it fades into the paper
+  haze: vec4f,  // paper rgb, time offset (also seeds surface ids)
 };
 @group(1) @binding(0) var<uniform> NODE: Node;
+
+const INK = vec3f(0.016, 0.014, 0.013);
 
 fn rotY(p: vec3f) -> vec3f {
   let c = cos(NODE.xf.w); let s = sin(NODE.xf.w);
   return vec3f(p.x * c + p.z * s, p.y, -p.x * s + p.z * c);
 }
 fn toWorld(p: vec3f) -> vec3f { return rotY(p) + NODE.xf.xyz; }
-fn finish(col: vec3f, emit: vec3f) -> vec4f {
+fn paper() -> vec3f { return NODE.haze.rgb; }
+// distant boards fade toward the paper, as if only sketched in
+fn finish(col: vec3f) -> vec4f {
   let L = NODE.look;
-  let c = mix(col * L.x + emit * L.z, NODE.haze.rgb, L.w);
-  return vec4f(c * L.y, L.y);
+  return vec4f(mix(col, paper(), L.w) * L.y, L.y);
 }
 
-fn env(r: vec3f) -> vec3f {
-  let t = clamp(r.y * 0.5 + 0.5, 0.0, 1.0);
-  var c = mix(vec3f(0.015, 0.02, 0.03), vec3f(0.30, 0.38, 0.48), smoothstep(0.3, 1.0, t));
-  let sb = normalize(vec3f(-0.5, 0.75, -0.45));
-  c += vec3f(1.3) * pow(max(dot(r, sb), 0.0), 60.0);
-  return c;
-}
-
-fn shade(base: vec3f, n: vec3f, v: vec3f, metal: f32, rough: f32) -> vec3f {
+// nearly cel-shaded: three flat tones, the shade side leaning cool, and a hard glint on metal
+fn toon(base: vec3f, n: vec3f, v: vec3f, metal: f32, rough: f32) -> vec3f {
   let l = normalize(S.lightDir.xyz);
+  let ndl = dot(n, l);
+  let lit = smoothstep(0.48, 0.52, ndl);
+  let mid = smoothstep(0.06, 0.1, ndl);
+  let shade = base * vec3f(0.58, 0.6, 0.74);
+  let half = base * vec3f(0.8, 0.82, 0.9);
+  let c = mix(shade, mix(half, base, lit), mid);
   let h = normalize(l + v);
-  let ndl = max(dot(n, l), 0.0);
-  let ndv = max(dot(n, v), 1e-3);
-  let f0 = mix(vec3f(0.04), base, metal);
-  let fres = f0 + (vec3f(1.0) - f0) * pow(1.0 - ndv, 5.0);
-  let shin = exp2(11.0 * (1.0 - rough) + 1.0);
-  let lightCol = vec3f(1.7, 1.6, 1.5);
-  let spec = fres * pow(max(dot(n, h), 0.0), shin) * (shin + 2.0) / 8.0 * ndl;
-  let hemi = mix(vec3f(0.035, 0.04, 0.05), vec3f(0.22, 0.26, 0.32), n.y * 0.5 + 0.5);
-  let diff = base * (1.0 - metal) * (ndl * lightCol + hemi);
-  let refl = env(reflect(-v, n)) * fres * (1.0 - rough * 0.85);
-  return diff + spec * lightCol + refl;
+  let shin = mix(10.0, 48.0, 1.0 - rough);
+  let glint = smoothstep(0.5, 0.56, pow(max(dot(n, h), 0.0), shin)) * metal;
+  return mix(c, mix(base, vec3f(1.0), 0.65), glint);
 }
 
-struct FragOut { @location(0) color: vec4f, @location(1) glow: vec4f };
+// g-buffer for the ink pass: octahedral normal, distance from the camera, surface id
+fn oct(n: vec3f) -> vec2f {
+  var p = n.xy / (abs(n.x) + abs(n.y) + abs(n.z));
+  if (n.z < 0.0) { p = (1.0 - abs(p.yx)) * select(vec2f(-1.0), vec2f(1.0), p >= vec2f(0.0)); }
+  return p;
+}
+fn gbuf(n: vec3f, wp: vec3f, id: f32) -> vec4f {
+  return vec4f(oct(normalize(n)), length(S.camPos.xyz - wp), fract(id + NODE.haze.w));
+}
+
+struct FragOut { @location(0) color: vec4f, @location(1) g: vec4f };
 `;
 
 const SLAB_WGSL = SCENE_WGSL + /* wgsl */ `
@@ -267,46 +267,30 @@ struct VOut {
 
   let v = normalize(S.camPos.xyz - in.wp);
   let focus = S.focus[li];
-  let dim = S.dim[li];
-  let accent = S.accents[li].rgb;
   let inner = li == 1u || li == 2u;
-  let t = S.params.x + NODE.haze.w;
 
   var col = vec3f(0.0);
-  var emit = vec3f(0.0);
   if (in.face == 0u) {
-    // height field: copper under mask, pads and silk are slightly raised
+    // a faint height field so pads and copper catch the glint; ink edges use the flat normal
     let hgt = vec3f(0.6, 0.35, 0.5);
     let h0 = dot(m.rgb, hgt); let hx = dot(mx.rgb, hgt); let hz = dot(mz.rgb, hgt);
-    let bump = select(1.4, 0.6, inner);
-    let n = rotY(normalize(vec3f(-(hx - h0) * bump, 1.0, -(hz - h0) * bump)));
+    let n = rotY(normalize(vec3f(-(hx - h0) * 0.5, 1.0, -(hz - h0) * 0.5)));
     var metal = m.g;
-    var rough = mix(0.32, 0.2, m.g);
-    if (inner) {
-      metal = max(metal, m.r);
-      rough = mix(0.7, 0.28, m.r);
-    } else {
-      rough = mix(rough, 0.85, m.b);
-    }
-    col = shade(a.rgb, n, v, metal, rough);
-    if (inner) {
-      emit = accent * (m.r * 0.06 + (1.0 - m.r) * (1.0 - m.g) * 0.015) * focus;
-    } else {
-      emit = accent * m.r * 0.05 * focus;
-    }
-    // logo art on the inner and bottom layers (B channel; on the top layer it is silkscreen)
-    if (li != 3u) { emit += accent * m.b * 0.55 * focus; }
+    var rough = mix(0.5, 0.25, m.g);
+    if (inner) { metal = max(metal, m.r * 0.6); }
+    col = toon(a.rgb, n, v, metal, rough);
   } else if (in.face == 1u) {
-    let base = select(vec3f(0.03, 0.07, 0.045), vec3f(0.16, 0.14, 0.07), inner);
-    let cu = select(0.0, 1.0, in.depth01 < 0.14);
-    col = shade(mix(base, vec3f(0.8, 0.45, 0.25), cu), normalize(in.n), v, cu, 0.5);
-    emit = accent * (0.05 + focus * 2.2) * (0.35 + 0.65 * cu);
+    // plate edge: FR4 with a copper (inner) or soldermask (outer) skin; the focused layer
+    // gets its edge painted in its colour
+    let skin = select(vec3f(0.11, 0.26, 0.11), vec3f(0.78, 0.33, 0.13), inner);
+    let edge = mix(vec3f(0.62, 0.47, 0.2), skin, select(0.0, 1.0, in.depth01 < 0.2));
+    col = toon(mix(edge, S.accents[li].rgb, focus * 0.85), normalize(in.n), v, 0.0, 0.8);
   } else {
-    col = vec3f(0.01);
+    col = vec3f(0.3, 0.24, 0.12);
   }
   var o: FragOut;
-  o.color = finish(col * dim, emit);
-  o.glow = vec4f(0.0);
+  o.color = finish(mix(paper(), col, S.dim[li]));
+  o.g = gbuf(select(in.n, vec3f(0.0, 1.0, 0.0), in.face == 0u), in.wp, f32(li) * 0.211 + 0.07);
   return o;
 }
 `;
@@ -319,11 +303,13 @@ struct VOut {
   @location(2) col: vec4f,
   @location(3) mat: vec4f,
   @location(4) @interpolate(flat) layer: u32,
+  @location(5) @interpolate(flat) id: f32,
 };
 
 @vertex fn vs(@location(0) p: vec3f, @location(1) n: vec3f,
               @location(2) ipos: vec4f, @location(3) isize: vec4f,
-              @location(4) icol: vec4f, @location(5) imat: vec4f) -> VOut {
+              @location(4) icol: vec4f, @location(5) imat: vec4f,
+              @builtin(instance_index) ii: u32) -> VOut {
   var o: VOut;
   let lp = p * isize.xyz;
   let c = cos(ipos.w); let s = sin(ipos.w);
@@ -333,22 +319,24 @@ struct VOut {
   o.pos = S.viewProj * vec4f(wp, 1.0);
   o.n = rotY(vec3f(n.x * c + n.z * s, n.y, -n.x * s + n.z * c));
   o.wp = wp; o.col = icol; o.mat = imat; o.layer = li;
+  o.id = fract(f32(ii) * 0.6180339 + 0.31);
   return o;
 }
 
 @fragment fn fs(in: VOut) -> FragOut {
   let v = normalize(S.camPos.xyz - in.wp);
   let li = in.layer;
-  var col = shade(in.col.rgb, normalize(in.n), v, in.mat.y, in.mat.x) * S.dim[li];
-  var e = in.col.a;
+  var base = in.col.rgb;
   if (in.mat.z > 0.5) {
-    // status LED: slow heartbeat
+    // status LED: a slow heartbeat between off and lit, in flat colour
     let t = fract((S.params.x + NODE.haze.w) * 0.6);
-    e *= mix(0.6, 0.25 + 0.75 * (exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t)), S.motion.x);
+    let beat = mix(1.0, exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t), S.motion.x);
+    base = mix(base, S.accents[3].rgb * 1.2 + vec3f(0.15), clamp(beat, 0.0, 1.0));
   }
+  let col = toon(base, normalize(in.n), v, in.mat.y, in.mat.x);
   var o: FragOut;
-  o.color = finish(col, S.accents[3].rgb * e);
-  o.glow = vec4f(0.0);
+  o.color = finish(mix(paper(), col, S.dim[li]));
+  o.g = gbuf(in.n, in.wp, in.id);
   return o;
 }
 `;
@@ -386,191 +374,54 @@ struct VOut {
   let L = in.seg.x; let hw = in.seg.y;
   let t = clamp(in.local.x, 0.0, L);
   let dist = length(vec2f(in.local.x - t, in.local.y));
-  let core = 1.0 - smoothstep(hw * 0.45, hw, dist);
+  let core = 1.0 - smoothstep(hw * 0.55, hw * 0.75, dist);
   if (core <= 0.001) { discard; }
   let dd = mix(in.seg.z, in.seg.w, t / max(L, 1e-4));
   let period = S.params.w;
   let u = fract(dd / period - S.params.x * S.params2.x / period);
-  let comet = pow(u, 9.0) * smoothstep(1.0, 0.985, u);
+  let dash = smoothstep(0.76, 0.78, u) * smoothstep(1.0, 0.98, u);
+  // the focused layer shows its signals; the top layer keeps a few going at rest
   let focus = S.focus[in.layer];
-  let level = mix(0.12, 1.0, focus) * S.dim[in.layer];
-  let m = S.motion.x;
-  let I = (0.06 + 0.1 * (1.0 - m) + comet * 7.0 * m) * level * core * NODE.look.z;
-  // the top layer's pulses take the colour of the hovered project
+  let rest = select(0.0, 0.55, in.layer == 3u) * clamp((S.dim[in.layer] - 0.5) * 2.0, 0.0, 1.0);
+  let a = dash * core * max(focus, rest) * NODE.look.y * (1.0 - NODE.look.w);
+  // the top layer's signals take the colour of the hovered project
   let col = select(S.accents[in.layer].rgb, S.params2.yzw, in.layer == 3u);
   var o: FragOut;
-  o.color = vec4f(0.0);
-  o.glow = vec4f(col * I, 1.0);
+  o.color = vec4f(col * a, a);
+  o.g = vec4f(0.0);
   return o;
 }
 `;
 
-const BEAM_WGSL = SCENE_WGSL + /* wgsl */ `
+// exploded-view guide lines: dashed ink through the mounting holes, from the bottom plate up
+const GUIDE_WGSL = SCENE_WGSL + /* wgsl */ `
 struct VOut {
   @builtin(position) pos: vec4f,
-  @location(0) q: vec2f,          // across -1..1, height 0..1
-  @location(1) @interpolate(flat) seed: f32,
+  @location(0) q: vec2f,
+  @location(1) y: f32,
 };
 
-@vertex fn vs(@builtin(vertex_index) vi: u32, @location(0) via: vec4f) -> VOut {
+@vertex fn vs(@builtin(vertex_index) vi: u32, @location(0) hole: vec4f) -> VOut {
   var corners = array<vec2f, 6>(vec2f(-1.0, 0.0), vec2f(1.0, 0.0), vec2f(1.0, 1.0),
                                 vec2f(-1.0, 0.0), vec2f(1.0, 1.0), vec2f(-1.0, 1.0));
   let c = corners[vi];
-  let y0 = S.layerY[0] - S.params.z;
-  let y1 = S.layerY[3];
-  let base = toWorld(vec3f(via.x, 0.0, via.y));
+  let y = mix(S.layerY[0] - S.params.z, S.layerY[3], c.y);
+  let base = toWorld(vec3f(hole.x, 0.0, hole.y));
   let toCam = S.camPos.xyz - base;
   let right = normalize(vec3f(toCam.z, 0.0, -toCam.x));
-  let w = 0.32;
-  let wp = base + right * c.x * w + vec3f(0.0, mix(y0, y1, c.y), 0.0);
   var o: VOut;
-  o.pos = S.viewProj * vec4f(wp, 1.0);
+  o.pos = S.viewProj * vec4f(base + right * c.x * 0.13 + vec3f(0.0, y, 0.0), 1.0);
   o.q = c;
-  o.seed = fract(sin(via.x * 12.9898 + via.y * 78.233) * 43758.5453);
+  o.y = y;
   return o;
 }
 
 @fragment fn fs(in: VOut) -> FragOut {
-  let across = exp(-in.q.x * in.q.x * 9.0);
-  let h = in.q.y;
-  let span = S.layerY[3] - S.layerY[0] + S.params.z;
-  let u = fract(h * span / 9.0 - S.params.x * 0.9 + in.seed);
-  let pulse = pow(u, 14.0);
-  // colour climbs the stack: tooling -> system -> beam -> application
-  let k = h * 3.0;
-  let i0 = u32(clamp(floor(k), 0.0, 2.0));
-  let col = mix(S.accents[i0].rgb, S.accents[i0 + 1u].rgb, clamp(k - f32(i0), 0.0, 1.0));
-  let I = S.params.y * across * (0.05 + 0.12 * (1.0 - S.motion.x) + pulse * 2.2 * S.motion.x);
+  let dash = step(0.42, fract(in.y / 1.3));
+  let a = dash * 0.5 * smoothstep(0.35, 0.8, S.params.y) * (1.0 - smoothstep(0.6, 1.0, abs(in.q.x)));
   var o: FragOut;
-  o.color = vec4f(0.0);
-  o.glow = vec4f(col * I, 1.0);
-  return o;
-}
-`;
-
-// Emissive quads whose world-space corners are built on the CPU each frame:
-// holograms over the top layer, the NervesHub uplink and the distribution links.
-const FX = { link: 0, uplink: 1, footprint: 2, cone: 3, tile: 4, flare: 5 };
-const FX_WGSL = SCENE_WGSL + /* wgsl */ `
-@group(0) @binding(1) var samp: sampler;
-@group(0) @binding(4) var logoTex: texture_2d_array<f32>;
-
-struct VOut {
-  @builtin(position) pos: vec4f,
-  @location(0) uv: vec2f,
-  @location(1) @interpolate(flat) prm: vec4f,   // mode, intensity, d0, d1
-  @location(2) @interpolate(flat) col: vec4f,   // rgb, kind / seed
-  @location(3) @interpolate(flat) ext: vec4f,   // mode specific
-};
-
-@vertex fn vs(@builtin(vertex_index) vi: u32,
-              @location(0) c0: vec4f, @location(1) c1: vec4f, @location(2) c2: vec4f, @location(3) c3: vec4f,
-              @location(4) col: vec4f, @location(5) ext: vec4f) -> VOut {
-  var uvs = array<vec2f, 6>(vec2f(0.0, 0.0), vec2f(1.0, 0.0), vec2f(1.0, 1.0),
-                            vec2f(0.0, 0.0), vec2f(1.0, 1.0), vec2f(0.0, 1.0));
-  var p = c3.xyz;
-  if (vi == 0u || vi == 3u) { p = c0.xyz; } else if (vi == 1u) { p = c1.xyz; } else if (vi == 2u || vi == 4u) { p = c2.xyz; }
-  var o: VOut;
-  o.pos = S.viewProj * vec4f(p, 1.0);
-  o.uv = uvs[vi];
-  o.prm = vec4f(c0.w, c1.w, c2.w, c3.w);
-  o.col = col; o.ext = ext;
-  return o;
-}
-
-fn sdBox(p: vec2f, b: vec2f, r: f32) -> f32 {
-  let q = abs(p) - b + vec2f(r);
-  return length(max(q, vec2f(0.0))) + min(max(q.x, q.y), 0.0) - r;
-}
-fn line(d: f32, w: f32, aa: f32) -> f32 { return 1.0 - smoothstep(w - aa, w + aa, d); }
-fn fill(d: f32, aa: f32) -> f32 { return 1.0 - smoothstep(-aa, aa, d); }
-fn hash2(p: vec2f) -> f32 { return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453); }
-fn comet(u: f32, k: f32) -> f32 { return pow(u, k) * smoothstep(1.0, 0.97, u); }
-
-@fragment fn fs(in: VOut) -> FragOut {
-  let aa = fwidth(in.uv);
-  // tiles show a logo inset in the frame; sampled up front to keep derivatives uniform
-  let luv = (in.uv - 0.5) / 0.74 + 0.5;
-  let layer = min(u32(max(in.col.w, 0.0) + 0.5), textureNumLayers(logoTex) - 1u);
-  let logo = textureSample(logoTex, samp, vec2f(luv.x, 1.0 - luv.y), layer);
-  let mode = u32(in.prm.x + 0.5);
-  let m = S.motion.x;
-  let t = S.params.x;
-  var rgb = in.col.rgb;
-  var I = 0.0;
-  var extra = vec3f(0.0);
-
-  if (mode == 0u) {
-    // distribution link: messages travel both ways
-    let x = in.uv.y * 2.0 - 1.0;
-    let along = mix(in.prm.z, in.prm.w, in.uv.x);
-    let seed = in.col.w;
-    let f = fract((along - t * 20.0) / 24.0 + seed);
-    let b = fract((along + t * 15.0) / 31.0 + seed * 1.7);
-    let msg = (comet(f, 12.0) + comet(1.0 - b, 12.0)) * m;
-    let core = exp(-x * x * 26.0);
-    let haze = exp(-x * x * 3.5);
-    I = core * (0.55 + 0.25 * (1.0 - m) + msg * 3.5) + haze * (0.1 + msg * 0.5);
-    rgb = mix(rgb, vec3f(1.0), clamp(msg, 0.0, 1.0) * 0.45);
-  } else if (mode == 1u) {
-    // uplink beam: telemetry rises, firmware comes down
-    let x = in.uv.x * 2.0 - 1.0;
-    let along = mix(in.prm.z, in.prm.w, in.uv.y);
-    let fade = 1.0 / (1.0 + along / 70.0);
-    let core = exp(-x * x * 160.0);
-    let haze = exp(-x * x * 7.0);
-    let up = comet(fract((along - t * 26.0) / 15.0), 10.0) * m;
-    let dn = comet(1.0 - fract((along + t * 38.0) / 120.0), 16.0) * m;
-    let base = exp(-along * 0.35);
-    I = (core * (0.7 + 0.4 * (1.0 - m) + up * 2.4) + haze * (0.07 + up * 0.25 + base * 0.6)) * fade;
-    extra = in.ext.rgb * dn * (core * 4.0 + haze * 0.7) * fade;
-  } else if (mode == 2u) {
-    // footprint on the board: corner brackets, faint fill, sweeping scan line
-    let hs = in.ext.xy * 0.5;
-    let pm = (in.uv * 2.0 - 1.0) * hs;
-    let am = max(aa.x * in.ext.x, aa.y * in.ext.y);
-    let inset = hs - vec2f(0.3);
-    let d = sdBox(pm, inset, 0.4);
-    let ap = abs(pm);
-    let arm = min(1.6, min(inset.x, inset.y) * 0.45);
-    let corner = step(inset.x - arm, ap.x) * step(inset.y - arm, ap.y);
-    I = line(abs(d), 0.11, am) * corner + line(abs(d), 0.035, am) * 0.4;
-    let inside = fill(d, am);
-    let sweep = mix(-inset.y, inset.y, fract(t * 0.3 + in.col.w * 0.37));
-    I += inside * (0.05 + exp(-abs(pm.y - sweep) * 5.0) * 0.3 * m);
-  } else if (mode == 3u) {
-    // light cone from the footprint up to the tile
-    let x = in.uv.x * 2.0 - 1.0;
-    let hgt = in.uv.y;
-    let edge = exp(-(1.0 - abs(x)) * 12.0);
-    let rays = 0.5 + 0.5 * sin(x * 21.0 + t * 1.3) * sin(x * 7.0 - t * 0.6 + in.col.w);
-    let rise = comet(fract(hgt * 2.2 - t * 0.8 + in.col.w * 0.3), 10.0) * m;
-    let k = (1.0 - hgt);
-    I = k * k * (0.06 + 0.1 * rays + 0.45 * edge) + rise * 0.2 * k;
-  } else if (mode == 4u) {
-    // floating tile with the project's logo and a light sweep across it
-    let q = in.uv * 2.0 - 1.0;
-    let aq = max(aa.x, aa.y) * 2.0;
-    let b = sdBox(q, vec2f(0.95), 0.24);
-    I = line(abs(b), 0.03, aq) + fill(b, aq) * 0.08;
-    let sweep = exp(-pow(in.uv.x * 0.6 + in.uv.y - fract(t * 0.16 + in.ext.y) * 2.8 + 0.4, 2.0) * 28.0) * m;
-    let shimmer = (0.86 + 0.14 * sin(in.uv.y * 80.0 - t * 5.0)) * (0.95 + 0.05 * sin(t * 31.0 + in.col.w * 5.0));
-    if (in.ext.x > 0.5) {
-      extra = logo.rgb * logo.a * (1.0 + sweep * 0.7) * shimmer;   // full-colour logo
-    } else {
-      I += logo.a * (1.15 + sweep * 0.8);
-    }
-    I *= shimmer;
-  } else {
-    // flare where the uplink leaves the board
-    let q = in.uv * 2.0 - 1.0;
-    let r = length(q);
-    let ring = fract(r * 1.6 - t * 0.6);
-    I = (pow(ring, 6.0) * 0.35 * m + exp(-r * r * 30.0) * 0.5) * smoothstep(1.0, 0.55, r);
-  }
-  var o: FragOut;
-  o.color = vec4f(0.0);
-  o.glow = vec4f((rgb * I + extra) * in.prm.y, 1.0);
+  o.color = vec4f(INK * a, a);
+  o.g = vec4f(0.0);
   return o;
 }
 `;
@@ -592,84 +443,64 @@ const MIP_WGSL = FULLSCREEN_VS + /* wgsl */ `
 @fragment fn fs(in: FsOut) -> @location(0) vec4f { return textureSample(src, smp, in.uv); }
 `;
 
-const BLOOM_WGSL = FULLSCREEN_VS + /* wgsl */ `
-@group(0) @binding(0) var src: texture_2d<f32>;
-@group(0) @binding(1) var smp: sampler;
-@group(0) @binding(2) var src2: texture_2d<f32>;
-@group(0) @binding(3) var<uniform> P: vec4f; // texel.xy of src, threshold, knee
-
-fn s(uv: vec2f) -> vec3f { return textureSample(src, smp, uv).rgb; }
-
-@fragment fn prefilter(in: FsOut) -> @location(0) vec4f {
-  let t = P.xy;
-  var c = vec3f(0.0);
-  for (var y = -1; y <= 1; y += 2) {
-    for (var x = -1; x <= 1; x += 2) {
-      let uv = in.uv + vec2f(f32(x), f32(y)) * t * 0.5;
-      c += textureSample(src, smp, uv).rgb + textureSample(src2, smp, uv).rgb;
-    }
-  }
-  c *= 0.25;
-  let br = max(c.r, max(c.g, c.b));
-  let soft = clamp(br - P.z + P.w, 0.0, 2.0 * P.w);
-  let contrib = max(soft * soft / (4.0 * P.w + 1e-4), br - P.z) / max(br, 1e-4);
-  return vec4f(c * contrib, 1.0);
-}
-
-@fragment fn down(in: FsOut) -> @location(0) vec4f {
-  let t = P.xy;
-  let uv = in.uv;
-  var c = s(uv) * 0.125;
-  c += (s(uv + t * vec2f(-1.0, -1.0)) + s(uv + t * vec2f(1.0, -1.0)) + s(uv + t * vec2f(-1.0, 1.0)) + s(uv + t * vec2f(1.0, 1.0))) * 0.125;
-  c += (s(uv + t * vec2f(-2.0, -2.0)) + s(uv + t * vec2f(2.0, -2.0)) + s(uv + t * vec2f(-2.0, 2.0)) + s(uv + t * vec2f(2.0, 2.0))) * 0.03125;
-  c += (s(uv + t * vec2f(-2.0, 0.0)) + s(uv + t * vec2f(2.0, 0.0)) + s(uv + t * vec2f(0.0, -2.0)) + s(uv + t * vec2f(0.0, 2.0))) * 0.0625;
-  return vec4f(c, 1.0);
-}
-
-@fragment fn up(in: FsOut) -> @location(0) vec4f {
-  let t = P.xy;
-  let uv = in.uv;
-  var c = s(uv) * 4.0;
-  c += (s(uv + t * vec2f(-1.0, 0.0)) + s(uv + t * vec2f(1.0, 0.0)) + s(uv + t * vec2f(0.0, -1.0)) + s(uv + t * vec2f(0.0, 1.0))) * 2.0;
-  c += s(uv + t * vec2f(-1.0, -1.0)) + s(uv + t * vec2f(1.0, -1.0)) + s(uv + t * vec2f(-1.0, 1.0)) + s(uv + t * vec2f(1.0, 1.0));
-  return vec4f(c / 16.0, 1.0);
-}
-`;
-
+// Ink pass: outlines where depth folds, normals turn or one surface meets another,
+// over the flat-shaded scene. The canvas is transparent, so the page's paper shows through.
 const COMPOSITE_WGSL = FULLSCREEN_VS + /* wgsl */ `
 @group(0) @binding(0) var sceneTex: texture_2d<f32>;
-@group(0) @binding(1) var glowTex: texture_2d<f32>;
-@group(0) @binding(2) var bloomTex: texture_2d<f32>;
-@group(0) @binding(3) var smp: sampler;
-@group(0) @binding(4) var<uniform> P: vec4f; // bloom strength, exposure, max output, encode sRGB
+@group(0) @binding(1) var gTex: texture_2d<f32>;
+@group(0) @binding(2) var<uniform> P: vec4f; // ink radius (px), hero distance, -, -
 
-fn shoulder(x: f32, maxOut: f32) -> f32 {
-  let k = 0.75 * min(maxOut, 1.0);
-  if (x < k) { return x; }
-  let r = maxOut - k;
-  return k + r * (1.0 - exp(-(x - k) / r));
+const INK = vec3f(0.016, 0.014, 0.013);
+
+fn unoct(e: vec2f) -> vec3f {
+  var n = vec3f(e, 1.0 - abs(e.x) - abs(e.y));
+  let t = max(-n.z, 0.0);
+  n.x += select(t, -t, n.x >= 0.0);
+  n.y += select(t, -t, n.y >= 0.0);
+  return normalize(n);
 }
-
+fn G(p: vec2i) -> vec4f {
+  return textureLoad(gTex, clamp(p, vec2i(0), vec2i(textureDimensions(gTex)) - 1), 0);
+}
+fn depthOf(g: vec4f) -> f32 { return select(1e5, g.z, g.z > 0.0); }
 fn encode(c: f32) -> f32 {
   return select(1.055 * pow(c, 1.0 / 2.4) - 0.055, c * 12.92, c <= 0.0031308);
 }
 
 @fragment fn fs(in: FsOut) -> @location(0) vec4f {
-  // output is premultiplied over a transparent canvas, so the page background shows through
-  let sc = textureSample(sceneTex, smp, in.uv);
-  let gl = textureSample(glowTex, smp, in.uv).rgb;
-  let bl = textureSample(bloomTex, smp, in.uv).rgb;
-  var c = (sc.rgb + gl + bl * P.x) * P.y;
-  c = vec3f(shoulder(c.r, P.z), shoulder(c.g, P.z), shoulder(c.b, P.z));
-  if (P.w > 0.5) {
-    c = vec3f(encode(c.r), encode(c.g), encode(c.b));
-    if (sc.a > 0.0) {
-      let n = fract(sin(dot(in.pos.xy, vec2f(12.9898, 78.233))) * 43758.5453) - 0.5;
-      c += n / 255.0;
+  let px = vec2i(in.pos.xy);
+  let sc = textureLoad(sceneTex, px, 0);
+  let c = G(px);
+  // a finer line for the boards in the distance
+  let r = select(i32(P.x), max(1, i32(P.x) / 2), depthOf(c) > P.y * 2.0);
+  var nb = array<vec4f, 4>(G(px + vec2i(-r, 0)), G(px + vec2i(r, 0)), G(px + vec2i(0, -r)), G(px + vec2i(0, r)));
+  let dc = depthOf(c);
+  let nc = unoct(c.xy);
+  var e = 0.0;
+  // depth folds and silhouettes: the second difference stays flat across a plane
+  for (var k = 0; k < 2; k++) {
+    let a = depthOf(nb[k * 2]);
+    let b = depthOf(nb[k * 2 + 1]);
+    e = max(e, smoothstep(0.004, 0.012, abs(a + b - 2.0 * dc) / min(dc, min(a, b))));
+  }
+  var near = dc;
+  for (var k = 0; k < 4; k++) {
+    let g = nb[k];
+    near = min(near, depthOf(g));
+    if (c.z > 0.0 && g.z > 0.0) {
+      e = max(e, smoothstep(0.82, 0.6, dot(nc, unoct(g.xy))));
+      e = max(e, step(0.004, abs(c.w - g.w)));
+    } else if (c.z > 0.0 || g.z > 0.0) {
+      e = 1.0;
     }
   }
-  let a = clamp(max(sc.a, max(c.r, max(c.g, c.b))), 0.0, 1.0);
-  return vec4f(c, a);
+  // the boards in the distance are drawn in a lighter hand
+  let k = e * clamp(1.0 - (near / P.y - 1.5) * 0.45, 0.22, 1.0);
+  let rgb = sc.rgb * (1.0 - k) + INK * k;
+  let a = sc.a * (1.0 - k) + k;
+  if (a <= 0.0) { return vec4f(0.0); }
+  let u = rgb / a;
+  return vec4f(vec3f(encode(u.r), encode(u.g), encode(u.b)) * a, a);
 }
 `;
 
@@ -831,7 +662,7 @@ export async function mountPcbHero(root, opts = {}) {
     svg.appendChild(path);
     leaders[i] = path;
   }
-  // callouts for the holograms, the uplink and the cluster
+  // callouts for the projects, the uplink and the cluster
   const extras = opts.extras || DEFAULT_EXTRAS;
   const tagBox = document.createElement('div');
   tagBox.className = 'pcb-hero__tags';
@@ -881,20 +712,10 @@ export async function mountPcbHero(root, opts = {}) {
   const dataPromise = opts.data ? Promise.resolve(opts.data) : fetch(opts.dataUrl || new URL('./pcb.json', import.meta.url)).then((r) => r.json());
   const data = await dataPromise;
 
-  // --- canvas / HDR configuration
+  // --- canvas: transparent, premultiplied over the page
   const ctx = canvas.getContext('webgpu');
-  const wantHdr = matchMedia('(dynamic-range: high)').matches;
-  let outFormat = navigator.gpu.getPreferredCanvasFormat();
-  let hdrOut = false;
-  if (wantHdr) {
-    try {
-      ctx.configure({ device, format: 'rgba16float', alphaMode: 'premultiplied', toneMapping: { mode: 'extended' } });
-      hdrOut = ctx.getConfiguration?.().toneMapping?.mode === 'extended';
-      if (hdrOut) outFormat = 'rgba16float';
-    } catch (e) { hdrOut = false; }
-  }
-  if (!hdrOut) ctx.configure({ device, format: outFormat, alphaMode: 'premultiplied' });
-  root.dataset.hdr = hdrOut ? 'extended' : 'sdr';
+  const outFormat = navigator.gpu.getPreferredCanvasFormat();
+  ctx.configure({ device, format: outFormat, alphaMode: 'premultiplied' });
 
   // --- textures
   const pxPerMm = opts.pxPerMm || (devicePixelRatio > 1.5 ? 40 : 32);
@@ -922,44 +743,6 @@ export async function mountPcbHero(root, opts = {}) {
   generateMips(device, matTex, 'rgba8unorm', 4, mipLevels, linearClamp);
   const aniso = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', maxAnisotropy: 8, addressModeU: 'clamp-to-edge', addressModeV: 'clamp-to-edge' });
 
-  // hologram logos: one layer per app, white masks for marks, full colour for images
-  const LOGO_PX = 256, logoMips = Math.log2(LOGO_PX) + 1;
-  const logoCanvases = await Promise.all(extras.apps.map(async (a) => {
-    const c = new OffscreenCanvas(LOGO_PX, LOGO_PX);
-    const g = c.getContext('2d');
-    if (a.image) {
-      const img = new Image();
-      img.src = new URL(a.image, import.meta.url).href;
-      try {
-        await img.decode();
-        const k = (LOGO_PX * 0.96) / Math.max(img.naturalWidth, img.naturalHeight);
-        const w = img.naturalWidth * k, hh = img.naturalHeight * k;
-        g.drawImage(img, (LOGO_PX - w) / 2, (LOGO_PX - hh) / 2, w, hh);
-        if (a.mono) {
-          // white mask from how light each pixel looks over white: fills glow, dark lines cut out
-          const px = g.getImageData(0, 0, LOGO_PX, LOGO_PX);
-          const d = px.data;
-          for (let i = 0; i < d.length; i += 4) {
-            const al = d[i + 3] / 255;
-            const lw = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255 * al + (1 - al);
-            d[i] = d[i + 1] = d[i + 2] = 255;
-            d[i + 3] = al > 0.15 ? 255 * Math.min(1, Math.max(0, (lw - 0.12) / 0.18)) : 0;
-          }
-          g.putImageData(px, 0, 0);
-        }
-      } catch (e) { console.warn('[pcb-hero] logo failed to load', a.image); }
-    } else if (a.logo) {
-      drawLogo(g, a.logo, LOGO_PX / 2, LOGO_PX / 2, LOGO_PX * 0.92, { ink: '#fff', clear: null });
-    }
-    return c;
-  }));
-  const logoTex = device.createTexture({
-    size: [LOGO_PX, LOGO_PX, Math.max(1, logoCanvases.length)], format: 'rgba8unorm', mipLevelCount: logoMips,
-    usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
-  });
-  logoCanvases.forEach((c, i) => device.queue.copyExternalImageToTexture({ source: c }, { texture: logoTex, origin: [0, 0, i] }, [LOGO_PX, LOGO_PX]));
-  generateMips(device, logoTex, 'rgba8unorm', Math.max(1, logoCanvases.length), logoMips, linearClamp);
-
   // --- buffers
   const mkBuf = (arr, usage) => {
     const b = device.createBuffer({ size: Math.max(16, arr.byteLength), usage: usage | GPUBufferUsage.COPY_DST });
@@ -975,8 +758,9 @@ export async function mountPcbHero(root, opts = {}) {
   const pulseData = buildPulses(data, layerDefs);
   const pulseBuf = mkBuf(pulseData, GPUBufferUsage.VERTEX);
   const h = data.board.w / 2;
-  const viaData = new Float32Array(data.vias.flatMap(([x, y, s, d]) => [x - h, y - h, s, d]));
-  const viaBuf = mkBuf(viaData, GPUBufferUsage.VERTEX);
+  // mounting holes carry the exploded-view guide lines
+  const holeData = new Float32Array(data.holes.filter(([, , d]) => d >= 2).flatMap(([x, y, d, w]) => [x - h, y - h, d, w]));
+  const holeBuf = mkBuf(holeData, GPUBufferUsage.VERTEX);
   const sceneUBO = device.createBuffer({ size: 256, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
 
   // the hero board is node 0; shadow nodes follow, one 256-byte slot each (dynamic offsets)
@@ -984,27 +768,20 @@ export async function mountPcbHero(root, opts = {}) {
   const shadowNodes = cfg.nodes.slice(0, Math.max(0, extras.cluster?.nodes?.length ?? cfg.nodes.length));
   const nodeCount = 1 + shadowNodes.length;
   const nodeUBO = device.createBuffer({ size: NODE_STRIDE * nodeCount, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-  const MAX_FX = 512;
-  const FX_FLOATS = 24;
-  const fxData = new Float32Array(MAX_FX * FX_FLOATS);
-  const fxBuf = device.createBuffer({ size: fxData.byteLength, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST });
-
   // --- pipelines
   const SAMPLES = 4;
-  const HDR = 'rgba16float';
-  const sceneTargets = (blend) => [
-    { format: HDR, writeMask: blend ? 0 : GPUColorWrite.ALL },
-    blend
-      ? { format: HDR, blend: { color: { srcFactor: 'one', dstFactor: 'one', operation: 'max' }, alpha: { srcFactor: 'one', dstFactor: 'one', operation: 'max' } } }
-      : { format: HDR },
-  ];
+  const RT = 'rgba16float'; // scene colour and g-buffer
+  // opaque surfaces write colour and the g-buffer; marks painted on top only blend colour
+  const over = { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' };
+  const sceneTargets = (painted) => painted
+    ? [{ format: RT, blend: { color: over, alpha: over } }, { format: RT, writeMask: 0 }]
+    : [{ format: RT }, { format: RT }];
   const sceneBGL = device.createBindGroupLayout({
     entries: [
       { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: {} },
       { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: {} },
       { binding: 2, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: '2d-array' } },
       { binding: 3, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: '2d-array' } },
-      { binding: 4, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: '2d-array' } },
     ],
   });
   const sceneBG = device.createBindGroup({
@@ -1014,7 +791,6 @@ export async function mountPcbHero(root, opts = {}) {
       { binding: 1, resource: aniso },
       { binding: 2, resource: albedoTex.createView({ dimension: '2d-array' }) },
       { binding: 3, resource: matTex.createView({ dimension: '2d-array' }) },
-      { binding: 4, resource: logoTex.createView({ dimension: '2d-array' }) },
     ],
   });
   const nodeBGL = device.createBindGroupLayout({
@@ -1023,7 +799,7 @@ export async function mountPcbHero(root, opts = {}) {
   const nodeBG = device.createBindGroup({ layout: nodeBGL, entries: [{ binding: 0, resource: { buffer: nodeUBO, size: 48 } }] });
   const sceneLayout = device.createPipelineLayout({ bindGroupLayouts: [sceneBGL, nodeBGL] });
   const depthOpaque = { format: 'depth24plus', depthWriteEnabled: true, depthCompare: 'less' };
-  const depthGlow = { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'less-equal' };
+  const depthPaint = { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'less-equal' };
   const ms = { count: SAMPLES };
   const mod = (code) => device.createShaderModule({ code });
 
@@ -1077,56 +853,19 @@ export async function mountPcbHero(root, opts = {}) {
     },
     fragment: { module: pulseMod, entryPoint: 'fs', targets: sceneTargets(true) },
     primitive: { topology: 'triangle-list' },
-    depthStencil: depthGlow, multisample: ms,
+    depthStencil: depthPaint, multisample: ms,
   });
-  const beamMod = mod(BEAM_WGSL);
-  const beamPipe = device.createRenderPipeline({
+  const guideMod = mod(GUIDE_WGSL);
+  const guidePipe = device.createRenderPipeline({
     layout: sceneLayout,
     vertex: {
-      module: beamMod, entryPoint: 'vs',
+      module: guideMod, entryPoint: 'vs',
       buffers: [{ arrayStride: 16, stepMode: 'instance', attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x4' }] }],
     },
-    fragment: { module: beamMod, entryPoint: 'fs', targets: sceneTargets(true) },
+    fragment: { module: guideMod, entryPoint: 'fs', targets: sceneTargets(true) },
     primitive: { topology: 'triangle-list' },
-    depthStencil: depthGlow, multisample: ms,
+    depthStencil: depthPaint, multisample: ms,
   });
-  const fxMod = mod(FX_WGSL);
-  const fxPipe = device.createRenderPipeline({
-    layout: sceneLayout,
-    vertex: {
-      module: fxMod, entryPoint: 'vs',
-      buffers: [{ arrayStride: FX_FLOATS * 4, stepMode: 'instance', attributes: [0, 1, 2, 3, 4, 5].map((i) => (
-        { shaderLocation: i, offset: i * 16, format: 'float32x4' })) }],
-    },
-    fragment: { module: fxMod, entryPoint: 'fs', targets: sceneTargets(true) },
-    primitive: { topology: 'triangle-list' },
-    depthStencil: depthGlow, multisample: ms,
-  });
-
-  const bloomMod = mod(BLOOM_WGSL);
-  const bloomBGL = device.createBindGroupLayout({
-    entries: [
-      { binding: 0, visibility: GPUShaderStage.FRAGMENT, texture: {} },
-      { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: {} },
-      { binding: 2, visibility: GPUShaderStage.FRAGMENT, texture: {} },
-      { binding: 3, visibility: GPUShaderStage.FRAGMENT, buffer: {} },
-    ],
-  });
-  const bloomLayout = device.createPipelineLayout({ bindGroupLayouts: [bloomBGL] });
-  const mkBloomPipe = (entryPoint, additive) => device.createRenderPipeline({
-    layout: bloomLayout,
-    vertex: { module: bloomMod, entryPoint: 'vs' },
-    fragment: {
-      module: bloomMod, entryPoint,
-      targets: [additive
-        ? { format: HDR, blend: { color: { srcFactor: 'one', dstFactor: 'one' }, alpha: { srcFactor: 'one', dstFactor: 'one' } } }
-        : { format: HDR }],
-    },
-  });
-  const prefilterPipe = mkBloomPipe('prefilter', false);
-  const downPipe = mkBloomPipe('down', false);
-  const upPipe = mkBloomPipe('up', true);
-
   const compMod = mod(COMPOSITE_WGSL);
   const compPipe = device.createRenderPipeline({
     layout: 'auto',
@@ -1134,65 +873,25 @@ export async function mountPcbHero(root, opts = {}) {
     fragment: { module: compMod, entryPoint: 'fs', targets: [{ format: outFormat }] },
   });
   const compUBO = device.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-  const black = device.createTexture({ size: [1, 1], format: HDR, usage: GPUTextureUsage.TEXTURE_BINDING });
 
   // --- size-dependent targets
   let T = null;
   function makeTargets(w, hgt) {
     T?.destroy();
-    const tex = (format, sampleCount = 1, extra = 0, mips = 1, sw = w, sh = hgt) => device.createTexture({
-      size: [sw, sh], format, sampleCount, mipLevelCount: mips,
-      usage: GPUTextureUsage.RENDER_ATTACHMENT | extra,
+    const tex = (format, sampleCount = 1, extra = 0) => device.createTexture({
+      size: [w, hgt], format, sampleCount, usage: GPUTextureUsage.RENDER_ATTACHMENT | extra,
     });
     const TB = GPUTextureUsage.TEXTURE_BINDING;
-    const bw = Math.max(1, w >> 1), bh = Math.max(1, hgt >> 1);
-    const bloomMips = Math.max(1, Math.min(6, Math.floor(Math.log2(Math.min(bw, bh))) - 2));
     const t = {
-      msColor: tex(HDR, SAMPLES), msGlow: tex(HDR, SAMPLES), depth: tex('depth24plus', SAMPLES),
-      color: tex(HDR, 1, TB), glow: tex(HDR, 1, TB),
-      bloom: tex(HDR, 1, TB, bloomMips, bw, bh), bloomMips, bw, bh,
+      msColor: tex(RT, SAMPLES), msG: tex(RT, SAMPLES), depth: tex('depth24plus', SAMPLES),
+      color: tex(RT, 1, TB), g: tex(RT, 1, TB),
     };
-    t.mipViews = [...Array(bloomMips)].map((_, i) => t.bloom.createView({ baseMipLevel: i, mipLevelCount: 1 }));
-    const blackView = black.createView();
-    const ubos = [];
-    const ubo = () => {
-      const b = device.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-      ubos.push(b);
-      return b;
-    };
-    // pass list: prefilter -> mip0, down i-1 -> i, up i -> i-1
-    t.passes = [];
-    const src0 = { w, h: hgt };
-    const pre = ubo();
-    device.queue.writeBuffer(pre, 0, new Float32Array([1 / src0.w, 1 / src0.h, 1.5, 0.6]));
-    t.passes.push({ pipe: prefilterPipe, target: t.mipViews[0], bg: device.createBindGroup({ layout: bloomBGL, entries: [
-      { binding: 0, resource: t.color.createView() }, { binding: 1, resource: linearClamp },
-      { binding: 2, resource: t.glow.createView() }, { binding: 3, resource: { buffer: pre } }] }), load: 'clear' });
-    for (let i = 1; i < bloomMips; i++) {
-      const b = ubo();
-      device.queue.writeBuffer(b, 0, new Float32Array([1 / Math.max(1, bw >> (i - 1)), 1 / Math.max(1, bh >> (i - 1)), 0, 0]));
-      t.passes.push({ pipe: downPipe, target: t.mipViews[i], bg: device.createBindGroup({ layout: bloomBGL, entries: [
-        { binding: 0, resource: t.mipViews[i - 1] }, { binding: 1, resource: linearClamp },
-        { binding: 2, resource: blackView }, { binding: 3, resource: { buffer: b } }] }), load: 'clear' });
-    }
-    for (let i = bloomMips - 1; i > 0; i--) {
-      const b = ubo();
-      device.queue.writeBuffer(b, 0, new Float32Array([1 / Math.max(1, bw >> i), 1 / Math.max(1, bh >> i), 0, 0]));
-      t.passes.push({ pipe: upPipe, target: t.mipViews[i - 1], bg: device.createBindGroup({ layout: bloomBGL, entries: [
-        { binding: 0, resource: t.mipViews[i] }, { binding: 1, resource: linearClamp },
-        { binding: 2, resource: blackView }, { binding: 3, resource: { buffer: b } }] }), load: 'load' });
-    }
     t.compBG = device.createBindGroup({ layout: compPipe.getBindGroupLayout(0), entries: [
       { binding: 0, resource: t.color.createView() },
-      { binding: 1, resource: t.glow.createView() },
-      { binding: 2, resource: t.mipViews[0] },
-      { binding: 3, resource: linearClamp },
-      { binding: 4, resource: { buffer: compUBO } },
+      { binding: 1, resource: t.g.createView() },
+      { binding: 2, resource: { buffer: compUBO } },
     ] });
-    t.destroy = () => {
-      for (const k of ['msColor', 'msGlow', 'depth', 'color', 'glow', 'bloom']) t[k].destroy();
-      for (const b of ubos) b.destroy();
-    };
+    t.destroy = () => { for (const k of ['msColor', 'msG', 'depth', 'color', 'g']) t[k].destroy(); };
     return t;
   }
 
@@ -1204,7 +903,7 @@ export async function mountPcbHero(root, opts = {}) {
     focusW: new Array(N).fill(0), dim: new Array(N).fill(1), explode: 0,
     viewProj: null, invViewProj: null, cssW: 1, cssH: 1,
   };
-  // reduced motion: time stops, transitions are instant, moving accents become a steady glow
+  // reduced motion: time stops and transitions are instant
   // and frames are only drawn when something changes
   const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
   let reduceMotion = motionQuery.matches;
@@ -1315,17 +1014,17 @@ export async function mountPcbHero(root, opts = {}) {
     state.camRight = [view[0], view[4], view[8]];
     state.camUp = [view[1], view[5], view[9]];
     state.labelCol = labelCol;
+    state.dist = dist;
     const key = `${W}x${H}`;
     if (key !== state.nodesFor) { state.nodesFor = key; placeNodes(dist); }
   }
 
   // the hero board is node 0; shadow nodes are placed along the view rays through their
   // configured spots, so they stay in frame whatever the hero's aspect ratio
-  const sh = cfg.shadow;
-  const nodes = [{ x: 0, y: 0, z: 0, yaw: 0, look: [1, 1, 1, 0], t0: 0 }].concat(shadowNodes.map((n, i) => ({
-    spec: n, x: 0, y: 0, z: 0, yaw: ((n.yaw || 0) * Math.PI) / 180, look: [sh.light, sh.alpha, sh.emit, sh.haze], t0: 0.37 + i * 0.61,
+  const nodes = [{ x: 0, y: 0, z: 0, yaw: 0, look: [1, 1, 0, 0], t0: 0 }].concat(shadowNodes.map((n, i) => ({
+    spec: n, x: 0, y: 0, z: 0, yaw: ((n.yaw || 0) * Math.PI) / 180, look: [1, 1, 0, cfg.shadowFade], t0: 0.37 + i * 0.61,
   })));
-  const haze = hexLinear('#0d2230');
+  const haze = hexLinear(cfg.paper);
   function placeNodes(dist) {
     const stackMid = 1.5 * (cfg.slab + cfg.gapIdle);
     for (const n of nodes) {
@@ -1361,7 +1060,7 @@ export async function mountPcbHero(root, opts = {}) {
     return { p: nodeToWorld(n, px, y, pz), n: [nx * c + nz * s, 0, -nx * s + nz * c] };
   }
 
-  // --- holograms, uplink and cluster links (emissive quads rebuilt every frame)
+  // --- where the annotations attach: apps, slots, the uplink and the cluster links
   const partTop = (p) => ({ usbc: 3.2, button: 1.35, ind: 1.0, xtal: 0.7 })[p.kind] ?? (p.kind === 'ic' ? (p.w >= 10 ? 1.5 : p.w >= 6 ? 0.9 : 1.0) : 0.6);
   const anchorOf = (spec) => {
     const p = spec.part && data.parts.find((q) => q.ref === spec.part);
@@ -1373,46 +1072,12 @@ export async function mountPcbHero(root, opts = {}) {
     const [w, d] = spec.size || [6, 6];
     return { x: x - h, z: y - h, w, d, top: 0 };
   };
-  const glowRgb = (hex) => { const c = hexLinear(hex); const m = Math.max(...c, 1e-3); return c.map((v) => v / m); };
-  const apps = extras.apps.map((a) => ({ ...a, anchor: anchorOf(a), rgb: glowRgb(a.accent || appAccent) }));
-  const uplink = extras.uplink && {
-    ...extras.uplink, anchor: anchorOf(extras.uplink),
-    rgb: hexLinear(extras.uplink.accent || appAccent), down: hexLinear(extras.uplink.down || '#ffffff'),
-  };
-  const runtimeRgb = hexLinear(runtimeAccent);
+  const apps = extras.apps.map((a) => ({ ...a, anchor: anchorOf(a), rgb: hexLinear(a.accent || appAccent) }));
+  const uplink = extras.uplink && { ...extras.uplink, anchor: anchorOf(extras.uplink) };
   const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
-  const fxState = { holo: 0, uplink: 0, links: 0 };
   const hotW = items.map(() => 0);
   const geo = { tiles: [], tileR: [], beam: null, links: [], slots: [] }; // world anchors for the callouts
-  const slots = (extras.slots || []).map((sl) => {
-    const layer = slotLayer(sl);
-    const rgb = glowRgb(sl.accent || layerDefs[layer].accent).map((c) => c + (1 - c) * 0.3); // a touch lighter than the layer
-    return { ...sl, layer, anchor: anchorOf(sl), rgb, w: 0 };
-  });
-  let fxN = 0;
-  function fxPush(c0, c1, c2, c3, mode, I, d0, d1, rgb, kind, ext = [0, 0, 0, 0]) {
-    if (fxN >= MAX_FX || I <= 0.002) return;
-    const o = fxN++ * FX_FLOATS;
-    fxData.set(c0, o); fxData[o + 3] = mode;
-    fxData.set(c1, o + 4); fxData[o + 7] = I;
-    fxData.set(c2, o + 8); fxData[o + 11] = d0;
-    fxData.set(c3, o + 12); fxData[o + 15] = d1;
-    fxData.set(rgb, o + 16); fxData[o + 19] = kind;
-    fxData.set(ext, o + 20);
-  }
-  function ribbon(pts, width, I, rgb, seed) {
-    let dist = 0;
-    for (let i = 0; i < pts.length - 1; i++) {
-      const a = pts[i], b = pts[i + 1];
-      const dir = v3.sub(b, a);
-      const len = Math.hypot(...dir);
-      const mid = add(a, dir, 0.5);
-      const side = v3.norm(v3.cross(dir, v3.sub(state.eye, mid)));
-      const s = width / 2;
-      fxPush(add(a, side, -s), add(b, side, -s), add(b, side, s), add(a, side, s), FX.link, I, dist, dist + len, rgb, seed);
-      dist += len;
-    }
-  }
+  const slots = (extras.slots || []).map((sl) => ({ ...sl, layer: slotLayer(sl), anchor: anchorOf(sl) }));
   function cubic(p0, p1, p2, p3, segs) {
     const out = [];
     for (let i = 0; i <= segs; i++) {
@@ -1422,92 +1087,35 @@ export async function mountPcbHero(root, opts = {}) {
     return out;
   }
 
-  function buildFx(focus, k) {
-    fxN = 0;
-    const ease = (key, target) => { fxState[key] += (target - fxState[key]) * k; return fxState[key]; };
-    const holoI = ease('holo', focus === TOP ? 1 : focus < 0 ? 0.6 : 0.1);
-    const upI = ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.8 : 0.3);
-    const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.22 : 0.08);
+  function buildGeo(focus, k) {
     const hot = hotItem();
     items.forEach((it, j) => { hotW[j] += ((hot === it ? 1 : 0) - hotW[j]) * k; });
-    const R = state.camRight, U = state.camUp;
     const topY = state.y[TOP];
 
-    geo.tiles = apps.map((app, i) => {
-      const I = holoI * (1 + hotW[i] * 0.7);
+    // apps: the callout sits above the part, the hover target is the part itself
+    apps.forEach((app, i) => {
       const A = app.anchor;
-      const fw = A.w + 1.8, fd = A.d + 1.8;
-      const y0 = topY + 0.03;
-      fxPush([A.x - fw / 2, y0, A.z + fd / 2], [A.x + fw / 2, y0, A.z + fd / 2], [A.x + fw / 2, y0, A.z - fd / 2], [A.x - fw / 2, y0, A.z - fd / 2],
-        FX.footprint, I, 0, 0, app.rgb, i, [fw, fd, 0, 0]);
-      const s = cfg.holoSize / 2;
-      const C = [A.x, topY + cfg.holoHeight + Math.sin(time * 1.1 + i * 2.1) * 0.35, A.z];
-      fxPush(add(add(C, R, -s), U, -s), add(add(C, R, s), U, -s), add(add(C, R, s), U, s), add(add(C, R, -s), U, s),
-        FX.tile, I, 0, 0, app.rgb, i, [app.image && !app.mono ? 1 : 0, i * 0.37, 0, 0]);
-      geo.tileR[i] = C;
-      const B = [A.x, topY + A.top + 0.05, A.z];
-      const Cb = add(C, U, -s);
-      const bw = Math.max(fw, fd) * 0.42, tw = s * 0.92;
-      fxPush(add(B, R, -bw), add(B, R, bw), add(Cb, R, tw), add(Cb, R, -tw), FX.cone, I, 0, 0, app.rgb, i);
-      return add(C, U, s);
+      geo.tileR[i] = [A.x, topY + A.top, A.z];
+      geo.tiles[i] = [A.x, topY + A.top + 3, A.z];
     });
+    geo.slots = slots.map((sl) => [sl.anchor.x, state.y[sl.layer] + 0.04, sl.anchor.z]);
+    if (uplink) { const A = uplink.anchor; geo.beam = [A.x, topY + A.top + 0.05, A.z]; }
 
-    // technology slots, shown while their layer is in focus
-    geo.slots = slots.map((sl, j) => {
-      sl.w += ((focus === sl.layer ? 1 : 0) - sl.w) * k;
-      const A = sl.anchor;
-      const yS = state.y[sl.layer] + 0.04;
-      const I = sl.w * (0.8 + hotW[apps.length + j] * 0.9);
-      fxPush([A.x - A.w / 2, yS, A.z + A.d / 2], [A.x + A.w / 2, yS, A.z + A.d / 2], [A.x + A.w / 2, yS, A.z - A.d / 2], [A.x - A.w / 2, yS, A.z - A.d / 2],
-        FX.footprint, I, 0, 0, sl.rgb, j + 5, [A.w, A.d, 0, 0]);
-      return [A.x, yS, A.z];
-    });
-
-    if (uplink) {
-      const A = uplink.anchor;
-      const B = [A.x, topY + A.top + 0.05, A.z];
-      const L = 320, w = 10;
-      fxPush(add(B, R, -w / 2), add(B, R, w / 2), add(add(B, R, w / 2), [0, L, 0]), add(add(B, R, -w / 2), [0, L, 0]),
-        FX.uplink, upI, 0, L, uplink.rgb, 0, [...uplink.down, 0]);
-      const f = 7;
-      fxPush([B[0] - f, B[1], B[2] + f], [B[0] + f, B[1], B[2] + f], [B[0] + f, B[1], B[2] - f], [B[0] - f, B[1], B[2] - f],
-        FX.flare, upI, 0, 0, uplink.rgb, 0);
-      geo.beam = B;
-    }
-
-    // Erlang distribution: a full mesh between the runtime plates of all nodes. On the hero
-    // board each link lands on a pad on the runtime plate, rising from it and running back
-    // through the gap under the plate above; between shadow nodes links leave square to an edge.
+    // Erlang distribution: on the hero board each link lands on a pad on the runtime plate,
+    // rising from it and running back through the gap under the plate above
     geo.links = [];
     const y = state.y[RUNTIME] - cfg.slab * 0.5;
     const yTop = state.y[RUNTIME] + 0.04;
+    const R = state.camRight;
     const across = (p) => p[0] * R[0] + p[2] * R[2];
     const ports = cfg.ports.map(([x, z]) => [x - h, yTop, z - h]).sort((a, b) => across(a) - across(b));
     const byScreen = nodes.slice(1).map((n, i) => i + 1).sort((a, b) => across([nodes[a].x, 0, nodes[a].z]) - across([nodes[b].x, 0, nodes[b].z]));
-    const portOf = new Map(byScreen.map((ni, k) => [ni, ports[Math.min(k, ports.length - 1)]]));
-    for (let a = 0; a < nodes.length; a++)
-      for (let b = a + 1; b < nodes.length; b++) {
-        const na = nodes[a], nb = nodes[b];
-        const hero = a === 0;
-        const B = edgeAnchor(nb, hero ? [0, 0, 0] : [na.x, na.y, na.z], y);
-        let pts;
-        if (hero) {
-          const P = portOf.get(b);
-          const len = Math.hypot(B.p[0] - P[0], B.p[2] - P[2]);
-          pts = cubic(P, add(P, [0, 6, 0]), add(add(B.p, B.n, len * 0.3), [0, len * 0.04, 0]), B.p, 56);
-          const f = 3;
-          fxPush([P[0] - f, P[1], P[2] + f], [P[0] + f, P[1], P[2] + f], [P[0] + f, P[1], P[2] - f], [P[0] - f, P[1], P[2] - f],
-            FX.flare, linkI * 2.4, 0, 0, runtimeRgb, 0);
-        } else {
-          const A = edgeAnchor(na, [nb.x, nb.y, nb.z], y);
-          const len = Math.hypot(B.p[0] - A.p[0], B.p[2] - A.p[2]);
-          const lift = [0, len * 0.05, 0];
-          pts = cubic(A.p, add(add(A.p, A.n, len * 0.22), lift), add(add(B.p, B.n, len * 0.22), lift), B.p, 44);
-        }
-        ribbon(pts, hero ? 1.8 : 1.4, linkI * (hero ? 1 : 0.45), runtimeRgb, a * 0.37 + b * 0.19);
-        if (hero) geo.links[b - 1] = pts;
-      }
-    device.queue.writeBuffer(fxBuf, 0, fxData, 0, fxN * FX_FLOATS);
+    byScreen.forEach((ni, kk) => {
+      const P = ports[Math.min(kk, ports.length - 1)];
+      const B = edgeAnchor(nodes[ni], [0, 0, 0], y);
+      const len = Math.hypot(B.p[0] - P[0], B.p[2] - P[2]);
+      geo.links[ni - 1] = cubic(P, add(P, [0, 6, 0]), add(add(B.p, B.n, len * 0.3), [0, len * 0.04, 0]), B.p, 40);
+    });
   }
 
   function layoutTags(focus, k) {
@@ -1613,7 +1221,7 @@ export async function mountPcbHero(root, opts = {}) {
     }
     state.explode += ((open ? 1 : 0.25) - state.explode) * k;
     camera();
-    buildFx(focus, k);
+    buildGeo(focus, k);
 
     sceneData.set(state.viewProj, 0);
     sceneData.set([...state.eye, 1], 16);
@@ -1628,13 +1236,13 @@ export async function mountPcbHero(root, opts = {}) {
     accents.forEach((a, i) => sceneData.set([...a, 1], 44 + i * 4));
     sceneData[60] = reduceMotion ? 0 : 1; // Scene.motion follows the four accents
     device.queue.writeBuffer(sceneUBO, 0, sceneData);
-    device.queue.writeBuffer(compUBO, 0, new Float32Array([cfg.bloom, cfg.exposure, hdrOut ? 4.0 : 1.0, hdrOut ? 0 : 1]));
+    device.queue.writeBuffer(compUBO, 0, new Float32Array([Math.max(1, Math.round(cfg.ink * dpr * 0.5)), state.dist, 0, 0]));
 
     const enc = device.createCommandEncoder();
     const pass = enc.beginRenderPass({
       colorAttachments: [
         { view: T.msColor.createView(), resolveTarget: T.color.createView(), clearValue: [0, 0, 0, 0], loadOp: 'clear', storeOp: 'discard' },
-        { view: T.msGlow.createView(), resolveTarget: T.glow.createView(), clearValue: [0, 0, 0, 0], loadOp: 'clear', storeOp: 'discard' },
+        { view: T.msG.createView(), resolveTarget: T.g.createView(), clearValue: [0, 0, 0, 0], loadOp: 'clear', storeOp: 'discard' },
       ],
       depthStencilAttachment: { view: T.depth.createView(), depthClearValue: 1, depthLoadOp: 'clear', depthStoreOp: 'discard' },
     });
@@ -1657,23 +1265,11 @@ export async function mountPcbHero(root, opts = {}) {
       pass.draw(6, pulseData.length / 8);
     }
     pass.setBindGroup(1, nodeBG, [0]);
-    pass.setPipeline(beamPipe);
-    pass.setVertexBuffer(0, viaBuf);
-    pass.draw(6, viaData.length / 4);
-    if (fxN) {
-      pass.setPipeline(fxPipe);
-      pass.setVertexBuffer(0, fxBuf);
-      pass.draw(6, fxN);
-    }
+    pass.setPipeline(guidePipe);
+    pass.setVertexBuffer(0, holeBuf);
+    pass.draw(6, holeData.length / 4);
     pass.end();
 
-    for (const p of T.passes) {
-      const bp = enc.beginRenderPass({ colorAttachments: [{ view: p.target, loadOp: p.load, storeOp: 'store', clearValue: [0, 0, 0, 0] }] });
-      bp.setPipeline(p.pipe);
-      bp.setBindGroup(0, p.bg);
-      bp.draw(3);
-      bp.end();
-    }
     const cp = enc.beginRenderPass({ colorAttachments: [{ view: ctx.getCurrentTexture().createView(), loadOp: 'clear', storeOp: 'store', clearValue: [0, 0, 0, 0] }] });
     cp.setPipeline(compPipe);
     cp.setBindGroup(0, T.compBG);

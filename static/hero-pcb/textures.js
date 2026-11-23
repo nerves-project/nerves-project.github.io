@@ -6,15 +6,16 @@
 
 import { drawLogo } from './logos.js';
 
+// flat, friendly tones for the nearly cel-shaded look
 export const PALETTE = {
-  mask: '#173f2a',          // soldermask over bare laminate
-  maskCopper: '#24583a',    // soldermask over copper
-  maskVia: '#2b6643',
-  laminate: '#5c5434',      // FR4 core (inner layers)
-  copper: '#c47a48',        // bare copper (inner planes)
-  copperRing: '#dc9a62',
-  gold: '#d9ad55',          // ENIG pads
-  silk: '#eeeee6',
+  mask: '#3f8a5c',          // soldermask over bare laminate
+  maskCopper: '#55a06f',    // soldermask over copper
+  maskVia: '#62ab7b',
+  laminate: '#cdb67c',      // FR4 core (inner layers)
+  copper: '#e49a62',        // bare copper (inner planes)
+  copperRing: '#f2b47e',
+  gold: '#efc25e',          // ENIG pads
+  silk: '#fbfaf2',
 };
 
 // Layer order is bottom -> top, matching the visual stack.
@@ -47,7 +48,7 @@ function drawImageArt(ctx, img, a, ink, pxPerMm, isMaterial) {
   const w = img.naturalWidth * k, h = img.naturalHeight * k;
   if (a.color) {
     // printed decal: the image itself on the albedo; on the material map it is matte and
-    // takes no copper, metal or glow, so it keeps its own colours
+    // takes no copper or metal, so it keeps its own colours
     if (!isMaterial) { ctx.drawImage(img, a.at[0] - w / 2, a.at[1] - h / 2, w, h); return; }
     const c = new OffscreenCanvas(Math.max(1, Math.ceil(w * pxPerMm)), Math.max(1, Math.ceil(h * pxPerMm)));
     const g = c.getContext('2d');
@@ -223,16 +224,15 @@ function drawSilk(ctx, silk, color) {
   }
 }
 
-function contactShadows(ctx, parts, pxPerMm) {
+// hard-edged cast shadows, offset away from the light, as a cel painter would block them in
+function contactShadows(ctx, parts) {
   ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.55)';
-  ctx.filter = `blur(${0.3 * pxPerMm}px)`; // filter radius is in canvas pixels, not transformed units
+  ctx.fillStyle = 'rgba(16, 52, 32, 0.32)';
   for (const p of parts) {
     ctx.save();
-    ctx.translate(p.x, p.y);
+    ctx.translate(p.x + 0.35, p.y + 0.22);
     ctx.rotate((-p.rot * Math.PI) / 180);
-    const grow = 0.25;
-    roundedRect(ctx, -p.w / 2 - grow, -p.h / 2 - grow, p.w + grow * 2, p.h + grow * 2, 0.3);
+    roundedRect(ctx, -p.w / 2, -p.h / 2, p.w, p.h, 0.25);
     ctx.fill();
     ctx.restore();
   }
@@ -282,7 +282,7 @@ export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
       circles(m, holeRings, '#ffff00');
 
       if (src.side === 'F') {
-        contactShadows(a, data.parts, pxPerMm);
+        contactShadows(a, data.parts);
         drawSilk(a, data.silk, PALETTE.silk);
         drawSilk(m, data.silk, '#0000ff');
       }
