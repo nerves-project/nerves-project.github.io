@@ -19,6 +19,7 @@ export const PALETTE = {
 
 // Layer order is bottom -> top, matching the visual stack.
 // art: logos drawn on the layer (board mm) - etched into inner copper, silkscreen on outer layers.
+//   { square, at, size } a plain square block marked with its name
 //   { logo, at, size }  a mark from logos.js
 //   { image, at, size } a logo file (path relative to this module), drawn monochrome by its alpha;
 //                       with `threshold`, pixels darker than it are left out; with `halftone` (cell mm)
@@ -28,15 +29,12 @@ export const PALETTE = {
 //   { text, at, size }  a label
 export const LAYER_SOURCES = [
   { cu: 'B.Cu', kind: 'outer', side: 'B', art: [
-    { image: 'logos/buildroot.png', at: [15, 25], size: 9.5, halftone: 0.3,
-      callout: { name: 'Buildroot', text: 'Reliable, maintained, builds embedded Linux', at: [24, 25], size: 20 } },
-    { text: 'Buildroot', at: [21, 25.4], size: 4.6, align: 'left' },
+    { square: 'Buildroot', at: [20, 25], size: 11,
+      callout: { name: 'Buildroot', text: 'Reliable, maintained, builds embedded Linux', at: [20, 25], size: 11 } },
   ] },
   { cu: 'In2.Cu', kind: 'inner', art: [
-    { image: "logos/tux.svg", color: true, at: [11.5, 26.5], size: 10.5, callout: { name: 'Linux', text: 'I run Nerves actually..', at: [11.5, 28], size: 13 } },
-    { text: 'Linux', at: [11.5, 33.6], size: 2.6 },
-    { logo: 'uboot', at: [35, 26], size: 14, callout: { name: 'U-Boot', text: 'The standard in booting embedded Linux', at: [35, 28], size: 15 } },
-    { text: 'U-Boot', at: [35, 32.6], size: 2.6 },
+    { square: 'Linux', at: [11.5, 26.5], size: 10, callout: { name: 'Linux', text: 'I run Nerves actually..', at: [11.5, 26.5], size: 10 } },
+    { square: 'U-Boot', at: [38.5, 28], size: 10, callout: { name: 'U-Boot', text: 'The standard in booting embedded Linux', at: [38.5, 28], size: 10 } },
   ] },
   { cu: 'In1.Cu', kind: 'inner' },
   { cu: 'F.Cu', kind: 'outer', side: 'F' },
@@ -102,9 +100,32 @@ function drawImageArt(ctx, img, a, ink, pxPerMm, isMaterial) {
   ctx.drawImage(c, a.at[0] - w / 2, a.at[1] - h / 2, w, h);
 }
 
+// a generic block: rounded outline, a pin-1 dot and the name fitted inside
+function drawSquare(ctx, a, ink) {
+  const s = a.size, x = a.at[0] - s / 2, y = a.at[1] - s / 2;
+  ctx.save();
+  ctx.strokeStyle = ink;
+  ctx.fillStyle = ink;
+  ctx.lineWidth = s * 0.045;
+  ctx.beginPath();
+  ctx.roundRect(x, y, s, s, s * 0.1);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(x + s * 0.16, y + s * 0.16, s * 0.045, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.font = `700 10px ${ART_FONT}`;
+  const fs = Math.min(s * 0.2, (10 * s * 0.74) / ctx.measureText(a.square).width);
+  ctx.font = `700 ${fs}px ${ART_FONT}`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(a.square, a.at[0], a.at[1] + fs * 0.04);
+  ctx.restore();
+}
+
 // style: { ink, clear } fill styles (clear null erases)
 function drawArt(ctx, art = [], style, images, pxPerMm, isMaterial = false) {
   for (const a of art) {
+    if (a.square) drawSquare(ctx, a, style.ink);
     if (a.logo) drawLogo(ctx, a.logo, a.at[0], a.at[1], a.size, style);
     if (a.image && images?.get(a.image)) drawImageArt(ctx, images.get(a.image), a, style.ink, pxPerMm, isMaterial);
     if (a.text) {

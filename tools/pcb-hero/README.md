@@ -26,7 +26,8 @@ Only the Python standard library is needed.
 
 Trellis Core is Copyright 2025 Protolux Electronics, licensed under CERN-OHL-P v2.
 Modification: the board geometry is converted to JSON and the Protolux Electronics
-logo (board-level silkscreen) is left out, per the repository's trademark notice.
+logo (board-level silkscreen) is left out, per the repository's trademark notice, as is the
+TRELLIS CORE wordmark.
 
 ### Logos
 
@@ -43,16 +44,7 @@ Check with each project before publishing.
   [beam-bots/bb](https://github.com/beam-bots/bb) © 2025 James Harton (LicenseRef-Beam-Bots-Logo), used with permission.
 - **Elixir Circuits**: `static/hero-pcb/logos/elixir-circuits.png`, the logo from
   [elixir-circuits.github.io](https://elixir-circuits.github.io/); the hologram glows its light parts in the logo's purple.
-- **U-Boot**: monochrome adaptation of `tools/logos/u-boot_logo.svg` from
-  [u-boot/u-boot](https://github.com/u-boot/u-boot), © 2018 Heinrich Schuchardt, CC-BY-SA-4.0.
-  The adaptation (in `static/hero-pcb/logos.js`) is shared under the same licence.
-- **Buildroot**: `static/hero-pcb/logos/buildroot.png`, the logo from `docs/website/images/logo.png` in
-  [buildroot/buildroot](https://gitlab.com/buildroot.org/buildroot), printed on the Tooling layer as a halftone.
-- **Linux**: the penguin is an original drawing standing in for Tux. To use Tux, replace `logo: 'penguin'`
-  in `LAYER_SOURCES` (`static/hero-pcb/textures.js`) with `image: 'logos/tux.svg'`, adding `color: true` to
-  print a colour file as is (without it the file is etched in one colour from its transparency). Tux is by
-  Larry Ewing (lewing@isc.tamu.edu) and The GIMP; the vector versions are by Simon Budig, whose notice must
-  ship with them (`static/hero-pcb/logos/README-penguin-simon-budig.txt`), and Garrett LeSage (CC0).
-  Add the Tux credit to the credit line in `static/hero-pcb/index.html`.
 
-The hero page credits Trellis, the Buildroot and U-Boot logos and the Linux trademark below the illustration.
+The System and Tooling layers mark Linux, U-Boot and Buildroot with plain named squares, not logos.
+
+The hero page credits Trellis below the illustration.

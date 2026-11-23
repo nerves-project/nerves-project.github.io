@@ -4,7 +4,8 @@
 Usage: python3 tools/pcb-hero/extract_kicad.py path/to/board.kicad_pcb static/hero-pcb/pcb.json
 
 Board-specific bits (board origin, CPU location used as the pulse origin) are at the top.
-Board graphics on F.SilkS (gr_poly - the Protolux logo) are intentionally not exported.
+Board graphics on F.SilkS (gr_poly - the Protolux logo) and the kibuzzard footprints (the TRELLIS CORE
+wordmark) are intentionally not exported.
 """
 import re, sys, json, math, heapq, collections
 
@@ -131,7 +132,7 @@ for fp in find(pcb, 'footprint'):
             r = math.dist(c, e); loc = [(c[0] + r * math.cos(t * math.pi / 16), c[1] + r * math.sin(t * math.pi / 16)) for t in range(33)]
         if layer == 'F.Fab': fab += loc
         if layer == 'F.CrtYd': crt += loc
-        if layer == 'F.SilkS':
+        if layer == 'F.SilkS' and not ref.startswith('kibuzzard'):
             glob = [xform(fx, fy, fa, x, y) for x, y in loc]
             flat = [R(c) for p in glob for c in p]
             filled = g[0] == 'fp_poly' and (get(g, 'fill') or ['', 'no'])[1] in ('yes', 'solid')
@@ -159,8 +160,6 @@ for fp in find(pcb, 'footprint'):
         if kind == 'ic':
             part['leads'] = [[R(x - cx), R(y - cy), R(w), R(h), R(a)] for x, y, w, h, a in fp_pads]
         parts.append(part)
-    if ref.startswith('kibuzzard'):
-        pass  # handled via silk_polys above (TRELLIS CORE wordmark)
 
 data = {
     'source': 'Trellis Core by Protolux Electronics (CERN-OHL-P v2) https://github.com/protolux-electronics/trellis_core',
