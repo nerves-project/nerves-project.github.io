@@ -39,15 +39,9 @@ menu:
     - name: 'Newsletter'
       url: '/newsletter'
       weight: 2
-    - name: 'Tips'
-      url: 'https://tips.nerves-project.org'
-      weight: 3
-    - name: 'Blog'
-      url: 'https://embedded-elixir.com'
-      weight: 4
     - name: 'Cases'
       url: '/cases'
-      weight: 5
+      weight: 3
   footer2:
     - name: 'Forum'
       url: 'https://elixirforum.com/nerves'
