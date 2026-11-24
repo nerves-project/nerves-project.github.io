@@ -12,6 +12,7 @@ export const PALETTE = {
   maskCopper: '#55a06f',    // soldermask over copper
   maskVia: '#62ab7b',
   laminate: '#cdb67c',      // FR4 core (inner layers)
+  etch: '#9c8350',          // art etched out of an inner plane, a little darker so it reads
   copper: '#e49a62',        // bare copper (inner planes)
   copperRing: '#f2b47e',
   gold: '#efc25e',          // ENIG pads
@@ -294,7 +295,7 @@ export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
       drawZones(a, zones, PALETTE.copper);
       drawZones(m, zones, '#ff0000');
       // copper art: the logo is etched out of the plane, its details stay copper
-      drawArt(a, src.art, { ink: PALETTE.laminate, clear: PALETTE.copper }, images, pxPerMm);
+      drawArt(a, src.art, { ink: PALETTE.etch, clear: PALETTE.copper }, images, pxPerMm);
       m.globalCompositeOperation = 'source-over';
       drawArt(m, src.art, { ink: '#0000ff', clear: '#ff0000' }, images, pxPerMm, true);
       m.globalCompositeOperation = 'lighter';

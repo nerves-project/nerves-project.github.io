@@ -6,6 +6,7 @@
 //   mountPcbHero(document.querySelector('#hero-stack'), { dataUrl: '/hero-pcb/pcb.json' });
 
 import { buildLayerCanvases, LAYER_SOURCES } from './textures.js';
+import { drawLogo } from './logos.js';
 
 export const DEFAULT_LAYERS = [
   // bottom -> top
@@ -17,15 +18,15 @@ export const DEFAULT_LAYERS = [
 
 // Things that sit on top of the stack. `part` anchors to a board reference, `at` to board mm.
 export const DEFAULT_EXTRAS = {
-  // projects on the Application layer: `logo` names a mark in logos.js, `image` a logo file;
-  // with `mono` the file's lighter parts become the mark (for dark-on-light logos).
-  // Accents are the projects' brand colours.
+  // projects on the Application layer, each a sticker floating over its part: `logo` names a
+  // mark in logos.js (drawn in the accent), `image` a logo file; `float` overrides how high the
+  // sticker floats (mm). Accents are the brand colours.
   apps: [
     { name: 'Phoenix', text: 'Web services', part: 'J1', logo: 'phoenix', accent: '#f05423' },
-    { name: 'Membrane', text: 'Media processing and streaming', at: [37, 33], size: [7, 7], logo: 'membrane', accent: '#87cce8' },
+    { name: 'Membrane', text: 'Media processing and streaming', at: [37, 33], size: [7, 7], logo: 'membrane', accent: '#87cce8', float: 6 },
     { name: 'Nx', text: 'Inference at the edge', part: 'U3', logo: 'nx', accent: '#b58491' },
     { name: 'BEAM Bots', text: 'Declarative robotics', at: [8.5, 24], size: [6, 7], image: 'logos/beam-bots.svg', accent: '#af4bf9' },
-    { name: 'Elixir Circuits', text: 'GPIO, SPI, I2C, UART, the usual suspects', at: [46.5, 9], size: [5.5, 5.5], image: 'logos/elixir-circuits.png', mono: true, accent: '#6b5487' },
+    { name: 'Elixir Circuits', text: 'GPIO, SPI, I2C, UART, the usual suspects', at: [46.5, 9], size: [5.5, 5.5], image: 'logos/elixir-circuits.png', accent: '#6b5487' },
   ],
   // technology slots, on the layer named by its copper (board mm; size is x by y)
   slots: [
@@ -43,13 +44,15 @@ export const DEFAULT_EXTRAS = {
     { layer: 'B.Cu', name: 'Mix tooling', text: 'Integrates with standard Elixir tooling', at: [44.5, 29], size: [4.2, 10] },
     { layer: 'B.Cu', name: 'fwup', text: 'Builds firmware and updates devices', at: [44.5, 40.5], size: [4.2, 10] },
   ],
-  uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', part: 'U5', accent: '#9fe8ff', down: '#4fd18b' },
+  uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', part: 'U5', accent: '#2f9fc4', down: '#3aa86b' },
   cluster: {
     name: 'Erlang distribution',
     text: 'Processes message each other across devices',
     nodes: ['nerves@nerves-4f2a.local', 'nerves@nerves-91c3.local', 'nerves@nerves-0b7e.local'],
   },
 };
+
+const INK_HEX = '#26221f';
 
 const CFG = {
   slab: 0.6,          // visual thickness of each layer plate (mm)
@@ -64,6 +67,9 @@ const CFG = {
   pulseSpeed: 16,     // mm/s
   paper: '#f4efe4',   // the page colour; distant boards and unfocused plates fade into it
   ink: 1.6,           // outline width in css px
+  boil: 8,            // hand-drawn marks are re-drawn this many times a second (PAINT_WGSL matches)
+  stickerHeight: 8.5, // project stickers float this far above the top plate (mm)
+  stickerSize: 6.2,
   // shadow nodes of the cluster: x, y = where the node's centre lands in the hero (0..1),
   // depth = distance from the camera in multiples of the hero board's distance, yaw in degrees
   nodes: [
@@ -426,6 +432,106 @@ struct VOut {
 }
 `;
 
+// Hand-drawn marks in the scene: marker, crayon and highlighter strokes and crayon dots.
+// Quads arrive with world-space corners built on the CPU; marks drawn on a plate lie flat on
+// it, the rest turn to face the camera. They are depth-tested, so plates in front hide them.
+const PAINT = { marker: 0, crayon: 1, highlighter: 2, dot: 3 };
+const PAINT_WGSL = SCENE_WGSL + /* wgsl */ `
+struct VOut {
+  @builtin(position) pos: vec4f,
+  @location(0) uv: vec2f,
+  @location(1) @interpolate(flat) prm: vec4f,   // mode, alpha, d0, d1 (mm along the stroke)
+  @location(2) @interpolate(flat) col: vec4f,   // rgb, seed
+  @location(3) @interpolate(flat) ext: vec4f,   // width (mm), stroke length (mm)
+};
+
+@vertex fn vs(@builtin(vertex_index) vi: u32,
+              @location(0) c0: vec4f, @location(1) c1: vec4f, @location(2) c2: vec4f, @location(3) c3: vec4f,
+              @location(4) col: vec4f, @location(5) ext: vec4f) -> VOut {
+  var uvs = array<vec2f, 6>(vec2f(0.0, 0.0), vec2f(1.0, 0.0), vec2f(1.0, 1.0),
+                            vec2f(0.0, 0.0), vec2f(1.0, 1.0), vec2f(0.0, 1.0));
+  var p = c3.xyz;
+  if (vi == 0u || vi == 3u) { p = c0.xyz; } else if (vi == 1u) { p = c1.xyz; } else if (vi == 2u || vi == 4u) { p = c2.xyz; }
+  var o: VOut;
+  o.pos = S.viewProj * vec4f(p, 1.0);
+  o.uv = uvs[vi];
+  o.prm = vec4f(c0.w, c1.w, c2.w, c3.w);
+  o.col = col; o.ext = ext;
+  return o;
+}
+
+fn pcg(x: u32) -> u32 {
+  let v = x * 747796405u + 2891336453u;
+  let w = ((v >> ((v >> 28u) + 4u)) ^ v) * 277803737u;
+  return (w >> 22u) ^ w;
+}
+fn hash(p: vec2f) -> f32 {
+  let q = vec2i(floor(p));
+  return f32(pcg(bitcast<u32>(q.x) ^ pcg(bitcast<u32>(q.y)))) / 4294967295.0;
+}
+fn vnoise(p: vec2f) -> f32 {
+  let i = floor(p); let f = fract(p);
+  let u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2f(1.0, 0.0)), u.x), mix(hash(i + vec2f(0.0, 1.0)), hash(i + vec2f(1.0, 1.0)), u.x), u.y);
+}
+
+fn paint(in: VOut) -> vec4f {
+  let mode = u32(in.prm.x + 0.5);
+  let x = in.uv.y * 2.0 - 1.0;                    // across the stroke
+  let along = mix(in.prm.z, in.prm.w, in.uv.x);
+  let w = in.ext.x;
+  let len = in.ext.y;
+  let seed = in.col.w;
+  let boil = floor(S.params.x * 8.0);             // redrawn 8 times a second; still with reduced motion
+  // the ends narrow like a pen landing on and leaving the page
+  let ends = max(smoothstep(0.0, w * 0.8, along) * smoothstep(0.0, w * 0.8, len - along), 0.3);
+  var rgb = in.col.rgb;
+  var a = 0.0;
+  if (mode == 0u) {
+    // marker: solid, a little streaky, ink pooling at the edges
+    let edge = 1.0 - smoothstep(0.72, 1.0, abs(x) / ends);
+    a = edge * (0.84 + 0.16 * vnoise(vec2f(along * 2.4, x * 2.0 + seed * 7.0)));
+    rgb *= mix(1.0, 0.8, smoothstep(0.4, 0.9, abs(x)));
+  } else if (mode == 1u) {
+    // crayon: wax catches the tooth of the paper and skips
+    let rag = 0.7 + 0.3 * vnoise(vec2f(along * 2.5, seed * 13.0 + boil));
+    let body = 1.0 - smoothstep(rag - 0.15, rag, abs(x) / ends);
+    let tooth = vnoise(vec2f(along / w * 7.0, x * 2.2) + vec2f(seed * 31.0 + boil * 3.7, boil))
+              * 0.65 + hash(vec2f(along / w * 20.0, x * 6.0) + vec2f(boil * 17.0, seed * 5.0)) * 0.35;
+    a = body * smoothstep(0.18, 0.42, tooth);
+  } else if (mode == 2u) {
+    // highlighter: flat, translucent, square-ish ends
+    a = (1.0 - smoothstep(0.86, 1.0, abs(x))) * 0.34
+      * smoothstep(0.0, w * 0.25, along) * smoothstep(0.0, w * 0.25, len - along);
+  } else {
+    // crayon dot
+    let r = length(in.uv * 2.0 - 1.0);
+    a = (1.0 - smoothstep(0.66, 1.0, r)) * smoothstep(0.18, 0.42, vnoise(in.uv * 5.0 + vec2f(seed * 17.0 + boil, boil)));
+  }
+  a *= in.prm.y;
+  return vec4f(rgb * a, a);
+}
+
+@fragment fn fs(in: VOut) -> FragOut {
+  var o: FragOut;
+  o.color = paint(in);
+  o.g = vec4f(0.0);
+  return o;
+}
+
+// hidden lines: where a stroke flagged in ext.z passes behind a plate it shows dashed and lighter,
+// as a technical drawing would
+@fragment fn fsHidden(in: VOut) -> FragOut {
+  if (in.ext.z < 0.5) { discard; }
+  let along = mix(in.prm.z, in.prm.w, in.uv.x);
+  let dash = step(0.5, fract(along / (in.ext.x * 2.4)));
+  var o: FragOut;
+  o.color = paint(in) * 0.45 * dash;
+  o.g = vec4f(0.0);
+  return o;
+}
+`;
+
 const FULLSCREEN_VS = /* wgsl */ `
 struct FsOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
 @vertex fn vs(@builtin(vertex_index) i: u32) -> FsOut {
@@ -639,6 +745,10 @@ export async function mountPcbHero(root, opts = {}) {
   const canvas = document.createElement('canvas');
   canvas.className = 'pcb-hero__canvas';
   canvas.setAttribute('aria-hidden', 'true');
+  const ink = document.createElement('canvas');
+  ink.className = 'pcb-hero__ink';
+  ink.setAttribute('aria-hidden', 'true');
+  const ictx = ink.getContext('2d');
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.classList.add('pcb-hero__leaders');
   svg.setAttribute('aria-hidden', 'true');
@@ -702,7 +812,7 @@ export async function mountPcbHero(root, opts = {}) {
   const uplinkTag = extras.uplink && mkTag(extras.uplink.name, extras.uplink.text, extras.uplink.accent || appAccent, 'is-uplink');
   const clusterTag = extras.cluster && mkTag(extras.cluster.name, extras.cluster.text, runtimeAccent, 'is-cluster');
   const nodeTags = (extras.cluster?.nodes || []).map((n) => mkTag(n, '', runtimeAccent, 'is-node'));
-  root.append(canvas, svg, list, tagBox);
+  root.append(canvas, ink, svg, list, tagBox);
 
   if (!navigator.gpu) return fail('WebGPU is not available in this browser.');
   const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
@@ -741,6 +851,35 @@ export async function mountPcbHero(root, opts = {}) {
   const linearClamp = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', addressModeU: 'clamp-to-edge', addressModeV: 'clamp-to-edge' });
   generateMips(device, albedoTex, 'rgba8unorm-srgb', 4, mipLevels, linearClamp);
   generateMips(device, matTex, 'rgba8unorm', 4, mipLevels, linearClamp);
+  // project stickers: the logo on a white die-cut with a hard shadow, drawn once
+  const STICKER_PX = 192, STICKER_BODY = 0.84;
+  const stickers = await Promise.all(extras.apps.map(async (a) => {
+    const P = STICKER_PX, c = new OffscreenCanvas(P, P), g = c.getContext('2d');
+    const body = P * STICKER_BODY, pad = (P - body) / 2, r = body * 0.24, off = P * 0.035;
+    g.fillStyle = 'rgba(38, 34, 31, 0.3)';
+    g.beginPath(); g.roundRect(pad + off, pad + off, body, body, r); g.fill();
+    g.fillStyle = '#fffdf7';
+    g.beginPath(); g.roundRect(pad, pad, body, body, r); g.fill();
+    g.lineWidth = P * 0.02; g.strokeStyle = 'rgba(38, 34, 31, 0.6)'; g.stroke();
+    const inner = body * 0.72;
+    if (a.image) {
+      const img = new Image();
+      img.src = new URL(a.image, import.meta.url).href;
+      try {
+        await img.decode();
+        const k = inner / Math.max(img.naturalWidth, img.naturalHeight);
+        g.drawImage(img, (P - img.naturalWidth * k) / 2, (P - img.naturalHeight * k) / 2, img.naturalWidth * k, img.naturalHeight * k);
+      } catch (e) { console.warn('[pcb-hero] logo failed to load', a.image); }
+    } else if (a.logo) {
+      // marks in the project's colour; knock-outs let the sticker show through
+      const m = new OffscreenCanvas(P, P);
+      drawLogo(m.getContext('2d'), a.logo, P / 2, P / 2, inner, { ink: a.accent || '#26221f', clear: null });
+      g.drawImage(m, 0, 0);
+    }
+    return c;
+  }));
+  // the handwriting for the scribbled notes
+  try { await document.fonts.load('700 16px Caveat'); } catch (e) { /* falls back to cursive */ }
   const aniso = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', maxAnisotropy: 8, addressModeU: 'clamp-to-edge', addressModeV: 'clamp-to-edge' });
 
   // --- buffers
@@ -768,6 +907,11 @@ export async function mountPcbHero(root, opts = {}) {
   const shadowNodes = cfg.nodes.slice(0, Math.max(0, extras.cluster?.nodes?.length ?? cfg.nodes.length));
   const nodeCount = 1 + shadowNodes.length;
   const nodeUBO = device.createBuffer({ size: NODE_STRIDE * nodeCount, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const MAX_PAINT = 4096;
+  const PAINT_FLOATS = 24;
+  const paintData = new Float32Array(MAX_PAINT * PAINT_FLOATS);
+  const paintBuf = device.createBuffer({ size: paintData.byteLength, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST });
+
   // --- pipelines
   const SAMPLES = 4;
   const RT = 'rgba16float'; // scene colour and g-buffer
@@ -865,6 +1009,26 @@ export async function mountPcbHero(root, opts = {}) {
     fragment: { module: guideMod, entryPoint: 'fs', targets: sceneTargets(true) },
     primitive: { topology: 'triangle-list' },
     depthStencil: depthPaint, multisample: ms,
+  });
+  const paintMod = mod(PAINT_WGSL);
+  const paintVertex = {
+    module: paintMod, entryPoint: 'vs',
+    buffers: [{ arrayStride: PAINT_FLOATS * 4, stepMode: 'instance', attributes: [0, 1, 2, 3, 4, 5].map((i) => (
+      { shaderLocation: i, offset: i * 16, format: 'float32x4' })) }],
+  };
+  const paintPipe = device.createRenderPipeline({
+    layout: sceneLayout,
+    vertex: paintVertex,
+    fragment: { module: paintMod, entryPoint: 'fs', targets: sceneTargets(true) },
+    primitive: { topology: 'triangle-list' },
+    depthStencil: depthPaint, multisample: ms,
+  });
+  const paintHiddenPipe = device.createRenderPipeline({
+    layout: sceneLayout,
+    vertex: paintVertex,
+    fragment: { module: paintMod, entryPoint: 'fsHidden', targets: sceneTargets(true) },
+    primitive: { topology: 'triangle-list' },
+    depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'greater' }, multisample: ms,
   });
   const compMod = mod(COMPOSITE_WGSL);
   const compPipe = device.createRenderPipeline({
@@ -982,6 +1146,7 @@ export async function mountPcbHero(root, opts = {}) {
     const w = Math.max(1, Math.round(state.cssW * dpr)), hh = Math.max(1, Math.round(state.cssH * dpr));
     if (canvas.width !== w || canvas.height !== hh || !T) {
       canvas.width = w; canvas.height = hh;
+      ink.width = w; ink.height = hh;
       T = makeTargets(w, hh);
     }
   }
@@ -1072,12 +1237,29 @@ export async function mountPcbHero(root, opts = {}) {
     const [w, d] = spec.size || [6, 6];
     return { x: x - h, z: y - h, w, d, top: 0 };
   };
-  const apps = extras.apps.map((a) => ({ ...a, anchor: anchorOf(a), rgb: hexLinear(a.accent || appAccent) }));
-  const uplink = extras.uplink && { ...extras.uplink, anchor: anchorOf(extras.uplink) };
+  // marks are drawn in the brand and layer colours taken a little toward the ink, to read on the board
+  const inkLin = hexLinear(INK_HEX);
+  const inkOf = (hex, k = 0.22) => hexLinear(hex).map((c, i) => c + (inkLin[i] - c) * k);
+  const apps = extras.apps.map((a, i) => ({
+    ...a, anchor: anchorOf(a), rgb: hexLinear(a.accent || appAccent), ink: inkOf(a.accent || appAccent, 0.12),
+    tilt: (((i * 0.618) % 1) - 0.5) * 0.24,
+  }));
+  const uplink = extras.uplink && {
+    ...extras.uplink, anchor: anchorOf(extras.uplink),
+    up: inkOf(extras.uplink.accent || appAccent, 0.3), down: inkOf(extras.uplink.down || '#3aa86b', 0.3),
+  };
+  const paperLin = hexLinear('#ffffff');
+  const layerInk = layerDefs.map((L, i) => (LAYER_SOURCES[i]?.kind === 'outer'
+    ? hexLinear(L.accent).map((c, j) => c + (paperLin[j] - c) * 0.6)
+    : inkOf(L.accent, 0.55)));
+  const layerHi = layerDefs.map((L) => hexLinear(L.accent));
+  const runtimeInk = inkOf(runtimeAccent, 0.3);
   const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
   const hotW = items.map(() => 0);
-  const geo = { tiles: [], tileR: [], beam: null, links: [], slots: [] }; // world anchors for the callouts
-  const slots = (extras.slots || []).map((sl) => ({ ...sl, layer: slotLayer(sl), anchor: anchorOf(sl) }));
+  const vis = { apps: 0, uplink: 0, links: 0 };
+  // world anchors for the callouts and the 2D ink layer
+  const geo = { stickers: [], stickerScreen: [], beam: null, beamTop: null, cloud: null, upMid: null, dnMid: null, links: [], slots: [] };
+  const slots = (extras.slots || []).map((sl) => ({ ...sl, layer: slotLayer(sl), anchor: anchorOf(sl), w: 0 }));
   function cubic(p0, p1, p2, p3, segs) {
     const out = [];
     for (let i = 0; i <= segs; i++) {
@@ -1086,41 +1268,221 @@ export async function mountPcbHero(root, opts = {}) {
     }
     return out;
   }
+  const line = (a, b, n = 16) => [...Array(n + 1)].map((_, i) => add(a, v3.sub(b, a), i / n));
+  const along = (pts, u) => {
+    const x = Math.min(Math.max(u, 0), 1) * (pts.length - 1), i = Math.min(pts.length - 2, Math.floor(x));
+    return add(pts[i], v3.sub(pts[i + 1], pts[i]), x - i);
+  };
 
-  function buildGeo(focus, k) {
+  // --- paint: hand-drawn marks, rebuilt every frame; their wobble is re-drawn cfg.boil times a second
+  let paintN = 0;
+  function paintQuad(c0, c1, c2, c3, mode, alpha, d0, d1, rgb, seed, ext) {
+    if (paintN >= MAX_PAINT) return;
+    const o = paintN++ * PAINT_FLOATS;
+    paintData.set(c0, o); paintData[o + 3] = mode;
+    paintData.set(c1, o + 4); paintData[o + 7] = alpha;
+    paintData.set(c2, o + 8); paintData[o + 11] = d0;
+    paintData.set(c3, o + 12); paintData[o + 15] = d1;
+    paintData.set(rgb, o + 16); paintData[o + 19] = seed;
+    paintData.set(ext, o + 20);
+  }
+  // a stroke through world points: `flat` strokes lie on a plate, the rest turn to the camera;
+  // `even` keeps the width the same on screen however far away it runs; `xray` strokes show
+  // dashed where something hides them
+  function stroke(pts, rgb, { w = 0.42, mode = PAINT.marker, alpha = 1, flat = false, even = false, xray = false, seed = 0 } = {}) {
+    if (alpha <= 0.004 || pts.length < 2) return;
+    const n = pts.length;
+    const ds = [0];
+    for (let i = 1; i < n; i++) ds.push(ds[i - 1] + Math.hypot(...v3.sub(pts[i], pts[i - 1])));
+    const sides = pts.map((p, i) => {
+      const d = v3.sub(pts[Math.min(n - 1, i + 1)], pts[Math.max(0, i - 1)]);
+      const sd = flat ? [-d[2], 0, d[0]] : v3.cross(d, v3.sub(state.eye, p));
+      const k = even ? Math.hypot(...v3.sub(p, state.eye)) / state.dist : 1;
+      const l = (Math.hypot(...sd) || 1) / (w * k / 2);
+      return [sd[0] / l, sd[1] / l, sd[2] / l];
+    });
+    for (let i = 0; i < n - 1; i++) {
+      paintQuad(add(pts[i], sides[i], -1), add(pts[i + 1], sides[i + 1], -1), add(pts[i + 1], sides[i + 1]), add(pts[i], sides[i]),
+        mode, alpha, ds[i], ds[i + 1], rgb, seed, [w, ds[n - 1], xray ? 1 : 0, 0]);
+    }
+  }
+  function dot(p, r, rgb, alpha, seed) {
+    if (alpha <= 0.004) return;
+    const R = state.camRight, U = state.camUp;
+    paintQuad(add(add(p, R, -r), U, -r), add(add(p, R, r), U, -r), add(add(p, R, r), U, r), add(add(p, R, -r), U, r),
+      PAINT.dot, alpha, 0, 0, rgb, seed, [r * 2, r * 2, 0, 0]);
+  }
+  // seeded randomness: the same marks for one boil frame, fresh ones on the next
+  let boil = 0;
+  const rand = (key) => {
+    let t = (key * 7919 + boil * 104729) | 0;
+    return () => {
+      t = (t + 0x6d2b79f5) | 0;
+      let r = Math.imul(t ^ (t >>> 15), 1 | t);
+      r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+  // a quick loop around something on a plate; it runs on past where it started, as quick circles do
+  function loop(cx, y, cz, rx, rz, rnd, turns = 1.12) {
+    const a0 = rnd() * Math.PI * 2, p1 = rnd() * 6.3, p2 = rnd() * 6.3, tilt = (rnd() - 0.5) * 0.35;
+    const ct = Math.cos(tilt), st = Math.sin(tilt);
+    const pts = [];
+    for (let i = 0; i <= 44; i++) {
+      const t = i / 44, a = a0 + t * turns * Math.PI * 2;
+      const k = 1 + 0.045 * Math.sin(2 * a + p1) + 0.03 * Math.sin(3 * a + p2) + 0.08 * (t - 0.5);
+      const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k;
+      pts.push([cx + x * ct - z * st, y, cz + x * st + z * ct]);
+    }
+    return pts;
+  }
+  // a sketched box on a plate: four strokes that each run a little past the corners
+  function box(cx, y, cz, w, d, rnd) {
+    const j = () => (rnd() - 0.5) * 0.35;
+    const c = [[cx - w / 2 + j(), cz - d / 2 + j()], [cx + w / 2 + j(), cz - d / 2 + j()], [cx + w / 2 + j(), cz + d / 2 + j()], [cx - w / 2 + j(), cz + d / 2 + j()]];
+    return c.map(([ax, az], i) => {
+      const [bx, bz] = c[(i + 1) % 4];
+      const L = Math.hypot(bx - ax, bz - az) || 1, ux = (bx - ax) / L, uz = (bz - az) / L;
+      const o0 = 0.3 + rnd() * 0.8, o1 = 0.3 + rnd() * 0.8, bow = (rnd() - 0.5) * 0.3;
+      return [...Array(7)].map((_, k) => {
+        const t = k / 6, s = -o0 + t * (L + o0 + o1), b = Math.sin(t * Math.PI) * bow;
+        return [ax + ux * s - uz * b, y, az + uz * s + ux * b];
+      });
+    });
+  }
+  // a hand's tremor along a path (world mm), strongest mid-stroke
+  function shake(pts, amp, rnd) {
+    const p1 = rnd() * 6.3, p2 = rnd() * 6.3, p3 = rnd() * 6.3, f = 2 + rnd() * 2, n = pts.length - 1 || 1;
+    return pts.map((p, i) => {
+      const t = i / n, e = Math.sin(t * Math.PI) * amp;
+      return [p[0] + Math.sin(t * f * 6.3 + p1) * e, p[1] + Math.sin(t * f * 5.1 + p2) * e, p[2] + Math.sin(t * f * 4.3 + p3) * e];
+    });
+  }
+  // an arrowhead at the end of a path, in the camera's plane
+  function head(pts, size, rgb, opts, rnd) {
+    const tip = pts[pts.length - 1];
+    const d = v3.norm(v3.sub(tip, pts[Math.max(0, pts.length - 4)]));
+    const sd = v3.norm(v3.cross(d, v3.sub(state.eye, tip)));
+    for (const sg of [-1, 1]) stroke([add(add(tip, d, -size), sd, sg * size * (0.5 + rnd() * 0.2)), tip], rgb, opts);
+  }
+
+  function buildPaint(focus, k) {
+    paintN = 0;
+    boil = Math.floor(time * cfg.boil);
     const hot = hotItem();
     items.forEach((it, j) => { hotW[j] += ((hot === it ? 1 : 0) - hotW[j]) * k; });
+    const ease = (key, target) => { vis[key] += (target - vis[key]) * k; return vis[key]; };
+    const appI = ease('apps', focus === TOP ? 1 : focus < 0 ? 0.8 : 0.12);
+    const upI = ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.85 : 0.25);
+    const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.3 : 0.08);
+    const R = state.camRight, U = state.camUp;
     const topY = state.y[TOP];
+    const bob = (i) => (reduceMotion ? 0 : Math.sin(time * 1.1 + i * 2.1) * 0.3);
 
-    // apps: the callout sits above the part, the hover target is the part itself
-    apps.forEach((app, i) => {
-      const A = app.anchor;
-      geo.tileR[i] = [A.x, topY + A.top, A.z];
-      geo.tiles[i] = [A.x, topY + A.top + 3, A.z];
+    // technology slots: a sketched box on their layer while it is in focus; hovering one
+    // swipes a highlighter through it
+    geo.slots = slots.map((sl, j) => {
+      sl.w += ((focus === sl.layer ? 1 : 0) - sl.w) * k;
+      const A = sl.anchor, hw = hotW[apps.length + j], rnd = rand(100 + j);
+      const y = state.y[sl.layer] + 0.04;
+      if (hw > 0.02) {
+        const long = A.w >= A.d, L = (long ? A.w : A.d) - 0.6, wd = long ? A.d : A.w;
+        for (let q = 0; q < 2; q++) {
+          const off = (q - 0.5) * wd * 0.42, wob = (rnd() - 0.5) * 0.5;
+          const ends = long
+            ? [[A.x - L / 2, y, A.z + off], [A.x + L / 2, y, A.z + off + wob]]
+            : [[A.x + off, y, A.z - L / 2], [A.x + off + wob, y, A.z + L / 2]];
+          stroke(ends, layerHi[sl.layer], { w: wd * 0.5, mode: PAINT.highlighter, flat: true, alpha: sl.w * hw, seed: j });
+        }
+      }
+      for (const side of box(A.x, y, A.z, A.w, A.d, rnd)) stroke(side, layerInk[sl.layer], { w: 0.4, flat: true, alpha: sl.w, seed: j + 0.3 });
+      return [A.x, y, A.z];
     });
-    geo.slots = slots.map((sl) => [sl.anchor.x, state.y[sl.layer] + 0.04, sl.anchor.z]);
-    if (uplink) { const A = uplink.anchor; geo.beam = [A.x, topY + A.top + 0.05, A.z]; }
+    // the layer art (Linux, U-Boot, Buildroot) gets circled when hovered
+    artItems.forEach((it, j) => {
+      const hw = hotW[apps.length + slots.length + j];
+      const r = it.size / 2 + 1.2;
+      if (hw > 0.02) stroke(loop(it.at[0] - h, state.y[it.layer] + 0.05, it.at[1] - h, r, r, rand(200 + j)), layerInk[it.layer], { w: 0.42, flat: true, alpha: hw, seed: j });
+    });
 
-    // Erlang distribution: on the hero board each link lands on a pad on the runtime plate,
-    // rising from it and running back through the gap under the plate above
+    // projects on the Application layer: a loop round the part, a sticker floating above it and
+    // a marker line between them
+    apps.forEach((app, i) => {
+      const A = app.anchor, hw = hotW[i], rnd = rand(1 + i);
+      const yb = topY + 0.05, rx = A.w / 2 + 1.1, rz = A.d / 2 + 1.1;
+      stroke(loop(A.x, yb, A.z, rx, rz, rnd), app.ink, { w: 0.62 + hw * 0.2, flat: true, alpha: appI, seed: i });
+      if (hw > 0.02) stroke(loop(A.x, yb, A.z, rx * 1.15, rz * 1.15, rnd, 1.04), app.ink, { w: 0.45, flat: true, alpha: appI * hw, seed: i + 0.5 });
+      const C = [A.x, topY + (app.float ?? cfg.stickerHeight) + bob(i), A.z];
+      geo.stickers[i] = C;
+      const from = [A.x, topY + A.top + 0.3, A.z];
+      const to = add(C, U, -cfg.stickerSize * 0.48);
+      const mid = add(add(from, v3.sub(to, from), 0.5), R, (rnd() - 0.5) * 1.4);
+      stroke(shake(cubic(from, mid, mid, to, 12), 0.1, rnd), app.ink, { w: 0.34, alpha: appI * 0.9, seed: i + 0.2 });
+    });
+
+    // NervesHub: a loop round the module, then arrows up to the cloud (health) and down from it
+    // (firmware), with packets travelling along them
+    if (uplink) {
+      const A = uplink.anchor, rnd = rand(300);
+      const B = [A.x, topY + A.top + 0.05, A.z];
+      geo.beam = B;
+      stroke(loop(A.x, topY + 0.05, A.z, A.w / 2 + 1, A.d / 2 + 1, rnd), uplink.up, { w: 0.4, flat: true, alpha: upI, seed: 3 });
+      if (geo.beamTop) {
+        const T = [B[0], geo.beamTop[1], B[2]];
+        const gap = 1.1, opts = { w: 0.42, alpha: upI };
+        const up = shake(line(add(add(B, R, -gap), [0, 1.6, 0]), add(T, R, -gap)), 0.35, rnd);
+        const dn = shake(line(add(T, R, gap), add(add(B, R, gap), [0, 1.6, 0])), 0.35, rnd);
+        stroke(up, uplink.up, { ...opts, seed: 4 });
+        head(up, 1.5, uplink.up, { ...opts, seed: 4.5 }, rnd);
+        stroke(dn, uplink.down, { ...opts, seed: 5 });
+        head(dn, 1.5, uplink.down, { ...opts, seed: 5.5 }, rnd);
+        geo.upMid = along(up, 0.72); geo.dnMid = along(dn, 0.28);
+        if (!reduceMotion) for (let q = 0; q < 2; q++) {
+          const tu = (time * 0.3 + q * 0.5) % 1, td = (time * 0.2 + q * 0.5) % 1;
+          dot(along(up, tu), 0.6, uplink.up, upI * Math.min(1, Math.sin(tu * Math.PI) * 3), 6 + q);
+          dot(along(dn, td), 0.6, uplink.down, upI * Math.min(1, Math.sin(td * Math.PI) * 3), 8 + q);
+        }
+      }
+    }
+
+    // Erlang distribution: crayon lines from pads on the runtime plate out to the other boards,
+    // rising through the gap under the plate above, with messages going both ways
     geo.links = [];
-    const y = state.y[RUNTIME] - cfg.slab * 0.5;
+    const yMid = state.y[RUNTIME] - cfg.slab * 0.5;
     const yTop = state.y[RUNTIME] + 0.04;
-    const R = state.camRight;
+    const rise = Math.min(6, Math.max(1, (state.y[TOP] - state.y[RUNTIME] - cfg.slab) * 0.55));
     const across = (p) => p[0] * R[0] + p[2] * R[2];
     const ports = cfg.ports.map(([x, z]) => [x - h, yTop, z - h]).sort((a, b) => across(a) - across(b));
     const byScreen = nodes.slice(1).map((n, i) => i + 1).sort((a, b) => across([nodes[a].x, 0, nodes[a].z]) - across([nodes[b].x, 0, nodes[b].z]));
     byScreen.forEach((ni, kk) => {
-      const P = ports[Math.min(kk, ports.length - 1)];
-      const B = edgeAnchor(nodes[ni], [0, 0, 0], y);
-      const len = Math.hypot(B.p[0] - P[0], B.p[2] - P[2]);
-      geo.links[ni - 1] = cubic(P, add(P, [0, 6, 0]), add(add(B.p, B.n, len * 0.3), [0, len * 0.04, 0]), B.p, 40);
+      const P = ports[Math.min(kk, ports.length - 1)], rnd = rand(400 + ni);
+      const Bq = edgeAnchor(nodes[ni], [0, 0, 0], yMid);
+      const len = Math.hypot(Bq.p[0] - P[0], Bq.p[2] - P[2]);
+      const pts = shake(cubic(P, add(P, [0, rise, 0]), add(add(Bq.p, Bq.n, len * 0.3), [0, len * 0.04, 0]), Bq.p, 40), 0.5, rnd);
+      geo.links[ni - 1] = pts;
+      stroke(pts, runtimeInk, { w: 0.85, mode: PAINT.crayon, alpha: linkI, even: true, xray: true, seed: ni });
+      stroke(loop(P[0], yTop, P[2], 1.3, 1.3, rnd), runtimeInk, { w: 0.4, flat: true, alpha: linkI, seed: ni + 0.4 });
+      if (!reduceMotion) for (const [sp, off, dir] of [[0.16, 0, 1], [0.11, 0.5, -1]]) {
+        const t = (time * sp + off + ni * 0.21) % 1, u = dir > 0 ? t : 1 - t;
+        const p = along(pts, u);
+        dot(p, 0.75 * Math.hypot(...v3.sub(p, state.eye)) / state.dist, runtimeInk, linkI * Math.min(1, Math.sin(u * Math.PI) * 3), 20 + ni);
+      }
     });
+    for (let a = 1; a < nodes.length; a++)
+      for (let b = a + 1; b < nodes.length; b++) {
+        const na = nodes[a], nb = nodes[b];
+        const A = edgeAnchor(na, [nb.x, nb.y, nb.z], yMid), Bq = edgeAnchor(nb, [na.x, na.y, na.z], yMid);
+        const len = Math.hypot(Bq.p[0] - A.p[0], Bq.p[2] - A.p[2]), lift = [0, len * 0.05, 0];
+        const pts = cubic(A.p, add(add(A.p, A.n, len * 0.22), lift), add(add(Bq.p, Bq.n, len * 0.22), lift), Bq.p, 32);
+        stroke(shake(pts, 0.8, rand(500 + a * 7 + b)), runtimeInk, { w: 0.6, mode: PAINT.crayon, alpha: linkI * 0.6, even: true, xray: true, seed: a * 3 + b });
+      }
+    device.queue.writeBuffer(paintBuf, 0, paintData, 0, paintN * PAINT_FLOATS);
   }
 
   function layoutTags(focus, k) {
     const W = state.cssW, H = state.cssH;
-    // mode 'above': centred above the anchor; 'right' / 'left': beside it, vertically centred
+    // mode 'above': centred above the anchor; 'right' / 'left': beside it, vertically centred;
+    // 'center': centred on it
     const place = (tag, target, x, y, mode, active = false) => {
       tag.vis += (target - tag.vis) * k;
       const s = tag.el.style;
@@ -1129,19 +1491,23 @@ export async function mountPcbHero(root, opts = {}) {
       tag.el.classList.toggle('is-active', active);
       if (tag.vis < 0.01) return;
       const w = tag.el.offsetWidth, hh = tag.el.offsetHeight;
-      let left = mode === 'above' ? x - w / 2 : mode === 'left' ? x - w : x;
+      let left = mode === 'above' || mode === 'center' ? x - w / 2 : mode === 'left' ? x - w : x;
       let top = mode === 'above' ? y - hh : y - hh / 2;
       left = Math.min(Math.max(6, left), W - w - 6);
       top = Math.min(Math.max(6, top), H - hh - 6);
       s.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`;
     };
-    const appVis = focus === TOP ? 1 : focus < 0 ? 0.75 : 0;
+    const appVis = focus === TOP ? 1 : focus < 0 ? 0.85 : 0;
     const hot = hotItem();
+    // project names sit on top of their stickers; the sticker is what you point at
     appTags.forEach((tag, i) => {
-      const [x, y] = project(geo.tiles[i]);
-      place(tag, appVis, x, y - 4, 'above', hot === items[i]);
-      const [cx, cy] = project(geo.tileR[i]);
-      Object.assign(items[i], { sx: cx, sy: cy, r: Math.max(18, (y - cy) * -1 + 6), live: tag.vis > 0.3 });
+      const C = geo.stickers[i];
+      const [x, y] = project(C);
+      const [ex] = project(add(C, state.camRight, cfg.stickerSize / 2));
+      const size = Math.abs(ex - x) * 2 * (1 + hotW[i] * 0.12);
+      geo.stickerScreen[i] = { x, y, size };
+      place(tag, appVis, x, y - size * 0.55, 'above', hot === items[i]);
+      Object.assign(items[i], { sx: x, sy: y, r: size * 0.65, live: vis.apps > 0.3 });
     });
     slotTags.forEach((tag, j) => {
       const it = items[appTags.length + j];
@@ -1158,12 +1524,16 @@ export async function mountPcbHero(root, opts = {}) {
       Object.assign(it, { sx: x, sy: y, r, live: focus === it.layer });
     }
     if (uplinkTag && geo.beam) {
-      // where the beam leaves the top of the hero
-      const [bx, by] = project(geo.beam);
-      const [tx, ty] = project(add(geo.beam, [0, 200, 0]));
-      const yT = Math.min(by - 40, 64);
-      const t = (yT - by) / (ty - by || 1);
-      place(uplinkTag, appVis, bx + (tx - bx) * t + 14, yT, 'right', focus === TOP);
+      // NervesHub is a cloud near the top of the hero, straight above the module
+      const by = project(geo.beam)[1];
+      const w = uplinkTag.el.offsetWidth, hh = uplinkTag.el.offsetHeight;
+      const cw = w + 46, ch = hh + 30;
+      const cy = Math.max(ch / 2 + 14, Math.min(by - 120, 26 + ch / 2));
+      const px = project(add(geo.beam, [0, heightAt(geo.beam, cy), 0]))[0];
+      const cx = Math.min(Math.max(px, cw / 2 + 10), W - cw / 2 - 10);
+      place(uplinkTag, focus === TOP ? 1 : focus < 0 ? 0.9 : 0.35, cx, cy, 'center', focus === TOP);
+      geo.cloud = { x: cx, y: cy, w: cw, h: ch };
+      geo.beamTop = add(geo.beam, [0, heightAt(geo.beam, cy + ch / 2 + 4), 0]);
     }
     const clusterVis = focus === RUNTIME ? 1 : 0;
     if (clusterTag && geo.links.length) {
@@ -1182,6 +1552,71 @@ export async function mountPcbHero(root, opts = {}) {
       const [x, y] = project([n.x, n.y + state.y[TOP] + 4, n.z]);
       place(tag, clusterVis, x, y, 'above');
     });
+  }
+
+  // --- the 2D ink layer: stickers, the NervesHub cloud and a few scribbled words
+  const css = (rgb) => `rgb(${rgb.map((c) => Math.round(255 * (c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055))).join(',')})`;
+  function drawInk() {
+    const W = state.cssW, H = state.cssH;
+    ictx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ictx.clearRect(0, 0, W, H);
+    if (uplink && geo.cloud && vis.uplink > 0.01) {
+      drawCloud(geo.cloud, vis.uplink);
+      ictx.save();
+      ictx.globalAlpha = vis.uplink * 0.95;
+      ictx.font = `700 ${W < 720 ? 13 : W > 1100 ? 17 : 15}px Caveat, cursive`;
+      ictx.textBaseline = 'middle';
+      const note = (p, text, rgb, side) => {
+        if (!p) return;
+        const [x, y] = project(p);
+        ictx.fillStyle = css(rgb);
+        ictx.textAlign = side < 0 ? 'right' : 'left';
+        ictx.fillText(text, x + side * 10, y);
+      };
+      note(geo.upMid, 'health', uplink.up, -1);
+      note(geo.dnMid, 'firmware', uplink.down, 1);
+      ictx.restore();
+    }
+    if (vis.apps > 0.01) apps.forEach((app, i) => {
+      const sc = geo.stickerScreen[i];
+      if (!sc || !stickers[i]) return;
+      ictx.save();
+      ictx.globalAlpha = Math.min(1, vis.apps * 1.2);
+      ictx.translate(sc.x, sc.y);
+      ictx.rotate(app.tilt * (1 - hotW[i] * 0.7));
+      const s = sc.size / STICKER_BODY;
+      ictx.drawImage(stickers[i], -s / 2, -s / 2, s, s);
+      ictx.restore();
+    });
+  }
+  // a cloud of marker bumps round an ellipse, filled with paper so the name reads on it
+  function drawCloud(c, alpha) {
+    const rnd = rand(900);
+    const n = 9, rx = c.w / 2, ry = c.h / 2, a0 = rnd();
+    const pts = [...Array(n)].map((_, i) => {
+      const t = a0 + (i / n) * Math.PI * 2, j = 1 + (rnd() - 0.5) * 0.1;
+      return [c.x + Math.cos(t) * rx * j, c.y + Math.sin(t) * ry * j];
+    });
+    ictx.save();
+    ictx.globalAlpha = alpha;
+    ictx.beginPath();
+    ictx.moveTo(pts[0][0], pts[0][1]);
+    pts.forEach((p, i) => {
+      const q = pts[(i + 1) % n];
+      const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, L = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1;
+      let nx = (q[1] - p[1]) / L, ny = -(q[0] - p[0]) / L;
+      if (nx * (mx - c.x) + ny * (my - c.y) < 0) { nx = -nx; ny = -ny; }
+      const bulge = 0.36 + rnd() * 0.16;
+      ictx.quadraticCurveTo(mx + nx * L * bulge, my + ny * L * bulge, q[0], q[1]);
+    });
+    ictx.closePath();
+    ictx.fillStyle = 'rgba(253, 251, 245, 0.94)';
+    ictx.fill();
+    ictx.lineCap = ictx.lineJoin = 'round';
+    ictx.strokeStyle = css(uplink.up);
+    ictx.lineWidth = 2.6;
+    ictx.stroke();
+    ictx.restore();
   }
 
   // --- frame
@@ -1221,7 +1656,7 @@ export async function mountPcbHero(root, opts = {}) {
     }
     state.explode += ((open ? 1 : 0.25) - state.explode) * k;
     camera();
-    buildGeo(focus, k);
+    buildPaint(focus, k);
 
     sceneData.set(state.viewProj, 0);
     sceneData.set([...state.eye, 1], 16);
@@ -1268,6 +1703,13 @@ export async function mountPcbHero(root, opts = {}) {
     pass.setPipeline(guidePipe);
     pass.setVertexBuffer(0, holeBuf);
     pass.draw(6, holeData.length / 4);
+    if (paintN) {
+      pass.setVertexBuffer(0, paintBuf);
+      pass.setPipeline(paintHiddenPipe);
+      pass.draw(6, paintN);
+      pass.setPipeline(paintPipe);
+      pass.draw(6, paintN);
+    }
     pass.end();
 
     const cp = enc.beginRenderPass({ colorAttachments: [{ view: ctx.getCurrentTexture().createView(), loadOp: 'clear', storeOp: 'store', clearValue: [0, 0, 0, 0] }] });
@@ -1279,7 +1721,18 @@ export async function mountPcbHero(root, opts = {}) {
 
     layoutLabels(focus);
     layoutTags(focus, k);
+    drawInk();
     requestAnimationFrame(frame);
+  }
+
+  // how far above a point you have to go for it to land at screen height sy
+  function heightAt(p, sy) {
+    let lo = 0, hi = 600;
+    for (let i = 0; i < 26; i++) {
+      const m = (lo + hi) / 2;
+      if (project(add(p, [0, m, 0]))[1] > sy) lo = m; else hi = m;
+    }
+    return (lo + hi) / 2;
   }
 
   function project(p) {
