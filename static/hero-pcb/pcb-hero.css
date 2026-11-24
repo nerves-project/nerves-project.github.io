@@ -174,6 +174,28 @@
     1.1px 1.1px var(--outline-c), -1.1px 1.1px var(--outline-c), 1.1px -1.1px var(--outline-c), -1.1px -1.1px var(--outline-c);
 }
 .pcb-hero__tag.is-art .pcb-hero__tag-text { font-size: 1.25rem; }
+/* hovering a slot or a layer note grows a white card behind it, so the handwriting reads */
+.pcb-hero__tag.is-slot,
+.pcb-hero__tag.is-art { isolation: isolate; }
+.pcb-hero__tag.is-active { z-index: 1; }
+.pcb-hero__tag.is-slot::before,
+.pcb-hero__tag.is-art::before {
+  content: '';
+  position: absolute;
+  inset: -0.45rem -0.85rem;
+  z-index: -1;
+  border-radius: 1.3rem;
+  background: #fffdf8;
+  box-shadow: 2px 3px 0 rgba(38, 34, 31, 0.2);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 180ms ease, transform 260ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.pcb-hero__tag.is-slot.is-active::before,
+.pcb-hero__tag.is-art.is-active::before { opacity: 1; transform: scale(1); }
+.pcb-hero__tag.is-slot.is-active .pcb-hero__tag-name,
+.pcb-hero__tag.is-slot.is-active .pcb-hero__tag-text,
+.pcb-hero__tag.is-art.is-active .pcb-hero__tag-text { color: var(--ink); text-shadow: none; }
 .pcb-hero__tag.is-slot .pcb-hero__tag-text { white-space: normal; width: 11rem; margin: 0 auto; }
 .pcb-hero.is-narrow .pcb-hero__tag-text { display: none; }
 /* small screens: smaller handwriting, and project names only for the tapped sticker */
@@ -187,4 +209,5 @@
 .pcb-hero.is-still .pcb-hero__canvas,
 .pcb-hero.is-still .pcb-hero__label,
 .pcb-hero.is-still .pcb-hero__leaders path,
-.pcb-hero.is-still .pcb-hero__tag-text { transition: none; }
+.pcb-hero.is-still .pcb-hero__tag-text,
+.pcb-hero.is-still .pcb-hero__tag::before { transition: none; }
