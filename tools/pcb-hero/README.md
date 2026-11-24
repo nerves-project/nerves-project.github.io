@@ -15,15 +15,19 @@ Prototype page: `/hero-pcb/` (`static/hero-pcb/index.html`).
 
 ## How it's drawn
 
-- **Board**: WebGPU, plates and parts flat-shaded in three tones. An ink pass draws outlines
-  where depth folds, normals turn or one surface meets another (from a small g-buffer). Boards in
-  the distance fade toward the paper colour and get a lighter line.
-- **Marks**: loops, sketched boxes, arrows and crayon links are world-space strokes in a paint
-  pass, depth-tested against the board; they are re-jittered 8 times a second (`boil`). Where the
-  Erlang links pass behind a plate they show dashed.
-- **On top**: a 2D canvas draws the project stickers, the NervesHub cloud and its notes; the
-  callouts and layer labels are HTML.
-- **Reduced motion**: time stops, so the marks hold still and the packets and messages are not drawn.
+- **Board**: WebGPU, plates and parts flat-shaded in three tones. An ink pass draws fine lines where
+  depth folds, normals turn or one surface meets another, and a heavy brush line round the front
+  board's whole silhouette (from a small g-buffer). The boards in the distance get no ink; they fade
+  toward the paper colour.
+- **Marks**: loops, sketched boxes, highlighter swipes and crayon links are world-space strokes in a
+  paint pass, depth-tested against the board. The middle layers get black marker and crayon, the
+  bottom layer a white paint pen. Where the Erlang links pass behind a plate they show dashed.
+  Linux, U-Boot and Buildroot are handwritten on their plates (in the layer textures).
+- **On top**: a 2D canvas draws the project stickers and the NervesHub cloud with its health and
+  firmware puffs; the callouts and layer labels are HTML.
+- **Motion**: each layer has its own clock and only the active one runs (the Application layer when
+  nothing is focused), so only that layer's marks wobble (`boil`, 8 times a second) and move. With
+  reduced motion every clock stops.
 
 ## Regenerating the board data
 

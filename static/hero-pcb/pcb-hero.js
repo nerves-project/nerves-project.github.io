@@ -53,6 +53,7 @@ export const DEFAULT_EXTRAS = {
 };
 
 const INK_HEX = '#26221f';
+const PAINT_PEN = '#fbfaf2';
 
 const CFG = {
   slab: 0.6,          // visual thickness of each layer plate (mm)
@@ -66,7 +67,9 @@ const CFG = {
   pulsePeriod: 14,    // mm between pulses along a trace
   pulseSpeed: 16,     // mm/s
   paper: '#f4efe4',   // the page colour; distant boards and unfocused plates fade into it
-  ink: 1.6,           // outline width in css px
+  ink: 1.6,           // fine ink line width in css px
+  brush: 3.2,         // half-width of the brush line round the front board, css px
+  highlighter: '#d9ff3a',
   boil: 8,            // hand-drawn marks are re-drawn this many times a second (PAINT_WGSL matches)
   stickerHeight: 8.5, // project stickers float this far above the top plate (mm)
   stickerSize: 6.2,
@@ -182,6 +185,7 @@ struct Scene {
   params2: vec4f,  // pulse speed, top-layer pulse colour (rgb)
   accents: array<vec4f, 4>,
   motion: vec4f,   // x: 1 animated, 0 reduced motion
+  clock: vec4f,    // per-layer time: only the active layer's clock runs
 };
 @group(0) @binding(0) var<uniform> S: Scene;
 
@@ -228,8 +232,11 @@ fn oct(n: vec3f) -> vec2f {
   if (n.z < 0.0) { p = (1.0 - abs(p.yx)) * select(vec2f(-1.0), vec2f(1.0), p >= vec2f(0.0)); }
   return p;
 }
+// front-board ids are positive, the boards in the distance negative, so even where
+// multisampling blends an edge with the empty background the ink pass can tell them apart
 fn gbuf(n: vec3f, wp: vec3f, id: f32) -> vec4f {
-  return vec4f(oct(normalize(n)), length(S.camPos.xyz - wp), fract(id + NODE.haze.w));
+  let i = 0.05 + 0.95 * fract(id + NODE.haze.w);
+  return vec4f(oct(normalize(n)), length(S.camPos.xyz - wp), select(i, -1.0 - i, NODE.look.w > 0.0));
 }
 
 struct FragOut { @location(0) color: vec4f, @location(1) g: vec4f };
@@ -335,8 +342,9 @@ struct VOut {
   var base = in.col.rgb;
   if (in.mat.z > 0.5) {
     // status LED: a slow heartbeat between off and lit, in flat colour
-    let t = fract((S.params.x + NODE.haze.w) * 0.6);
-    let beat = mix(1.0, exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t), S.motion.x);
+    let t = fract(S.clock[3] * 0.6);
+    let still = S.motion.x < 0.5 || NODE.look.w > 0.0;
+    let beat = select(exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t), 1.0, still);
     base = mix(base, S.accents[3].rgb * 1.2 + vec3f(0.15), clamp(beat, 0.0, 1.0));
   }
   let col = toon(base, normalize(in.n), v, in.mat.y, in.mat.x);
@@ -384,7 +392,7 @@ struct VOut {
   if (core <= 0.001) { discard; }
   let dd = mix(in.seg.z, in.seg.w, t / max(L, 1e-4));
   let period = S.params.w;
-  let u = fract(dd / period - S.params.x * S.params2.x / period);
+  let u = fract(dd / period - S.clock[in.layer] * S.params2.x / period);
   let dash = smoothstep(0.76, 0.78, u) * smoothstep(1.0, 0.98, u);
   // the focused layer shows its signals; the top layer keeps a few going at rest
   let focus = S.focus[in.layer];
@@ -442,7 +450,7 @@ struct VOut {
   @location(0) uv: vec2f,
   @location(1) @interpolate(flat) prm: vec4f,   // mode, alpha, d0, d1 (mm along the stroke)
   @location(2) @interpolate(flat) col: vec4f,   // rgb, seed
-  @location(3) @interpolate(flat) ext: vec4f,   // width (mm), stroke length (mm)
+  @location(3) @interpolate(flat) ext: vec4f,   // width (mm), stroke length (mm), x-ray flag, layer clock
 };
 
 @vertex fn vs(@builtin(vertex_index) vi: u32,
@@ -482,7 +490,7 @@ fn paint(in: VOut) -> vec4f {
   let w = in.ext.x;
   let len = in.ext.y;
   let seed = in.col.w;
-  let boil = floor(S.params.x * 8.0);             // redrawn 8 times a second; still with reduced motion
+  let boil = floor(in.ext.w * 8.0);               // its layer's clock: redrawn 8 times a second while active
   // the ends narrow like a pen landing on and leaving the page
   let ends = max(smoothstep(0.0, w * 0.8, along) * smoothstep(0.0, w * 0.8, len - along), 0.3);
   var rgb = in.col.rgb;
@@ -501,7 +509,7 @@ fn paint(in: VOut) -> vec4f {
     a = body * smoothstep(0.18, 0.42, tooth);
   } else if (mode == 2u) {
     // highlighter: flat, translucent, square-ish ends
-    a = (1.0 - smoothstep(0.86, 1.0, abs(x))) * 0.34
+    a = (1.0 - smoothstep(0.86, 1.0, abs(x))) * 0.42
       * smoothstep(0.0, w * 0.25, along) * smoothstep(0.0, w * 0.25, len - along);
   } else {
     // crayon dot
@@ -549,12 +557,13 @@ const MIP_WGSL = FULLSCREEN_VS + /* wgsl */ `
 @fragment fn fs(in: FsOut) -> @location(0) vec4f { return textureSample(src, smp, in.uv); }
 `;
 
-// Ink pass: outlines where depth folds, normals turn or one surface meets another,
-// over the flat-shaded scene. The canvas is transparent, so the page's paper shows through.
+// Ink pass over the flat-shaded scene, front board only: fine lines where depth folds, normals
+// turn or one surface meets another, and a heavy brush line round the board's whole silhouette.
+// The boards in the distance get no ink. The canvas is transparent, so the page shows through.
 const COMPOSITE_WGSL = FULLSCREEN_VS + /* wgsl */ `
 @group(0) @binding(0) var sceneTex: texture_2d<f32>;
 @group(0) @binding(1) var gTex: texture_2d<f32>;
-@group(0) @binding(2) var<uniform> P: vec4f; // ink radius (px), hero distance, -, -
+@group(0) @binding(2) var<uniform> P: vec4f; // fine ink radius (px), brush half-width (px), -, -
 
 const INK = vec3f(0.016, 0.014, 0.013);
 
@@ -568,40 +577,91 @@ fn unoct(e: vec2f) -> vec3f {
 fn G(p: vec2i) -> vec4f {
   return textureLoad(gTex, clamp(p, vec2i(0), vec2i(textureDimensions(gTex)) - 1), 0);
 }
-fn depthOf(g: vec4f) -> f32 { return select(1e5, g.z, g.z > 0.0); }
+fn front(g: vec4f) -> bool { return g.z > 0.0 && g.w > 0.0; }
+fn frontAt(p: vec2i) -> bool { return front(G(p)); }
 fn encode(c: f32) -> f32 {
   return select(1.055 * pow(c, 1.0 / 2.4) - 0.055, c * 12.92, c <= 0.0031308);
 }
+fn pcg(x: u32) -> u32 {
+  let v = x * 747796405u + 2891336453u;
+  let w = ((v >> ((v >> 28u) + 4u)) ^ v) * 277803737u;
+  return (w >> 22u) ^ w;
+}
+fn hash(p: vec2f) -> f32 {
+  let q = vec2i(floor(p));
+  return f32(pcg(bitcast<u32>(q.x) ^ pcg(bitcast<u32>(q.y)))) / 4294967295.0;
+}
+fn vnoise(p: vec2f) -> f32 {
+  let i = floor(p); let f = fract(p);
+  let u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2f(1.0, 0.0)), u.x), mix(hash(i + vec2f(0.0, 1.0)), hash(i + vec2f(1.0, 1.0)), u.x), u.y);
+}
+
+const DIRS = array<vec2f, 16>(
+  vec2f(1.0, 0.0), vec2f(0.924, 0.383), vec2f(0.707, 0.707), vec2f(0.383, 0.924),
+  vec2f(0.0, 1.0), vec2f(-0.383, 0.924), vec2f(-0.707, 0.707), vec2f(-0.924, 0.383),
+  vec2f(-1.0, 0.0), vec2f(-0.924, -0.383), vec2f(-0.707, -0.707), vec2f(-0.383, -0.924),
+  vec2f(0.0, -1.0), vec2f(0.383, -0.924), vec2f(0.707, -0.707), vec2f(0.924, -0.383));
 
 @fragment fn fs(in: FsOut) -> @location(0) vec4f {
   let px = vec2i(in.pos.xy);
+  let pf = in.pos.xy;
   let sc = textureLoad(sceneTex, px, 0);
   let c = G(px);
-  // a finer line for the boards in the distance
-  let r = select(i32(P.x), max(1, i32(P.x) / 2), depthOf(c) > P.y * 2.0);
-  var nb = array<vec4f, 4>(G(px + vec2i(-r, 0)), G(px + vec2i(r, 0)), G(px + vec2i(0, -r)), G(px + vec2i(0, r)));
-  let dc = depthOf(c);
-  let nc = unoct(c.xy);
+  let inside = front(c);
+
+  // fine ink: creases and part edges inside the front board
   var e = 0.0;
-  // depth folds and silhouettes: the second difference stays flat across a plane
-  for (var k = 0; k < 2; k++) {
-    let a = depthOf(nb[k * 2]);
-    let b = depthOf(nb[k * 2 + 1]);
-    e = max(e, smoothstep(0.004, 0.012, abs(a + b - 2.0 * dc) / min(dc, min(a, b))));
-  }
-  var near = dc;
-  for (var k = 0; k < 4; k++) {
-    let g = nb[k];
-    near = min(near, depthOf(g));
-    if (c.z > 0.0 && g.z > 0.0) {
-      e = max(e, smoothstep(0.82, 0.6, dot(nc, unoct(g.xy))));
-      e = max(e, step(0.004, abs(c.w - g.w)));
-    } else if (c.z > 0.0 || g.z > 0.0) {
-      e = 1.0;
+  if (inside) {
+    let r = i32(P.x);
+    var nb = array<vec4f, 4>(G(px + vec2i(-r, 0)), G(px + vec2i(r, 0)), G(px + vec2i(0, -r)), G(px + vec2i(0, r)));
+    let nc = unoct(c.xy);
+    for (var k = 0; k < 2; k++) {
+      let a = nb[k * 2];
+      let b = nb[k * 2 + 1];
+      if (front(a) && front(b)) {
+        e = max(e, smoothstep(0.004, 0.012, abs(a.z + b.z - 2.0 * c.z) / min(c.z, min(a.z, b.z))));
+      }
+    }
+    for (var k = 0; k < 4; k++) {
+      let g = nb[k];
+      if (front(g)) {
+        e = max(e, smoothstep(0.82, 0.6, dot(nc, unoct(g.xy))));
+        e = max(e, step(0.004, abs(c.w - g.w)));
+      }
     }
   }
-  // the boards in the distance are drawn in a lighter hand
-  let k = e * clamp(1.0 - (near / P.y - 1.5) * 0.45, 0.22, 1.0);
+
+  // the brush: distance to the silhouette, a width that swells and thins along it, and dry
+  // streaks running with the stroke toward its outer edge
+  let W = P.y;
+  let R = i32(ceil(W * 1.6));
+  var near = false;
+  for (var k = 0; k < 16; k += 2) {
+    if (frontAt(px + vec2i(round(DIRS[k] * f32(R)))) != inside) { near = true; }
+  }
+  var brush = 0.0;
+  if (near || inside != frontAt(px + vec2i(1, 0)) || inside != frontAt(px + vec2i(0, 1))) {
+    var d = f32(R) + 1.0;
+    var nrm = vec2f(0.0);
+    for (var rr = 1; rr <= R; rr++) {
+      var hit = false;
+      for (var k = 0; k < 16; k++) {
+        if (frontAt(px + vec2i(round(DIRS[k] * f32(rr)))) != inside) { hit = true; nrm += DIRS[k]; }
+      }
+      if (hit) { d = f32(rr) - 0.5; break; }
+    }
+    let wv = W * (0.5 + 0.95 * (vnoise(pf / (W * 18.0)) * 0.7 + vnoise(pf / (W * 5.0) + 11.0) * 0.3));
+    let lim = select(wv, wv * 0.4, inside);   // the brush mostly rides outside the board
+    brush = 1.0 - smoothstep(lim - 0.8, lim + 0.6, d);
+    let n = normalize(nrm + vec2f(1e-4, 0.0));
+    let t = vec2f(-n.y, n.x);
+    let q = vec2f(dot(pf, t) / (W * 7.0), dot(pf, n) / (W * 0.42));
+    let streak = vnoise(q) * 0.7 + vnoise(q * 2.3 + 7.0) * 0.3;
+    brush *= mix(1.0, smoothstep(0.2, 0.48, streak), smoothstep(lim * 0.3, lim, d) * select(1.0, 0.0, inside));
+  }
+
+  let k = max(e, brush);
   let rgb = sc.rgb * (1.0 - k) + INK * k;
   let a = sc.a * (1.0 - k) + k;
   if (a <= 0.0) { return vec4f(0.0); }
@@ -794,7 +854,9 @@ export async function mountPcbHero(root, opts = {}) {
   const runtimeAccent = layerDefs[RUNTIME].accent;
   const appTags = extras.apps.map((a) => mkTag(a.name, a.text, a.accent || appAccent, 'is-app'));
   const slotLayer = (sl) => { const i = layerDefs.findIndex((L) => L.cu === sl.layer); return i >= 0 ? i : RUNTIME; };
-  const slotTags = (extras.slots || []).map((sl) => mkTag(sl.name, sl.text, sl.accent || layerDefs[slotLayer(sl)].accent, 'is-slot'));
+  // handwriting on the plates matches the marks: black on the middle layers, white on the outer ones
+  const markClass = (li) => (LAYER_SOURCES[li]?.kind === 'outer' ? 'is-pen' : 'is-marker');
+  const slotTags = (extras.slots || []).map((sl) => mkTag(sl.name, sl.text, sl.accent || layerDefs[slotLayer(sl)].accent, `is-slot ${markClass(slotLayer(sl))}`));
   // hoverable things: hovering one shows its callout and focuses its layer
   const items = [
     ...appTags.map((tag, i) => ({ tag, i, layer: TOP, sx: -1e9, sy: -1e9, r: 0 })),
@@ -803,15 +865,15 @@ export async function mountPcbHero(root, opts = {}) {
   // logo art on the layers (LAYER_SOURCES runs bottom to top like layerDefs) with hover callouts
   const artItems = LAYER_SOURCES.flatMap((src, li) => (li < layerDefs.length ? src.art || [] : [])
     .filter((a) => a.callout)
-    .map((a) => ({ ...a.callout, layer: li, tag: mkTag(a.callout.name, a.callout.text, layerDefs[li].accent, 'is-art'), sx: -1e9, sy: -1e9, r: 0 })));
+    .map((a) => ({ ...a.callout, layer: li, tag: mkTag('', a.callout.text, layerDefs[li].accent, `is-art ${markClass(li)}`), sx: -1e9, sy: -1e9, r: 0 })));
   items.push(...artItems);
   items.forEach((it) => {
     it.tag.el.addEventListener('pointerenter', () => { state.hotTag = it; state.hover = true; });
     it.tag.el.addEventListener('pointerleave', () => { if (state.hotTag === it) state.hotTag = null; });
   });
   const uplinkTag = extras.uplink && mkTag(extras.uplink.name, extras.uplink.text, extras.uplink.accent || appAccent, 'is-uplink');
-  const clusterTag = extras.cluster && mkTag(extras.cluster.name, extras.cluster.text, runtimeAccent, 'is-cluster');
-  const nodeTags = (extras.cluster?.nodes || []).map((n) => mkTag(n, '', runtimeAccent, 'is-node'));
+  const clusterTag = extras.cluster && mkTag(extras.cluster.name, extras.cluster.text, runtimeAccent, 'is-cluster is-marker');
+  const nodeTags = (extras.cluster?.nodes || []).map((n) => mkTag(n, '', runtimeAccent, 'is-node is-marker'));
   root.append(canvas, ink, svg, list, tagBox);
 
   if (!navigator.gpu) return fail('WebGPU is not available in this browser.');
@@ -836,6 +898,8 @@ export async function mountPcbHero(root, opts = {}) {
     img.src = new URL(a.image, import.meta.url).href;
     try { await img.decode(); artImages.set(a.image, img); } catch (e) { console.warn('[pcb-hero] art failed to load', a.image); }
   }));
+  // the handwriting, before the plates are drawn: some of it is written on them
+  try { await document.fonts.load('700 16px Caveat'); } catch (e) { /* falls back to cursive */ }
   const { size: texSize, layers: canvases } = buildLayerCanvases(data, pxPerMm, artImages);
   const mipLevels = Math.floor(Math.log2(texSize)) + 1;
   const mkArray = (format) => device.createTexture({
@@ -878,8 +942,6 @@ export async function mountPcbHero(root, opts = {}) {
     }
     return c;
   }));
-  // the handwriting for the scribbled notes
-  try { await document.fonts.load('700 16px Caveat'); } catch (e) { /* falls back to cursive */ }
   const aniso = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', maxAnisotropy: 8, addressModeU: 'clamp-to-edge', addressModeV: 'clamp-to-edge' });
 
   // --- buffers
@@ -900,7 +962,7 @@ export async function mountPcbHero(root, opts = {}) {
   // mounting holes carry the exploded-view guide lines
   const holeData = new Float32Array(data.holes.filter(([, , d]) => d >= 2).flatMap(([x, y, d, w]) => [x - h, y - h, d, w]));
   const holeBuf = mkBuf(holeData, GPUBufferUsage.VERTEX);
-  const sceneUBO = device.createBuffer({ size: 256, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const sceneUBO = device.createBuffer({ size: 272, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
 
   // the hero board is node 0; shadow nodes follow, one 256-byte slot each (dynamic offsets)
   const NODE_STRIDE = 256;
@@ -1248,17 +1310,16 @@ export async function mountPcbHero(root, opts = {}) {
     ...extras.uplink, anchor: anchorOf(extras.uplink),
     up: inkOf(extras.uplink.accent || appAccent, 0.3), down: inkOf(extras.uplink.down || '#3aa86b', 0.3),
   };
-  const paperLin = hexLinear('#ffffff');
-  const layerInk = layerDefs.map((L, i) => (LAYER_SOURCES[i]?.kind === 'outer'
-    ? hexLinear(L.accent).map((c, j) => c + (paperLin[j] - c) * 0.6)
-    : inkOf(L.accent, 0.55)));
-  const layerHi = layerDefs.map((L) => hexLinear(L.accent));
-  const runtimeInk = inkOf(runtimeAccent, 0.3);
+  // marks on the middle layers are black marker and crayon; the bottom layer gets a white paint pen
+  const isOuter = (i) => LAYER_SOURCES[i]?.kind === 'outer';
+  const layerInk = layerDefs.map((L, i) => (isOuter(i) ? hexLinear(PAINT_PEN) : inkLin));
+  const highlight = hexLinear(cfg.highlighter);
+  const runtimeInk = inkLin;
   const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
   const hotW = items.map(() => 0);
   const vis = { apps: 0, uplink: 0, links: 0 };
   // world anchors for the callouts and the 2D ink layer
-  const geo = { stickers: [], stickerScreen: [], beam: null, beamTop: null, cloud: null, upMid: null, dnMid: null, links: [], slots: [] };
+  const geo = { stickers: [], stickerScreen: [], beam: null, cloud: null, links: [], slots: [] };
   const slots = (extras.slots || []).map((sl) => ({ ...sl, layer: slotLayer(sl), anchor: anchorOf(sl), w: 0 }));
   function cubic(p0, p1, p2, p3, segs) {
     const out = [];
@@ -1268,7 +1329,6 @@ export async function mountPcbHero(root, opts = {}) {
     }
     return out;
   }
-  const line = (a, b, n = 16) => [...Array(n + 1)].map((_, i) => add(a, v3.sub(b, a), i / n));
   const along = (pts, u) => {
     const x = Math.min(Math.max(u, 0), 1) * (pts.length - 1), i = Math.min(pts.length - 2, Math.floor(x));
     return add(pts[i], v3.sub(pts[i + 1], pts[i]), x - i);
@@ -1289,7 +1349,7 @@ export async function mountPcbHero(root, opts = {}) {
   // a stroke through world points: `flat` strokes lie on a plate, the rest turn to the camera;
   // `even` keeps the width the same on screen however far away it runs; `xray` strokes show
   // dashed where something hides them
-  function stroke(pts, rgb, { w = 0.42, mode = PAINT.marker, alpha = 1, flat = false, even = false, xray = false, seed = 0 } = {}) {
+  function stroke(pts, rgb, { w = 0.42, mode = PAINT.marker, alpha = 1, flat = false, even = false, xray = false, seed = 0, layer = TOP } = {}) {
     if (alpha <= 0.004 || pts.length < 2) return;
     const n = pts.length;
     const ds = [0];
@@ -1303,19 +1363,18 @@ export async function mountPcbHero(root, opts = {}) {
     });
     for (let i = 0; i < n - 1; i++) {
       paintQuad(add(pts[i], sides[i], -1), add(pts[i + 1], sides[i + 1], -1), add(pts[i + 1], sides[i + 1]), add(pts[i], sides[i]),
-        mode, alpha, ds[i], ds[i + 1], rgb, seed, [w, ds[n - 1], xray ? 1 : 0, 0]);
+        mode, alpha, ds[i], ds[i + 1], rgb, seed, [w, ds[n - 1], xray ? 1 : 0, clocks[layer]]);
     }
   }
-  function dot(p, r, rgb, alpha, seed) {
+  function dot(p, r, rgb, alpha, seed, layer) {
     if (alpha <= 0.004) return;
     const R = state.camRight, U = state.camUp;
     paintQuad(add(add(p, R, -r), U, -r), add(add(p, R, r), U, -r), add(add(p, R, r), U, r), add(add(p, R, -r), U, r),
-      PAINT.dot, alpha, 0, 0, rgb, seed, [r * 2, r * 2, 0, 0]);
+      PAINT.dot, alpha, 0, 0, rgb, seed, [r * 2, r * 2, 0, clocks[layer]]);
   }
-  // seeded randomness: the same marks for one boil frame, fresh ones on the next
-  let boil = 0;
-  const rand = (key) => {
-    let t = (key * 7919 + boil * 104729) | 0;
+  // seeded randomness: the same marks for one boil frame of their layer, fresh ones on the next
+  const rand = (key, layer = TOP) => {
+    let t = (key * 7919 + Math.floor(clocks[layer] * cfg.boil) * 104729) | 0;
     return () => {
       t = (t + 0x6d2b79f5) | 0;
       let r = Math.imul(t ^ (t >>> 15), 1 | t);
@@ -1358,51 +1417,49 @@ export async function mountPcbHero(root, opts = {}) {
       return [p[0] + Math.sin(t * f * 6.3 + p1) * e, p[1] + Math.sin(t * f * 5.1 + p2) * e, p[2] + Math.sin(t * f * 4.3 + p3) * e];
     });
   }
-  // an arrowhead at the end of a path, in the camera's plane
-  function head(pts, size, rgb, opts, rnd) {
-    const tip = pts[pts.length - 1];
-    const d = v3.norm(v3.sub(tip, pts[Math.max(0, pts.length - 4)]));
-    const sd = v3.norm(v3.cross(d, v3.sub(state.eye, tip)));
-    for (const sg of [-1, 1]) stroke([add(add(tip, d, -size), sd, sg * size * (0.5 + rnd() * 0.2)), tip], rgb, opts);
-  }
-
   function buildPaint(focus, k) {
     paintN = 0;
-    boil = Math.floor(time * cfg.boil);
     const hot = hotItem();
     items.forEach((it, j) => { hotW[j] += ((hot === it ? 1 : 0) - hotW[j]) * k; });
     const ease = (key, target) => { vis[key] += (target - vis[key]) * k; return vis[key]; };
     const appI = ease('apps', focus === TOP ? 1 : focus < 0 ? 0.8 : 0.12);
-    const upI = ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.85 : 0.25);
-    const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.3 : 0.08);
+    ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.9 : 0.25);
+    const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.16 : 0.06);
     const R = state.camRight, U = state.camUp;
     const topY = state.y[TOP];
-    const bob = (i) => (reduceMotion ? 0 : Math.sin(time * 1.1 + i * 2.1) * 0.3);
+    const tTop = clocks[TOP], tRun = clocks[RUNTIME];
+
+    // a couple of highlighter swipes through a footprint on a plate
+    const swipe = (cx, y, cz, w, d, alpha, rnd, layer, seed) => {
+      const long = w >= d, L = (long ? w : d) - 0.6, wd = long ? d : w;
+      for (let q = 0; q < 2; q++) {
+        const off = (q - 0.5) * wd * 0.42, wob = (rnd() - 0.5) * 0.5;
+        const ends = long
+          ? [[cx - L / 2, y, cz + off], [cx + L / 2, y, cz + off + wob]]
+          : [[cx + off, y, cz - L / 2], [cx + off + wob, y, cz + L / 2]];
+        stroke(ends, highlight, { w: wd * 0.5, mode: PAINT.highlighter, flat: true, alpha, seed, layer });
+      }
+    };
 
     // technology slots: a sketched box on their layer while it is in focus; hovering one
     // swipes a highlighter through it
     geo.slots = slots.map((sl, j) => {
       sl.w += ((focus === sl.layer ? 1 : 0) - sl.w) * k;
-      const A = sl.anchor, hw = hotW[apps.length + j], rnd = rand(100 + j);
+      const A = sl.anchor, hw = hotW[apps.length + j], rnd = rand(100 + j, sl.layer);
       const y = state.y[sl.layer] + 0.04;
-      if (hw > 0.02) {
-        const long = A.w >= A.d, L = (long ? A.w : A.d) - 0.6, wd = long ? A.d : A.w;
-        for (let q = 0; q < 2; q++) {
-          const off = (q - 0.5) * wd * 0.42, wob = (rnd() - 0.5) * 0.5;
-          const ends = long
-            ? [[A.x - L / 2, y, A.z + off], [A.x + L / 2, y, A.z + off + wob]]
-            : [[A.x + off, y, A.z - L / 2], [A.x + off + wob, y, A.z + L / 2]];
-          stroke(ends, layerHi[sl.layer], { w: wd * 0.5, mode: PAINT.highlighter, flat: true, alpha: sl.w * hw, seed: j });
-        }
+      if (hw > 0.02) swipe(A.x, y, A.z, A.w, A.d, sl.w * hw, rnd, sl.layer, j);
+      for (const side of box(A.x, y, A.z, A.w, A.d, rnd)) {
+        stroke(side, layerInk[sl.layer], { w: 0.4, flat: true, alpha: sl.w, seed: j + 0.3, layer: sl.layer });
       }
-      for (const side of box(A.x, y, A.z, A.w, A.d, rnd)) stroke(side, layerInk[sl.layer], { w: 0.4, flat: true, alpha: sl.w, seed: j + 0.3 });
       return [A.x, y, A.z];
     });
-    // the layer art (Linux, U-Boot, Buildroot) gets circled when hovered
+    // the layer art (Linux, U-Boot, Buildroot) is written on the plate; hovering highlights it
     artItems.forEach((it, j) => {
       const hw = hotW[apps.length + slots.length + j];
-      const r = it.size / 2 + 1.2;
-      if (hw > 0.02) stroke(loop(it.at[0] - h, state.y[it.layer] + 0.05, it.at[1] - h, r, r, rand(200 + j)), layerInk[it.layer], { w: 0.42, flat: true, alpha: hw, seed: j });
+      if (hw > 0.02) {
+        const s = it.size * 0.8;
+        swipe(it.at[0] - h, state.y[it.layer] + 0.05, it.at[1] - h, s, s * 0.45, hw, rand(200 + j, it.layer), it.layer, j);
+      }
     });
 
     // projects on the Application layer: a loop round the part, a sticker floating above it and
@@ -1412,7 +1469,7 @@ export async function mountPcbHero(root, opts = {}) {
       const yb = topY + 0.05, rx = A.w / 2 + 1.1, rz = A.d / 2 + 1.1;
       stroke(loop(A.x, yb, A.z, rx, rz, rnd), app.ink, { w: 0.62 + hw * 0.2, flat: true, alpha: appI, seed: i });
       if (hw > 0.02) stroke(loop(A.x, yb, A.z, rx * 1.15, rz * 1.15, rnd, 1.04), app.ink, { w: 0.45, flat: true, alpha: appI * hw, seed: i + 0.5 });
-      const C = [A.x, topY + (app.float ?? cfg.stickerHeight) + bob(i), A.z];
+      const C = [A.x, topY + (app.float ?? cfg.stickerHeight) + Math.sin(tTop * 1.1 + i * 2.1) * 0.3, A.z];
       geo.stickers[i] = C;
       const from = [A.x, topY + A.top + 0.3, A.z];
       const to = add(C, U, -cfg.stickerSize * 0.48);
@@ -1420,32 +1477,14 @@ export async function mountPcbHero(root, opts = {}) {
       stroke(shake(cubic(from, mid, mid, to, 12), 0.1, rnd), app.ink, { w: 0.34, alpha: appI * 0.9, seed: i + 0.2 });
     });
 
-    // NervesHub: a loop round the module, then arrows up to the cloud (health) and down from it
-    // (firmware), with packets travelling along them
+    // NervesHub: the module gets a loop; the cloud and its puffs are drawn in 2D
     if (uplink) {
-      const A = uplink.anchor, rnd = rand(300);
-      const B = [A.x, topY + A.top + 0.05, A.z];
-      geo.beam = B;
-      stroke(loop(A.x, topY + 0.05, A.z, A.w / 2 + 1, A.d / 2 + 1, rnd), uplink.up, { w: 0.4, flat: true, alpha: upI, seed: 3 });
-      if (geo.beamTop) {
-        const T = [B[0], geo.beamTop[1], B[2]];
-        const gap = 1.1, opts = { w: 0.42, alpha: upI };
-        const up = shake(line(add(add(B, R, -gap), [0, 1.6, 0]), add(T, R, -gap)), 0.35, rnd);
-        const dn = shake(line(add(T, R, gap), add(add(B, R, gap), [0, 1.6, 0])), 0.35, rnd);
-        stroke(up, uplink.up, { ...opts, seed: 4 });
-        head(up, 1.5, uplink.up, { ...opts, seed: 4.5 }, rnd);
-        stroke(dn, uplink.down, { ...opts, seed: 5 });
-        head(dn, 1.5, uplink.down, { ...opts, seed: 5.5 }, rnd);
-        geo.upMid = along(up, 0.72); geo.dnMid = along(dn, 0.28);
-        if (!reduceMotion) for (let q = 0; q < 2; q++) {
-          const tu = (time * 0.3 + q * 0.5) % 1, td = (time * 0.2 + q * 0.5) % 1;
-          dot(along(up, tu), 0.6, uplink.up, upI * Math.min(1, Math.sin(tu * Math.PI) * 3), 6 + q);
-          dot(along(dn, td), 0.6, uplink.down, upI * Math.min(1, Math.sin(td * Math.PI) * 3), 8 + q);
-        }
-      }
+      const A = uplink.anchor;
+      geo.beam = [A.x, topY + A.top + 0.05, A.z];
+      stroke(loop(A.x, topY + 0.05, A.z, A.w / 2 + 1, A.d / 2 + 1, rand(300)), uplink.up, { w: 0.42, flat: true, alpha: vis.uplink, seed: 3 });
     }
 
-    // Erlang distribution: crayon lines from pads on the runtime plate out to the other boards,
+    // Erlang distribution: black crayon from pads on the runtime plate out to the other boards,
     // rising through the gap under the plate above, with messages going both ways
     geo.links = [];
     const yMid = state.y[RUNTIME] - cfg.slab * 0.5;
@@ -1454,18 +1493,19 @@ export async function mountPcbHero(root, opts = {}) {
     const across = (p) => p[0] * R[0] + p[2] * R[2];
     const ports = cfg.ports.map(([x, z]) => [x - h, yTop, z - h]).sort((a, b) => across(a) - across(b));
     const byScreen = nodes.slice(1).map((n, i) => i + 1).sort((a, b) => across([nodes[a].x, 0, nodes[a].z]) - across([nodes[b].x, 0, nodes[b].z]));
+    const run = { layer: RUNTIME };
     byScreen.forEach((ni, kk) => {
-      const P = ports[Math.min(kk, ports.length - 1)], rnd = rand(400 + ni);
+      const P = ports[Math.min(kk, ports.length - 1)], rnd = rand(400 + ni, RUNTIME);
       const Bq = edgeAnchor(nodes[ni], [0, 0, 0], yMid);
       const len = Math.hypot(Bq.p[0] - P[0], Bq.p[2] - P[2]);
       const pts = shake(cubic(P, add(P, [0, rise, 0]), add(add(Bq.p, Bq.n, len * 0.3), [0, len * 0.04, 0]), Bq.p, 40), 0.5, rnd);
       geo.links[ni - 1] = pts;
-      stroke(pts, runtimeInk, { w: 0.85, mode: PAINT.crayon, alpha: linkI, even: true, xray: true, seed: ni });
-      stroke(loop(P[0], yTop, P[2], 1.3, 1.3, rnd), runtimeInk, { w: 0.4, flat: true, alpha: linkI, seed: ni + 0.4 });
-      if (!reduceMotion) for (const [sp, off, dir] of [[0.16, 0, 1], [0.11, 0.5, -1]]) {
-        const t = (time * sp + off + ni * 0.21) % 1, u = dir > 0 ? t : 1 - t;
+      stroke(pts, runtimeInk, { ...run, w: 0.4 + 0.4 * linkI, mode: PAINT.crayon, alpha: linkI, even: true, xray: true, seed: ni });
+      stroke(loop(P[0], yTop, P[2], 1.3, 1.3, rnd), runtimeInk, { ...run, w: 0.4, flat: true, alpha: linkI, seed: ni + 0.4 });
+      if (!reduceMotion && focus === RUNTIME) for (const [sp, off, dir] of [[0.16, 0, 1], [0.11, 0.5, -1]]) {
+        const t = (tRun * sp + off + ni * 0.21) % 1, u = dir > 0 ? t : 1 - t;
         const p = along(pts, u);
-        dot(p, 0.75 * Math.hypot(...v3.sub(p, state.eye)) / state.dist, runtimeInk, linkI * Math.min(1, Math.sin(u * Math.PI) * 3), 20 + ni);
+        dot(p, 0.75 * Math.hypot(...v3.sub(p, state.eye)) / state.dist, runtimeInk, linkI * Math.min(1, Math.sin(u * Math.PI) * 3), 20 + ni, RUNTIME);
       }
     });
     for (let a = 1; a < nodes.length; a++)
@@ -1474,7 +1514,7 @@ export async function mountPcbHero(root, opts = {}) {
         const A = edgeAnchor(na, [nb.x, nb.y, nb.z], yMid), Bq = edgeAnchor(nb, [na.x, na.y, na.z], yMid);
         const len = Math.hypot(Bq.p[0] - A.p[0], Bq.p[2] - A.p[2]), lift = [0, len * 0.05, 0];
         const pts = cubic(A.p, add(add(A.p, A.n, len * 0.22), lift), add(add(Bq.p, Bq.n, len * 0.22), lift), Bq.p, 32);
-        stroke(shake(pts, 0.8, rand(500 + a * 7 + b)), runtimeInk, { w: 0.6, mode: PAINT.crayon, alpha: linkI * 0.6, even: true, xray: true, seed: a * 3 + b });
+        stroke(shake(pts, 0.8, rand(500 + a * 7 + b, RUNTIME)), runtimeInk, { ...run, w: 0.3 + 0.25 * linkI, mode: PAINT.crayon, alpha: linkI * 0.55, even: true, xray: true, seed: a * 3 + b });
       }
     device.queue.writeBuffer(paintBuf, 0, paintData, 0, paintN * PAINT_FLOATS);
   }
@@ -1527,13 +1567,14 @@ export async function mountPcbHero(root, opts = {}) {
       // NervesHub is a cloud near the top of the hero, straight above the module
       const by = project(geo.beam)[1];
       const w = uplinkTag.el.offsetWidth, hh = uplinkTag.el.offsetHeight;
-      const cw = w + 46, ch = hh + 30;
-      const cy = Math.max(ch / 2 + 14, Math.min(by - 120, 26 + ch / 2));
+      const cw = w + 40, ch = hh + 26;
+      const cy = Math.max(ch / 2 + 16, Math.min(by - 120, 30 + ch / 2));
       const px = project(add(geo.beam, [0, heightAt(geo.beam, cy), 0]))[0];
-      const cx = Math.min(Math.max(px, cw / 2 + 10), W - cw / 2 - 10);
+      const cx = Math.min(Math.max(px, cw / 2 + 14), W - cw / 2 - 14);
       place(uplinkTag, focus === TOP ? 1 : focus < 0 ? 0.9 : 0.35, cx, cy, 'center', focus === TOP);
-      geo.cloud = { x: cx, y: cy, w: cw, h: ch };
-      geo.beamTop = add(geo.beam, [0, heightAt(geo.beam, cy + ch / 2 + 4), 0]);
+      // the puffs travel between the top of the module and the bottom of the cloud
+      const [mx, my] = project(geo.beam);
+      geo.cloud = { x: cx, y: cy, w: cw, h: ch, from: [mx, my - 8], to: [px, cy + ch * 0.45] };
     }
     const clusterVis = focus === RUNTIME ? 1 : 0;
     if (clusterTag && geo.links.length) {
@@ -1560,23 +1601,7 @@ export async function mountPcbHero(root, opts = {}) {
     const W = state.cssW, H = state.cssH;
     ictx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ictx.clearRect(0, 0, W, H);
-    if (uplink && geo.cloud && vis.uplink > 0.01) {
-      drawCloud(geo.cloud, vis.uplink);
-      ictx.save();
-      ictx.globalAlpha = vis.uplink * 0.95;
-      ictx.font = `700 ${W < 720 ? 13 : W > 1100 ? 17 : 15}px Caveat, cursive`;
-      ictx.textBaseline = 'middle';
-      const note = (p, text, rgb, side) => {
-        if (!p) return;
-        const [x, y] = project(p);
-        ictx.fillStyle = css(rgb);
-        ictx.textAlign = side < 0 ? 'right' : 'left';
-        ictx.fillText(text, x + side * 10, y);
-      };
-      note(geo.upMid, 'health', uplink.up, -1);
-      note(geo.dnMid, 'firmware', uplink.down, 1);
-      ictx.restore();
-    }
+    if (uplink && geo.cloud && vis.uplink > 0.01) drawNervesHub(geo.cloud, vis.uplink, W);
     if (vis.apps > 0.01) apps.forEach((app, i) => {
       const sc = geo.stickerScreen[i];
       if (!sc || !stickers[i]) return;
@@ -1589,39 +1614,73 @@ export async function mountPcbHero(root, opts = {}) {
       ictx.restore();
     });
   }
-  // a cloud of marker bumps round an ellipse, filled with paper so the name reads on it
-  function drawCloud(c, alpha) {
-    const rnd = rand(900);
-    const n = 9, rx = c.w / 2, ry = c.h / 2, a0 = rnd();
-    const pts = [...Array(n)].map((_, i) => {
-      const t = a0 + (i / n) * Math.PI * 2, j = 1 + (rnd() - 0.5) * 0.1;
-      return [c.x + Math.cos(t) * rx * j, c.y + Math.sin(t) * ry * j];
-    });
+
+  // cel-shaded clouds: white orbs with a cool shade along their undersides, no outline
+  const CLOUD_SHADE = '#d6e1e8';
+  function cloudPath(orbs) {
+    const p = new Path2D();
+    for (const [x, y, r] of orbs) { p.moveTo(x + r, y); p.arc(x, y, r, 0, Math.PI * 2); }
+    return p;
+  }
+  function fillCloud(orbs, lift) {
+    const p = cloudPath(orbs);
+    ictx.fillStyle = CLOUD_SHADE;
+    ictx.fill(p);
+    ictx.save();
+    ictx.clip(p);
+    ictx.translate(0, -lift);
+    ictx.fillStyle = '#ffffff';
+    ictx.fill(p);
+    ictx.restore();
+  }
+  // NervesHub: a cloud whose orbs drift slowly, and small puffs going up (health) and down
+  // (firmware) between it and the module. All of it moves on the top layer's clock.
+  const MAIN_ORBS = [
+    [-0.78, 0.32, 0.5], [-0.28, 0.42, 0.55], [0.28, 0.42, 0.55], [0.78, 0.32, 0.5],
+    [-0.62, -0.12, 0.62], [-0.08, -0.3, 0.78], [0.5, -0.18, 0.66], [0.0, 0.08, 0.7],
+  ];
+  function drawNervesHub(c, alpha, W) {
+    const t = clocks[TOP];
     ictx.save();
     ictx.globalAlpha = alpha;
-    ictx.beginPath();
-    ictx.moveTo(pts[0][0], pts[0][1]);
-    pts.forEach((p, i) => {
-      const q = pts[(i + 1) % n];
-      const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, L = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1;
-      let nx = (q[1] - p[1]) / L, ny = -(q[0] - p[0]) / L;
-      if (nx * (mx - c.x) + ny * (my - c.y) < 0) { nx = -nx; ny = -ny; }
-      const bulge = 0.36 + rnd() * 0.16;
-      ictx.quadraticCurveTo(mx + nx * L * bulge, my + ny * L * bulge, q[0], q[1]);
-    });
-    ictx.closePath();
-    ictx.fillStyle = 'rgba(253, 251, 245, 0.94)';
-    ictx.fill();
-    ictx.lineCap = ictx.lineJoin = 'round';
-    ictx.strokeStyle = css(uplink.up);
-    ictx.lineWidth = 2.6;
-    ictx.stroke();
+    const hw = c.w / 2, hh = c.h / 2, unit = Math.min(hh * 1.25, hw * 0.55);
+    const orbs = MAIN_ORBS.map(([x, y, r], i) => [
+      c.x + x * hw + Math.sin(t * 0.33 + i * 1.7) * unit * 0.07,
+      c.y + y * hh + Math.cos(t * 0.27 + i * 2.3) * unit * 0.06,
+      r * unit * (1 + 0.04 * Math.sin(t * 0.41 + i)),
+    ]);
+    fillCloud(orbs, unit * 0.16);
+
+    // puffs: three going up, two coming down, at their own pace
+    const [x0, y0] = c.from, [x1, y1] = c.to;
+    const lane = Math.max(10, unit * 0.32);
+    const fontPx = W < 720 ? 13 : 16;
+    ictx.font = `700 ${fontPx}px Caveat, cursive`;
+    ictx.textBaseline = 'middle';
+    const puff = (u, side, seed, label, rgb) => {
+      const fade = Math.min(1, Math.sin(u * Math.PI) * 2.2);
+      if (fade <= 0.02) return;
+      const x = x0 + (x1 - x0) * u + side * lane + Math.sin(u * 7 + seed) * 3;
+      const y = y0 + (y1 - y0) * u;
+      const r = unit * (0.25 + 0.05 * Math.sin(seed * 3.1)) * (0.6 + 0.4 * fade);
+      ictx.globalAlpha = alpha * fade;
+      fillCloud([[x - r * 0.9, y + r * 0.2, r * 0.7], [x + r * 0.85, y + r * 0.25, r * 0.65], [x, y - r * 0.15, r]], r * 0.22);
+      if (label) {
+        ictx.fillStyle = css(rgb);
+        ictx.textAlign = side < 0 ? 'right' : 'left';
+        ictx.fillText(label, x + side * (r * 1.9 + 3), y);
+      }
+    };
+    for (let q = 0; q < 3; q++) puff((t * 0.07 + q / 3) % 1, -1, q, q % 2 === 0 ? 'health' : '', uplink.up);
+    for (let q = 0; q < 2; q++) puff(1 - ((t * 0.05 + q / 2 + 0.25) % 1), 1, q + 5, q === 0 ? 'firmware' : '', uplink.down);
     ictx.restore();
   }
 
   // --- frame
   const accents = layerDefs.map((L) => hexLinear(L.accent));
-  const sceneData = new Float32Array(64);
+  const sceneData = new Float32Array(68);
+  // one clock per layer; only the active layer's runs, so only it animates
+  const clocks = new Array(N).fill(0);
   let last = performance.now();
   let time = 0;
   let running = true;
@@ -1648,6 +1707,7 @@ export async function mountPcbHero(root, opts = {}) {
     }
     const focus = focusTarget();
     const open = state.hover || focus >= 0;
+    if (!reduceMotion) clocks[focus >= 0 ? focus : TOP] += dt;
     const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 7);
     for (let i = 0; i < N; i++) {
       state.y[i] += (targetY(i, focus, open) - state.y[i]) * k;
@@ -1670,8 +1730,11 @@ export async function mountPcbHero(root, opts = {}) {
     sceneData.set([cfg.pulseSpeed, ...tint], 40);
     accents.forEach((a, i) => sceneData.set([...a, 1], 44 + i * 4));
     sceneData[60] = reduceMotion ? 0 : 1; // Scene.motion follows the four accents
+    sceneData.set(clocks, 64);           // then Scene.clock
     device.queue.writeBuffer(sceneUBO, 0, sceneData);
-    device.queue.writeBuffer(compUBO, 0, new Float32Array([Math.max(1, Math.round(cfg.ink * dpr * 0.5)), state.dist, 0, 0]));
+    // the brush line narrows a little on small heroes, where the board is small too
+    const brush = cfg.brush * dpr * Math.min(1, Math.max(0.6, state.cssW / 1100));
+    device.queue.writeBuffer(compUBO, 0, new Float32Array([Math.max(1, Math.round(cfg.ink * dpr * 0.5)), brush, 0, 0]));
 
     const enc = device.createCommandEncoder();
     const pass = enc.beginRenderPass({
@@ -1693,13 +1756,10 @@ export async function mountPcbHero(root, opts = {}) {
       pass.setVertexBuffer(1, partBuf);
       pass.draw(36, partData.length / 16);
     }
+    pass.setBindGroup(1, nodeBG, [0]);
     pass.setPipeline(pulsePipe);
     pass.setVertexBuffer(0, pulseBuf);
-    for (let n = 0; n < nodeCount; n++) {
-      pass.setBindGroup(1, nodeBG, [n * NODE_STRIDE]);
-      pass.draw(6, pulseData.length / 8);
-    }
-    pass.setBindGroup(1, nodeBG, [0]);
+    pass.draw(6, pulseData.length / 8);
     pass.setPipeline(guidePipe);
     pass.setVertexBuffer(0, holeBuf);
     pass.draw(6, holeData.length / 4);

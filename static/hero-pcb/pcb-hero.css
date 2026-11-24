@@ -161,7 +161,19 @@
 .pcb-hero__tag.is-cluster .pcb-hero__tag-text { margin: 0 0 0 auto; }
 .pcb-hero__tag.is-app,
 .pcb-hero__tag.is-slot { pointer-events: auto; cursor: default; }
-.pcb-hero__tag.is-slot .pcb-hero__tag-name { font-size: 1.2rem; color: color-mix(in srgb, var(--accent) 50%, var(--ink)); }
+.pcb-hero__tag.is-slot .pcb-hero__tag-name { font-size: 1.2rem; }
+.pcb-hero__tag-name:empty { display: none; }
+/* handwriting on the plates: black marker on the middle layers, white paint pen on the outer ones */
+.pcb-hero__tag.is-marker .pcb-hero__tag-name,
+.pcb-hero__tag.is-marker .pcb-hero__tag-text { color: var(--ink); }
+.pcb-hero__tag.is-pen .pcb-hero__tag-name,
+.pcb-hero__tag.is-pen .pcb-hero__tag-text {
+  color: #fbfaf2;
+  --outline-c: #1f3a29;
+  text-shadow: 1.5px 0 var(--outline-c), -1.5px 0 var(--outline-c), 0 1.5px var(--outline-c), 0 -1.5px var(--outline-c),
+    1.1px 1.1px var(--outline-c), -1.1px 1.1px var(--outline-c), 1.1px -1.1px var(--outline-c), -1.1px -1.1px var(--outline-c);
+}
+.pcb-hero__tag.is-art .pcb-hero__tag-text { font-size: 1.25rem; }
 .pcb-hero__tag.is-slot .pcb-hero__tag-text { white-space: normal; width: 11rem; margin: 0 auto; }
 .pcb-hero.is-narrow .pcb-hero__tag-text { display: none; }
 /* small screens: smaller handwriting, and project names only for the tapped sticker */

@@ -17,11 +17,13 @@ export const PALETTE = {
   copperRing: '#f2b47e',
   gold: '#efc25e',          // ENIG pads
   silk: '#fbfaf2',
+  marker: '#1f1b18',        // black marker on the inner planes
 };
 
 // Layer order is bottom -> top, matching the visual stack.
 // art: logos drawn on the layer (board mm) - etched into inner copper, silkscreen on outer layers.
-//   { square, at, size } a plain square block marked with its name
+//   { square, at, size } a name handwritten in a messy marker box (black on the inner
+//                       planes, white paint pen on the outer layers)
 //   { logo, at, size }  a mark from logos.js
 //   { image, at, size } a logo file (path relative to this module), drawn monochrome by its alpha;
 //                       with `threshold`, pixels darker than it are left out; with `halftone` (cell mm)
@@ -102,32 +104,53 @@ function drawImageArt(ctx, img, a, ink, pxPerMm, isMaterial) {
   ctx.drawImage(c, a.at[0] - w / 2, a.at[1] - h / 2, w, h);
 }
 
-// a generic block: rounded outline, a pin-1 dot and the name fitted inside
+// a name written on the plate in marker, in a quickly drawn box whose strokes run past the corners
+const HAND_FONT = 'Caveat, "Comic Sans MS", cursive';
 function drawSquare(ctx, a, ink) {
-  const s = a.size, x = a.at[0] - s / 2, y = a.at[1] - s / 2;
+  let seed = [...a.square].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) | 0, 7);
+  const rnd = () => { seed = (seed * 1103515245 + 12345) | 0; return ((seed >>> 8) & 0xffff) / 0xffff; };
+  const s = a.size, cx = a.at[0], cy = a.at[1];
+  const j = () => (rnd() - 0.5) * s * 0.05;
+  const c = [[cx - s / 2 + j(), cy - s / 2 + j()], [cx + s / 2 + j(), cy - s / 2 + j()], [cx + s / 2 + j(), cy + s / 2 + j()], [cx - s / 2 + j(), cy + s / 2 + j()]];
   ctx.save();
   ctx.strokeStyle = ink;
   ctx.fillStyle = ink;
-  ctx.lineWidth = s * 0.045;
-  ctx.beginPath();
-  ctx.roundRect(x, y, s, s, s * 0.1);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(x + s * 0.16, y + s * 0.16, s * 0.045, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.font = `700 10px ${ART_FONT}`;
-  const fs = Math.min(s * 0.2, (10 * s * 0.74) / ctx.measureText(a.square).width);
-  ctx.font = `700 ${fs}px ${ART_FONT}`;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = s * 0.042;
+  c.forEach(([ax, ay], i) => {
+    const [bx, by] = c[(i + 1) % 4];
+    const L = Math.hypot(bx - ax, by - ay), ux = (bx - ax) / L, uy = (by - ay) / L;
+    const o0 = s * (0.02 + rnd() * 0.09), o1 = s * (0.02 + rnd() * 0.09), bow = (rnd() - 0.5) * s * 0.05;
+    ctx.beginPath();
+    ctx.moveTo(ax - ux * o0, ay - uy * o0);
+    ctx.quadraticCurveTo((ax + bx) / 2 - uy * bow, (ay + by) / 2 + ux * bow, bx + ux * o1, by + uy * o1);
+    ctx.stroke();
+    // now and then the pen goes over a side twice
+    if (rnd() > 0.6) {
+      ctx.lineWidth = s * 0.026;
+      ctx.beginPath();
+      ctx.moveTo(ax + ux * s * 0.1, ay + uy * s * 0.1 + s * 0.012);
+      ctx.quadraticCurveTo((ax + bx) / 2 - uy * bow * 1.6, (ay + by) / 2 + ux * bow * 1.6 + s * 0.012, bx - ux * s * 0.15, by - uy * s * 0.15 + s * 0.012);
+      ctx.stroke();
+      ctx.lineWidth = s * 0.042;
+    }
+  });
+  ctx.translate(cx, cy);
+  ctx.rotate((rnd() - 0.5) * 0.12);
+  ctx.font = `700 10px ${HAND_FONT}`;
+  const fs = Math.min(s * 0.34, (10 * s * 0.8) / ctx.measureText(a.square).width);
+  ctx.font = `700 ${fs}px ${HAND_FONT}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(a.square, a.at[0], a.at[1] + fs * 0.04);
+  ctx.fillText(a.square, 0, fs * 0.05);
   ctx.restore();
 }
 
 // style: { ink, clear } fill styles (clear null erases)
 function drawArt(ctx, art = [], style, images, pxPerMm, isMaterial = false) {
   for (const a of art) {
-    if (a.square) drawSquare(ctx, a, style.ink);
+    if (a.square) drawSquare(ctx, a, style.marker || style.ink);
     if (a.logo) drawLogo(ctx, a.logo, a.at[0], a.at[1], a.size, style);
     if (a.image && images?.get(a.image)) drawImageArt(ctx, images.get(a.image), a, style.ink, pxPerMm, isMaterial);
     if (a.text) {
@@ -287,7 +310,7 @@ export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
         drawSilk(a, data.silk, PALETTE.silk);
         drawSilk(m, data.silk, '#0000ff');
       }
-      drawArt(a, src.art, { ink: PALETTE.silk, clear: null }, images, pxPerMm);
+      drawArt(a, src.art, { ink: PALETTE.silk, clear: null, marker: PALETTE.silk }, images, pxPerMm);
       drawArt(m, src.art, { ink: '#0000ff', clear: null }, images, pxPerMm, true);
     } else {
       a.fillStyle = PALETTE.laminate;
@@ -295,7 +318,7 @@ export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
       drawZones(a, zones, PALETTE.copper);
       drawZones(m, zones, '#ff0000');
       // copper art: the logo is etched out of the plane, its details stay copper
-      drawArt(a, src.art, { ink: PALETTE.etch, clear: PALETTE.copper }, images, pxPerMm);
+      drawArt(a, src.art, { ink: PALETTE.etch, clear: PALETTE.copper, marker: PALETTE.marker }, images, pxPerMm);
       m.globalCompositeOperation = 'source-over';
       drawArt(m, src.art, { ink: '#0000ff', clear: '#ff0000' }, images, pxPerMm, true);
       m.globalCompositeOperation = 'lighter';
