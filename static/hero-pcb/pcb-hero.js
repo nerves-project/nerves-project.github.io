@@ -4,6 +4,8 @@
 // Usage:
 //   import { mountPcbHero } from './pcb-hero.js';
 //   mountPcbHero(document.querySelector('#hero-stack'), { dataUrl: '/hero-pcb/pcb.json' });
+// Options: dataUrl or data, layers, extras, config, pxPerMm, and backdrop: an image URL drawn
+// faded behind the board, centred on it and fitted inside the hero.
 
 import { buildLayerCanvases, LAYER_SOURCES } from './textures.js';
 import { drawLogo } from './logos.js';
@@ -875,6 +877,13 @@ export async function mountPcbHero(root, opts = {}) {
   const uplinkTag = extras.uplink && mkTag(extras.uplink.name, extras.uplink.text, extras.uplink.accent || appAccent, 'is-uplink');
   const clusterTag = extras.cluster && mkTag(extras.cluster.name, extras.cluster.text, runtimeAccent, 'is-cluster is-marker');
   const nodeTags = (extras.cluster?.nodes || []).map((n) => mkTag(n, '', runtimeAccent, 'is-node is-marker'));
+  const backdrop = opts.backdrop && document.createElement('div');
+  if (backdrop) {
+    backdrop.className = 'pcb-hero__backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+    backdrop.style.backgroundImage = `url("${new URL(opts.backdrop, document.baseURI).href}")`;
+    root.append(backdrop);
+  }
   root.append(canvas, ink, svg, list, tagBox);
 
   if (!navigator.gpu) return fail('WebGPU is not available in this browser.');
@@ -1244,7 +1253,17 @@ export async function mountPcbHero(root, opts = {}) {
     state.labelCol = labelCol;
     state.dist = dist;
     const key = `${W}x${H}`;
-    if (key !== state.nodesFor) { state.nodesFor = key; placeNodes(dist); }
+    if (key !== state.nodesFor) { state.nodesFor = key; placeNodes(dist); placeBackdrop(target); }
+  }
+
+  // the backdrop is centred where the board sits (the camera target, which stays put while the
+  // plates open) and gets the largest box around that point that still fits inside the hero
+  function placeBackdrop(target) {
+    if (!backdrop) return;
+    const W = state.cssW, H = state.cssH;
+    const [cx, cy] = project(target);
+    const hw = Math.max(0, Math.min(cx, W - cx)) * 0.94, hh = Math.max(0, Math.min(cy, H - cy)) * 0.94;
+    Object.assign(backdrop.style, { left: `${cx - hw}px`, top: `${cy - hh}px`, width: `${hw * 2}px`, height: `${hh * 2}px` });
   }
 
   // the hero board is node 0; shadow nodes are placed along the view rays through their

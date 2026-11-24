@@ -21,6 +21,14 @@
   font-family: inherit;
 }
 
+/* optional faded image centred behind the board (opts.backdrop) */
+.pcb-hero__backdrop {
+  position: absolute;
+  pointer-events: none;
+  background: center / contain no-repeat;
+  opacity: 0.075;
+}
+
 .pcb-hero__canvas,
 .pcb-hero__ink,
 .pcb-hero__leaders {
