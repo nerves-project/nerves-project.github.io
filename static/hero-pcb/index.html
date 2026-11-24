@@ -13,8 +13,19 @@
       min-height: min(760px, 100vh);
       background: #f4efe4;
       color: #26221f;
+      position: relative;
+      overflow: hidden;
     }
-    .hero__copy { align-self: center; padding: 3rem 0 3rem clamp(1.5rem, 5vw, 5rem); }
+    /* the Nerves mark, faded, filling the hero behind everything */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: -14% -6% -14% 4%;
+      background: url('nerves-mark.svg') center / contain no-repeat;
+      opacity: 0.075;
+      pointer-events: none;
+    }
+    .hero__copy { position: relative; align-self: center; padding: 3rem 0 3rem clamp(1.5rem, 5vw, 5rem); }
     .hero__copy h1 { font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.1; margin: 0 0 1rem; }
     .hero__copy p { font-size: 1.15rem; line-height: 1.5; color: #5b5650; max-width: 34ch; margin: 0 0 2rem; }
     .hero__copy a { display: inline-block; padding: 0.7rem 1.3rem; border-radius: 6px; background: #2f86a6; color: #fff; font-weight: 700; text-decoration: none; margin-right: 0.5rem; }

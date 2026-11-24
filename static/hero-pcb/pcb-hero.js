@@ -80,7 +80,8 @@ const CFG = {
     { x: 0.86, y: 0.2, depth: 3.0, yaw: -22 },
     { x: 0.33, y: 0.09, depth: 3.7, yaw: 36 },
   ],
-  shadowFade: 0.7,    // how far the boards in the distance fade into the paper
+  shadowFade: 0.62,   // how far the boards in the distance fade into the paper
+  shadowAlpha: 0.78,  // and how much of the page behind them shows through
   ports: [[22, 34], [31, 31], [36, 22]], // where cluster links land on the runtime plate (board mm)
 };
 
@@ -1249,7 +1250,7 @@ export async function mountPcbHero(root, opts = {}) {
   // the hero board is node 0; shadow nodes are placed along the view rays through their
   // configured spots, so they stay in frame whatever the hero's aspect ratio
   const nodes = [{ x: 0, y: 0, z: 0, yaw: 0, look: [1, 1, 0, 0], t0: 0 }].concat(shadowNodes.map((n, i) => ({
-    spec: n, x: 0, y: 0, z: 0, yaw: ((n.yaw || 0) * Math.PI) / 180, look: [1, 1, 0, cfg.shadowFade], t0: 0.37 + i * 0.61,
+    spec: n, x: 0, y: 0, z: 0, yaw: ((n.yaw || 0) * Math.PI) / 180, look: [1, cfg.shadowAlpha, 0, cfg.shadowFade], t0: 0.37 + i * 0.61,
   })));
   const haze = hexLinear(cfg.paper);
   function placeNodes(dist) {
