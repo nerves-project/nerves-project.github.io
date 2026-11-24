@@ -71,6 +71,7 @@ const CFG = {
   paper: '#f4efe4',   // the page colour; distant boards and unfocused plates fade into it
   ink: 1.6,           // fine ink line width in css px
   brush: 3.2,         // half-width of the brush line round the front board, css px
+  nodeBrush: 0.45,    // the boards in the distance, while the cluster is in focus: this much of it
   highlighter: '#d9ff3a',
   boil: 8,            // hand-drawn marks are re-drawn this many times a second (PAINT_WGSL matches)
   stickerHeight: 8.5, // project stickers float this far above the top plate (mm)
@@ -560,13 +561,16 @@ const MIP_WGSL = FULLSCREEN_VS + /* wgsl */ `
 @fragment fn fs(in: FsOut) -> @location(0) vec4f { return textureSample(src, smp, in.uv); }
 `;
 
-// Ink pass over the flat-shaded scene, front board only: fine lines where depth folds, normals
-// turn or one surface meets another, and a heavy brush line round the board's whole silhouette.
-// The boards in the distance get no ink. The canvas is transparent, so the page shows through.
+// Ink pass over the flat-shaded scene: fine lines where depth folds, normals turn or one
+// surface meets another, and a heavy brush line round the front board's whole silhouette.
+// The boards in the distance get no fine ink (too small, it speckles), only a lighter brush
+// round their outline while the cluster is in focus. The canvas is transparent, so the page
+// shows through.
 const COMPOSITE_WGSL = FULLSCREEN_VS + /* wgsl */ `
 @group(0) @binding(0) var sceneTex: texture_2d<f32>;
 @group(0) @binding(1) var gTex: texture_2d<f32>;
-@group(0) @binding(2) var<uniform> P: vec4f; // fine ink radius (px), brush half-width (px), -, -
+// fine ink radius (px), brush half-width (px), distant outline strength (0..1), its half-width (px)
+@group(0) @binding(2) var<uniform> P: vec4f;
 
 const INK = vec3f(0.016, 0.014, 0.013);
 
@@ -581,7 +585,8 @@ fn G(p: vec2i) -> vec4f {
   return textureLoad(gTex, clamp(p, vec2i(0), vec2i(textureDimensions(gTex)) - 1), 0);
 }
 fn front(g: vec4f) -> bool { return g.z > 0.0 && g.w > 0.0; }
-fn frontAt(p: vec2i) -> bool { return front(G(p)); }
+// mask 0: the front board; mask 1: any board at all, so the outline runs where boards meet paper
+fn occ(p: vec2i, m: i32) -> bool { let g = G(p); return select(front(g), g.z > 0.0, m == 1); }
 fn encode(c: f32) -> f32 {
   return select(1.055 * pow(c, 1.0 / 2.4) - 0.055, c * 12.92, c <= 0.0031308);
 }
@@ -605,6 +610,36 @@ const DIRS = array<vec2f, 16>(
   vec2f(0.0, 1.0), vec2f(-0.383, 0.924), vec2f(-0.707, 0.707), vec2f(-0.924, 0.383),
   vec2f(-1.0, 0.0), vec2f(-0.924, -0.383), vec2f(-0.707, -0.707), vec2f(-0.383, -0.924),
   vec2f(0.0, -1.0), vec2f(0.383, -0.924), vec2f(0.707, -0.707), vec2f(0.924, -0.383));
+
+// a brush line along a mask's silhouette: distance to the edge, a width that swells and thins
+// along it, and dry streaks running with the stroke toward its outer edge
+fn brushLine(px: vec2i, pf: vec2f, W: f32, m: i32, seed: f32) -> f32 {
+  let inside = occ(px, m);
+  let R = i32(ceil(W * 1.6));
+  var near = inside != occ(px + vec2i(1, 0), m) || inside != occ(px + vec2i(0, 1), m);
+  for (var k = 0; k < 16; k += 2) {
+    if (occ(px + vec2i(round(DIRS[k] * f32(R))), m) != inside) { near = true; }
+  }
+  if (!near) { return 0.0; }
+  var d = f32(R) + 1.0;
+  var nrm = vec2f(0.0);
+  for (var rr = 1; rr <= R; rr++) {
+    var hit = false;
+    for (var k = 0; k < 16; k++) {
+      if (occ(px + vec2i(round(DIRS[k] * f32(rr))), m) != inside) { hit = true; nrm += DIRS[k]; }
+    }
+    if (hit) { d = f32(rr) - 0.5; break; }
+  }
+  let wv = W * (0.5 + 0.95 * (vnoise(pf / (W * 18.0) + seed) * 0.7 + vnoise(pf / (W * 5.0) + 11.0 + seed) * 0.3));
+  let lim = select(wv, wv * 0.4, inside);   // the brush mostly rides outside the shape
+  var b = 1.0 - smoothstep(lim - 0.8, lim + 0.6, d);
+  let n = normalize(nrm + vec2f(1e-4, 0.0));
+  let t = vec2f(-n.y, n.x);
+  let q = vec2f(dot(pf, t) / (W * 7.0), dot(pf, n) / (W * 0.42));
+  let streak = vnoise(q + seed) * 0.7 + vnoise(q * 2.3 + 7.0 + seed) * 0.3;
+  b *= mix(1.0, smoothstep(0.2, 0.48, streak), smoothstep(lim * 0.3, lim, d) * select(1.0, 0.0, inside));
+  return b;
+}
 
 @fragment fn fs(in: FsOut) -> @location(0) vec4f {
   let px = vec2i(in.pos.xy);
@@ -635,34 +670,9 @@ const DIRS = array<vec2f, 16>(
     }
   }
 
-  // the brush: distance to the silhouette, a width that swells and thins along it, and dry
-  // streaks running with the stroke toward its outer edge
-  let W = P.y;
-  let R = i32(ceil(W * 1.6));
-  var near = false;
-  for (var k = 0; k < 16; k += 2) {
-    if (frontAt(px + vec2i(round(DIRS[k] * f32(R)))) != inside) { near = true; }
-  }
-  var brush = 0.0;
-  if (near || inside != frontAt(px + vec2i(1, 0)) || inside != frontAt(px + vec2i(0, 1))) {
-    var d = f32(R) + 1.0;
-    var nrm = vec2f(0.0);
-    for (var rr = 1; rr <= R; rr++) {
-      var hit = false;
-      for (var k = 0; k < 16; k++) {
-        if (frontAt(px + vec2i(round(DIRS[k] * f32(rr)))) != inside) { hit = true; nrm += DIRS[k]; }
-      }
-      if (hit) { d = f32(rr) - 0.5; break; }
-    }
-    let wv = W * (0.5 + 0.95 * (vnoise(pf / (W * 18.0)) * 0.7 + vnoise(pf / (W * 5.0) + 11.0) * 0.3));
-    let lim = select(wv, wv * 0.4, inside);   // the brush mostly rides outside the board
-    brush = 1.0 - smoothstep(lim - 0.8, lim + 0.6, d);
-    let n = normalize(nrm + vec2f(1e-4, 0.0));
-    let t = vec2f(-n.y, n.x);
-    let q = vec2f(dot(pf, t) / (W * 7.0), dot(pf, n) / (W * 0.42));
-    let streak = vnoise(q) * 0.7 + vnoise(q * 2.3 + 7.0) * 0.3;
-    brush *= mix(1.0, smoothstep(0.2, 0.48, streak), smoothstep(lim * 0.3, lim, d) * select(1.0, 0.0, inside));
-  }
+  // the heavy brush round the front board, and a lighter one round the boards in the distance
+  var brush = brushLine(px, pf, P.y, 0, 0.0);
+  if (P.z > 0.0 && !inside) { brush = max(brush, brushLine(px, pf, P.w, 1, 37.0) * P.z * 0.8); }
 
   let k = max(e, brush);
   let rgb = sc.rgb * (1.0 - k) + INK * k;
@@ -1337,7 +1347,7 @@ export async function mountPcbHero(root, opts = {}) {
   const runtimeInk = inkLin;
   const add = (a, b, k = 1) => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
   const hotW = items.map(() => 0);
-  const vis = { apps: 0, uplink: 0, links: 0 };
+  const vis = { apps: 0, uplink: 0, links: 0, nodes: 0 };
   // world anchors for the callouts and the 2D ink layer
   const geo = { stickers: [], stickerScreen: [], beam: null, cloud: null, links: [], slots: [] };
   const slots = (extras.slots || []).map((sl) => ({ ...sl, layer: slotLayer(sl), anchor: anchorOf(sl), w: 0 }));
@@ -1445,6 +1455,7 @@ export async function mountPcbHero(root, opts = {}) {
     const appI = ease('apps', focus === TOP ? 1 : focus < 0 ? 0.8 : 0.12);
     ease('uplink', focus === TOP ? 1 : focus < 0 ? 0.9 : 0.25);
     const linkI = ease('links', focus === RUNTIME ? 1 : focus < 0 ? 0.16 : 0.06);
+    ease('nodes', focus === RUNTIME ? 1 : 0); // the boards in the distance get an outline
     const R = state.camRight, U = state.camUp;
     const topY = state.y[TOP];
     const tTop = clocks[TOP], tRun = clocks[RUNTIME];
@@ -1754,7 +1765,8 @@ export async function mountPcbHero(root, opts = {}) {
     device.queue.writeBuffer(sceneUBO, 0, sceneData);
     // the brush line narrows a little on small heroes, where the board is small too
     const brush = cfg.brush * dpr * Math.min(1, Math.max(0.6, state.cssW / 1100));
-    device.queue.writeBuffer(compUBO, 0, new Float32Array([Math.max(1, Math.round(cfg.ink * dpr * 0.5)), brush, 0, 0]));
+    const nodeOutline = vis.nodes > 0.01 ? vis.nodes : 0;
+    device.queue.writeBuffer(compUBO, 0, new Float32Array([Math.max(1, Math.round(cfg.ink * dpr * 0.5)), brush, nodeOutline, Math.max(1, brush * cfg.nodeBrush)]));
 
     const enc = device.createCommandEncoder();
     const pass = enc.beginRenderPass({
