@@ -16,7 +16,7 @@
 {{/* ------------------------------------------------------------ tiers */}}
 <section class="sp-tiers" aria-label="Our sponsors">
   <div class="wrap sp-tiers__inner">
-    {{ range site.Data.sponsors.tiers }}
+    {{ range hugo.Data.sponsors.tiers }}
     {{ $tier := lower .name }}
     <div class="sp-tier sp-tier--{{ $tier }}">
       <h2 class="sp-tier__label"><span class="sp-tier__medal" aria-hidden="true"></span>{{ .name }}</h2>

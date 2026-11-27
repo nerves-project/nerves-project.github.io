@@ -271,7 +271,7 @@
       <a class="btn btn--ghost btn--sm" href="{{ relURL "sponsors/" }}">Become a sponsor</a>
     </div>
     <ul class="sponsor-strip">
-      {{ range site.Data.sponsors.tiers }}
+      {{ range hugo.Data.sponsors.tiers }}
         {{ range .sponsors }}
         <li><a href="{{ .url }}" title="{{ .name }}"><img src="{{ .logo }}" alt="{{ .name }}"{{ if .dim }} class="is-dim"{{ end }} loading="lazy"></a></li>
         {{ end }}

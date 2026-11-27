@@ -63,13 +63,13 @@
   }
 }
 
-@include below(1240px) {
+@include below(1360px) {
   .nav { gap: 18px; }
   .nav__link { font-size: 15px; }
   .site-header__left { gap: 28px; }
 }
 
-@include below(1140px) {
+@include below(1240px) {
   .site-header__burger { display: grid; }
   .site-header__github,
   .site-header__divider { display: none; }

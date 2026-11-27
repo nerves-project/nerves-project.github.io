@@ -28,6 +28,9 @@ svg,
 video { max-width: 100%; }
 img { height: auto; }
 
+// hidden means hidden, even for elements that set their own display
+[hidden] { display: none !important; }
+
 h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote, pre { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 
