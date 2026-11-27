@@ -33,12 +33,12 @@ export const PALETTE = {
 //   { text, at, size }  a label
 export const LAYER_SOURCES = [
   { cu: 'B.Cu', kind: 'outer', side: 'B', art: [
-    { square: 'Buildroot', at: [20, 25], size: 11,
-      callout: { name: 'Buildroot', text: 'Reliable, maintained, builds embedded Linux', at: [20, 25], size: 11 } },
+    { square: 'Buildroot', at: [26, 24], size: 12,
+      callout: { name: 'Buildroot', text: 'Reliable, maintained, builds embedded Linux', at: [26, 24], size: 12 } },
   ] },
   { cu: 'In2.Cu', kind: 'inner', art: [
-    { square: 'Linux', at: [11.5, 26.5], size: 10, callout: { name: 'Linux', text: 'I run Nerves actually..', at: [11.5, 26.5], size: 10 } },
-    { square: 'U-Boot', at: [38.5, 28], size: 10, callout: { name: 'U-Boot', text: 'The standard in booting embedded Linux', at: [38.5, 28], size: 10 } },
+    { square: 'Linux', at: [16, 25], size: 11, callout: { name: 'Linux', text: 'I run Nerves actually..', at: [16, 25], size: 11 } },
+    { square: 'U-Boot', at: [62, 26], size: 11, callout: { name: 'U-Boot', text: 'The standard in booting embedded Linux', at: [62, 26], size: 11 } },
   ] },
   { cu: 'In1.Cu', kind: 'inner' },
   { cu: 'F.Cu', kind: 'outer', side: 'F' },
@@ -265,18 +265,19 @@ function contactShadows(ctx, parts) {
 
 export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
   const { board } = data;
-  const size = Math.round(board.w * pxPerMm);
+  const width = Math.round(board.w * pxPerMm), height = Math.round(board.h * pxPerMm);
   const out = [];
 
   for (let li = 0; li < LAYER_SOURCES.length; li++) {
     const src = LAYER_SOURCES[li];
-    const albedo = new OffscreenCanvas(size, size);
-    const mat = new OffscreenCanvas(size, size);
+    const albedo = new OffscreenCanvas(width, height);
+    const mat = new OffscreenCanvas(width, height);
     const a = albedo.getContext('2d');
     const m = mat.getContext('2d');
     for (const c of [a, m]) {
       c.setTransform(pxPerMm, 0, 0, pxPerMm, 0, 0);
-      roundedRect(c, 0, 0, board.w, board.h, board.r);
+      // the board's own outline (with its slots) where the data has one
+      if (board.outline) { c.beginPath(); polyPath(c, board.outline); } else roundedRect(c, 0, 0, board.w, board.h, board.r);
       c.clip();
     }
     m.fillStyle = '#000';
@@ -336,5 +337,5 @@ export function buildLayerCanvases(data, pxPerMm, images = new Map()) {
 
     out.push({ albedo, mat });
   }
-  return { size, layers: out };
+  return { width, height, layers: out };
 }

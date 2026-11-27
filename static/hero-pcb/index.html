@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nerves stackup hero — prototype</title>
   <link rel="stylesheet" href="pcb-hero.css">
+  <link rel="stylesheet" href="nerves-demo.css">
   <style>
     html, body { margin: 0; background: #f4efe4; font-family: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
     .hero {
+      position: relative;
       display: grid;
       grid-template-columns: minmax(280px, 0.8fr) 1.6fr;
       min-height: min(760px, 100vh);
@@ -50,16 +52,19 @@
       <a href="#">Get started</a><a href="#">Features</a>
     </div>
     <div class="hero__stack" id="stack">
-      <p class="credit">Concept illustration using open hardware:
-        <a href="https://github.com/protolux-electronics/trellis_core">Trellis</a>.</p>
+      <p class="credit">The board is the Nerves Starter Kit, open hardware by
+        <a href="https://protolux.io">Protolux Electronics</a>.</p>
     </div>
   </header>
 
   <script type="module">
     import { mountPcbHero } from './pcb-hero.js';
+    import { mountNervesDemo } from './nerves-demo.js';
     const el = document.getElementById('stack');
     el.style.background = 'none';
     window.hero = await mountPcbHero(el, { dataUrl: './pcb.json', backdrop: './nerves-mark.svg' });
+    // "Try Me" on the board: Nerves boots in the page, and the terminal opens over the copy
+    window.demo = mountNervesDemo({ hero: window.hero, host: document.querySelector('.hero'), copy: document.querySelector('.hero__copy') });
   </script>
 </body>
 </html>

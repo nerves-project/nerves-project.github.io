@@ -1,8 +1,7 @@
 # Nerves stackup hero
 
-Interactive WebGPU hero (`static/hero-pcb/`) that renders the
-[Trellis Core](https://github.com/protolux-electronics/trellis_core) 4-layer board
-as an explodable stack, one copper layer per layer of Nerves:
+Interactive WebGPU hero (`static/hero-pcb/`) that renders the Nerves Starter Kit, a 4-layer
+board by Protolux Electronics, as an explodable stack, one copper layer per layer of Nerves:
 
 | Copper | Nerves layer |
 | ------ | ------------ |
@@ -15,7 +14,10 @@ Prototype page: `/hero-pcb/` (`static/hero-pcb/index.html`).
 
 ## How it's drawn
 
-- **Board**: WebGPU, plates and parts flat-shaded in three tones. An ink pass draws fine lines where
+- **Board**: WebGPU, plates and parts flat-shaded in three tones. The plates are textures drawn
+  from the KiCad board (`pcb.json`); the parts are the models of the board's STEP export
+  (`parts.bin`, loaded after the first frames, with plain boxes standing in until then and for
+  the boards in the distance). An ink pass draws fine lines where
   depth folds, normals turn or one surface meets another, and a heavy brush line round the front
   board's whole silhouette (from a small g-buffer). The boards in the distance get no ink; they fade
   toward the paper colour.
@@ -29,21 +31,71 @@ Prototype page: `/hero-pcb/` (`static/hero-pcb/index.html`).
   nothing is focused), so only that layer's marks wobble (`boil`, 8 times a second) and move. With
   reduced motion every clock stops.
 
-## Regenerating the board data
+## The live demo
+
+A "Try Me" sign points at one of the board's buttons. Clicking it (or the button) starts
+[jsnerves](https://github.com/lawik/jsnerves): a RISC-V machine emulated in WebAssembly that
+runs a Nerves firmware, restored from a snapshot so it is at the IEx prompt as soon as it has
+downloaded (about 40 MB, fetched only on that click).
+
+- `nerves-demo.js` opens a panel over the hero's left side (on small screens, in place of the
+  copy above the board): a progress bar while the firmware downloads, then the terminal.
+- `pcb-hero.js` (`setDemo`) smacks the plates together into one board, turns the camera top
+  down and takes everything explanatory away. The board's own parts are the machine's hardware
+  (`DEMO_BOARD`):
+
+  | Part | In the demo |
+  | ---- | ----------- |
+  | SW1, SW4 (push buttons) | `BUTTON_1`, `BUTTON_2`: GPIO inputs, 1 while held |
+  | SW3 (slide switch) | `BUTTON_3`, stays where it is put |
+  | D18 (white) | power: lit while the machine runs |
+  | D2 (green), D3 (red) | `LED_READY`, `LED_SLOT_A`, driven by the firmware |
+  | U12 (TMP103) | an I2C temperature sensor at `0x70`; a slider on the board sets what it reads |
+
+  The firmware's frame-rate sensor (I2C `0x10`, `WebDemoNerves.Board.fps()`) is there too; it
+  has no part. `LED_SLOT_B` has no LED on this board.
+- Without WebGPU the terminal still opens, with the LEDs and buttons in a strip under it.
+- The log is attached to the console when the prompt is ready (`RingLogger.attach()`), so that
+  a button press shows at once.
+
+`static/hero-pcb/vm/` is a copy of what jsnerves serves (emulator, `nerves-vm.js`, `board.js`,
+terminal, OpenSBI, U-Boot, the disk image in blocks and its snapshot). Update it from a jsnerves
+checkout, after `extract_firmware.sh` there has made a new image:
 
 ```sh
-git clone https://github.com/protolux-electronics/trellis_core /tmp/trellis_core
-python3 tools/pcb-hero/extract_kicad.py /tmp/trellis_core/src/trellis_core.kicad_pcb static/hero-pcb/pcb.json
+tools/pcb-hero/sync_jsnerves.sh ../jsnerves
 ```
 
-Only the Python standard library is needed.
+The script points `nerves.cfg` at `/hero-pcb/vm/disk/...`: the emulator resolves the disk image
+against the page, not against the configuration file, so the copy has to name it from the site
+root. `vm/VERSION` records the jsnerves commit. The firmware is
+[web-demo-nerves](https://github.com/lawik/web-demo-nerves) on
+[nerves_system_jslinux](https://github.com/underjord/nerves_system_jslinux); the emulator is
+built from [TinyEMU](https://github.com/lawik/TinyEMU) (branch `emscripten-modern`, MIT).
+
+## Regenerating the board data
+
+From the board's KiCad file and its STEP export (File > Export > STEP in KiCad's board editor):
+
+```sh
+python3 tools/pcb-hero/extract_kicad.py nsk.kicad_pcb static/hero-pcb/pcb.json
+pip install cadquery-ocp numpy
+python3 tools/pcb-hero/extract_step.py nsk.step static/hero-pcb/parts.bin --cache /tmp/nsk
+```
+
+`extract_kicad.py` needs only the Python standard library. `extract_step.py` tessellates every
+part of the STEP assembly with its colours (reading a 60 MB STEP file takes about ten minutes;
+`--cache` keeps the result), leaves out the board itself and writes one mesh. Parts and models
+are matched by position, so the two files have to be of the same board revision. Positions in
+`pcb-hero.js` (`DEFAULT_EXTRAS`, `DEMO_BOARD`, `CFG.ports`) and `textures.js` (`LAYER_SOURCES`)
+are board millimetres or references of this board.
 
 ## Attribution
 
-Trellis Core is Copyright 2025 Protolux Electronics, licensed under CERN-OHL-P v2.
-Modification: the board geometry is converted to JSON and the Protolux Electronics
-logo (board-level silkscreen) is left out, per the repository's trademark notice, as is the
-TRELLIS CORE wordmark.
+The Nerves Starter Kit ("Sprout" v0.2) is Copyright 2025 Protolux Electronics, designed by
+Gus Workman, licensed under CERN-OHL-S v2 and shown here with permission. `pcb.json` and
+`parts.bin` are converted from its design files: the board's copper, pads, silkscreen (with
+the Protolux Electronics and Nerves marks on it) and part models, nothing redrawn.
 
 ### Logos
 
@@ -65,7 +117,7 @@ The project logos are shown as stickers floating over their parts.
 
 The System and Tooling layers mark Linux, U-Boot and Buildroot with plain named squares, not logos.
 
-The hero page credits Trellis below the illustration.
+The hero page credits the board below the illustration.
 
 ### Font
 

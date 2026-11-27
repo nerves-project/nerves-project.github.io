@@ -4,8 +4,19 @@
 // Usage:
 //   import { mountPcbHero } from './pcb-hero.js';
 //   mountPcbHero(document.querySelector('#hero-stack'), { dataUrl: '/hero-pcb/pcb.json' });
-// Options: dataUrl or data, layers, extras, config, pxPerMm, and backdrop: an image URL drawn
-// faded behind the board, centred on it and fitted inside the hero.
+// Options: dataUrl or data, layers, extras, config, pxPerMm, backdrop: an image URL drawn
+// faded behind the board, centred on it and fitted inside the hero, demo: the live demo's
+// hardware (DEMO_BOARD, or false for none), and partsUrl: the modelled parts (parts.bin beside
+// this module; false for boxes only).
+//
+// The live demo (nerves-demo.js drives it): the board carries buttons, LEDs and a sensor, and a
+// "Try Me" sign points at one of the buttons. The returned object has
+//   onTry              called when the sign or a demo button is clicked
+//   setDemo(on)        the plates smack together, the board turns top down and everything
+//                      explanatory goes away; the buttons and the sensor can then be used
+//   demoInset          css px on the hero's left that something covers while the demo is on
+//   setLed(name, on)   light an LED;  onButton(name, pressed)  a button is held or let go
+//   sensorValue()      what the sensor's slider is set to;  onSensor(value)  it was moved
 
 import { buildLayerCanvases, LAYER_SOURCES } from './textures.js';
 import { drawLogo } from './logos.js';
@@ -24,35 +35,65 @@ export const DEFAULT_EXTRAS = {
   // mark in logos.js (drawn in the accent), `image` a logo file; `float` overrides how high the
   // sticker floats (mm). Accents are the brand colours.
   apps: [
-    { name: 'Phoenix', text: 'Web services', part: 'J1', logo: 'phoenix', accent: '#f05423' },
-    { name: 'Membrane', text: 'Media processing and streaming', at: [37, 33], size: [7, 7], logo: 'membrane', accent: '#87cce8', float: 6 },
-    { name: 'Nx', text: 'Inference at the edge', part: 'U3', logo: 'nx', accent: '#b58491' },
-    { name: 'BEAM Bots', text: 'Declarative robotics', at: [8.5, 24], size: [6, 7], image: 'logos/beam-bots.svg', accent: '#af4bf9' },
-    { name: 'Elixir Circuits', text: 'GPIO, SPI, I2C, UART, the usual suspects', at: [46.5, 9], size: [5.5, 5.5], image: 'logos/elixir-circuits.png', accent: '#6b5487' },
+    { name: 'Phoenix', text: 'Web services', part: 'J1', logo: 'phoenix', accent: '#f05423', float: 14 },
+    { name: 'Membrane', text: 'Media processing and streaming', part: 'J2', logo: 'membrane', accent: '#87cce8' },
+    { name: 'Nx', text: 'Inference at the edge', part: 'U5', logo: 'nx', accent: '#b58491' },
+    { name: 'BEAM Bots', text: 'Declarative robotics', part: 'J5', image: 'logos/beam-bots.svg', accent: '#af4bf9' },
+    { name: 'Elixir Circuits', text: 'GPIO, SPI, I2C, UART, the usual suspects', part: 'U15', image: 'logos/elixir-circuits.png', accent: '#6b5487' },
   ],
   // technology slots, on the layer named by its copper (board mm; size is x by y)
   slots: [
-    { layer: 'In1.Cu', name: 'VintageNet', text: 'Networking APIs from Elixir', at: [9, 44], size: [9, 4.2] },
-    { layer: 'In1.Cu', name: 'RingLogger', text: 'Flash-safe, memory-resilient logging', at: [20, 44], size: [9, 4.2] },
-    { layer: 'In1.Cu', name: 'fwup', text: 'A/B updates and recovery', at: [31, 44], size: [9, 4.2] },
-    { layer: 'In1.Cu', name: 'Nerves Heart', text: 'Watchdog for Erlang itself', at: [44.5, 40], size: [4.2, 9] },
-    { layer: 'In1.Cu', name: 'Watchdog', text: 'Integrate heart with your hardware watchdog', at: [44.5, 29.5], size: [4.2, 9] },
-    { layer: 'In1.Cu', name: 'KV store', text: 'Critical information, kept sanely', at: [44.5, 19], size: [4.2, 9] },
-    { layer: 'In1.Cu', name: 'PubSub', text: 'Convenience without infrastructure', at: [44.5, 9.5], size: [4.2, 9] },
-    { layer: 'In2.Cu', name: 'SquashFS/EroFS', text: 'Read-only root filesystem', at: [8, 43], size: [9.5, 4.2] },
-    { layer: 'In2.Cu', name: 'Data partition', text: 'Separate data and system', at: [18.5, 43], size: [9.5, 4.2] },
-    { layer: 'In2.Cu', name: 'A/B partitions', text: 'Safe updates', at: [29, 43], size: [9.5, 4.2] },
-    { layer: 'In2.Cu', name: 'Minimal OS', text: 'Small attack surface, low complexity', at: [39.5, 43], size: [9.5, 4.2] },
-    { layer: 'B.Cu', name: 'Mix tooling', text: 'Integrates with standard Elixir tooling', at: [44.5, 29], size: [4.2, 10] },
-    { layer: 'B.Cu', name: 'fwup', text: 'Builds firmware and updates devices', at: [44.5, 40.5], size: [4.2, 10] },
+    { layer: 'In1.Cu', name: 'VintageNet', text: 'Networking APIs from Elixir', at: [10, 44], size: [10, 4.2] },
+    { layer: 'In1.Cu', name: 'RingLogger', text: 'Flash-safe, memory-resilient logging', at: [22.5, 44], size: [10, 4.2] },
+    { layer: 'In1.Cu', name: 'fwup', text: 'A/B updates and recovery', at: [35, 44], size: [10, 4.2] },
+    { layer: 'In1.Cu', name: 'Nerves Heart', text: 'Watchdog for Erlang itself', at: [74.5, 40], size: [4.2, 9] },
+    { layer: 'In1.Cu', name: 'Watchdog', text: 'Integrate heart with your hardware watchdog', at: [74.5, 29.5], size: [4.2, 9] },
+    { layer: 'In1.Cu', name: 'KV store', text: 'Critical information, kept sanely', at: [74.5, 19], size: [4.2, 9] },
+    { layer: 'In1.Cu', name: 'PubSub', text: 'Convenience without infrastructure', at: [74.5, 9.5], size: [4.2, 9] },
+    { layer: 'In2.Cu', name: 'SquashFS/EroFS', text: 'Read-only root filesystem', at: [12, 43], size: [11, 4.2] },
+    { layer: 'In2.Cu', name: 'Data partition', text: 'Separate data and system', at: [25, 43], size: [11, 4.2] },
+    { layer: 'In2.Cu', name: 'A/B partitions', text: 'Safe updates', at: [38, 43], size: [11, 4.2] },
+    { layer: 'In2.Cu', name: 'Minimal OS', text: 'Small attack surface, low complexity', at: [51, 43], size: [11, 4.2] },
+    { layer: 'B.Cu', name: 'Mix tooling', text: 'Integrates with standard Elixir tooling', at: [74.5, 29], size: [4.2, 10] },
+    { layer: 'B.Cu', name: 'fwup', text: 'Builds firmware and updates devices', at: [74.5, 40.5], size: [4.2, 10] },
   ],
-  uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', part: 'U5', accent: '#2f9fc4', down: '#3aa86b' },
+  // NervesHub is reached over the radio: its puffs come and go at the board's antenna
+  uplink: { name: 'NervesHub', text: 'Over-the-air updates and fleet management', at: [5.6, 20.5], size: [6, 14], accent: '#2f9fc4', down: '#3aa86b' },
   cluster: {
     name: 'Erlang distribution',
     text: 'Processes message each other across devices',
     nodes: ['nerves@nerves-4f2a.local', 'nerves@nerves-91c3.local', 'nerves@nerves-0b7e.local'],
   },
 };
+
+// The live demo's hardware: which of the board's own parts stand for the GPIO lines and the
+// I2C sensor of the emulated machine (vm/board.js, nerves-demo.js). `part` is a board reference.
+export const DEMO_BOARD = {
+  buttons: [
+    { name: 'BUTTON_1', label: '1', part: 'SW1' },
+    { name: 'BUTTON_2', label: '2', part: 'SW4' },
+    { name: 'BUTTON_3', label: '3', part: 'SW3', toggle: true },   // the slide switch stays where it is put
+  ],
+  leds: [
+    { name: 'power', part: 'D18', color: '#fff1c4' },   // on VBUS on the real board too
+    { name: 'ready', part: 'D2', color: '#30d158' },
+    { name: 'slotA', part: 'D3', color: '#ff3b30' },
+  ],
+  // the TMP103 by the board's thermal slot
+  sensor: { name: 'temp', part: 'U12', title: 'TMP103', unit: '°C', min: -10, max: 60, value: 23 },
+  try: 'BUTTON_1',     // the button the "Try Me" sign points at
+};
+
+// the board data with the demo's parts marked
+function withDemoParts(data, demo) {
+  if (!demo) return data;
+  const parts = data.parts.map((p) => ({ ...p }));
+  for (const d of [...demo.buttons, ...demo.leds, ...(demo.sensor ? [demo.sensor] : [])]) {
+    const p = parts.find((q) => q.ref === d.part);
+    if (p) p.demo = d.name;
+  }
+  return { ...data, parts };
+}
 
 const INK_HEX = '#26221f';
 const PAINT_PEN = '#fbfaf2';
@@ -62,7 +103,7 @@ const CFG = {
   gapIdle: 2.6,       // gap between plates at rest
   gapOpen: 8,         // gap when the pointer is over the hero
   lift: 14,           // extra lift for plates above the focused one
-  azimuth: 38,        // degrees, camera swung toward the right
+  azimuth: -40,       // degrees, camera swung toward the left, where the buttons show
   elevation: 27,      // degrees above the board plane (isometric is ~35)
   fov: 20,
   labelColumn: 300,   // css px reserved to the right for callouts
@@ -85,7 +126,7 @@ const CFG = {
   ],
   shadowFade: 0.62,   // how far the boards in the distance fade into the paper
   shadowAlpha: 0.78,  // and how much of the page behind them shows through
-  ports: [[22, 34], [31, 31], [36, 22]], // where cluster links land on the runtime plate (board mm)
+  ports: [[30, 36], [46, 33], [62, 22]], // where cluster links land on the runtime plate (board mm)
 };
 
 // ---------------------------------------------------------------------------
@@ -98,14 +139,14 @@ const v3 = {
   norm: (a) => { const l = Math.hypot(...a); return [a[0] / l, a[1] / l, a[2] / l]; },
 };
 
-function perspective(fovy, aspect, near, far, shiftX = 0) {
+function perspective(fovy, aspect, near, far, shiftX = 0, shiftY = 0) {
   const f = 1 / Math.tan(fovy / 2);
   const nf = 1 / (near - far);
-  // shiftX moves the image horizontally in NDC (lens shift) without rotating the camera
+  // shiftX and shiftY move the image in NDC (lens shift) without rotating the camera
   return new Float32Array([
     f / aspect, 0, 0, 0,
     0, f, 0, 0,
-    -shiftX, 0, far * nf, -1,
+    -shiftX, -shiftY, far * nf, -1,
     0, 0, far * near * nf, 0,
   ]);
 }
@@ -188,7 +229,7 @@ struct Scene {
   params: vec4f,   // time, explode 0..1, slab thickness, pulse period
   params2: vec4f,  // pulse speed, top-layer pulse colour (rgb)
   accents: array<vec4f, 4>,
-  motion: vec4f,   // x: 1 animated, 0 reduced motion
+  motion: vec4f,   // x: 1 animated, 0 reduced motion; y: the live demo, 0..1
   clock: vec4f,    // per-layer time: only the active layer's clock runs
 };
 @group(0) @binding(0) var<uniform> S: Scene;
@@ -344,17 +385,68 @@ struct VOut {
   let v = normalize(S.camPos.xyz - in.wp);
   let li = in.layer;
   var base = in.col.rgb;
-  if (in.mat.z > 0.5) {
-    // status LED: a slow heartbeat between off and lit, in flat colour
+  if (in.mat.z > 0.5 && in.mat.z < 1.5) {
+    // status LED: a slow heartbeat between off and lit, in flat colour; the live demo drives
+    // its LEDs itself
     let t = fract(S.clock[3] * 0.6);
     let still = S.motion.x < 0.5 || NODE.look.w > 0.0;
     let beat = select(exp(-t * 18.0) + 0.6 * exp(-max(t - 0.18, 0.0) * 18.0) * step(0.18, t), 1.0, still);
-    base = mix(base, S.accents[3].rgb * 1.2 + vec3f(0.15), clamp(beat, 0.0, 1.0));
+    base = mix(base, S.accents[3].rgb * 1.2 + vec3f(0.15), clamp(beat, 0.0, 1.0) * (1.0 - S.motion.y));
   }
-  let col = toon(base, normalize(in.n), v, in.mat.y, in.mat.x);
+  // mat.w: a lit LED of the demo, in flat colour
+  let col = mix(toon(base, normalize(in.n), v, in.mat.y, in.mat.x), base, in.mat.w);
   var o: FragOut;
   o.color = finish(mix(paper(), col, S.dim[li]));
   o.g = gbuf(in.n, in.wp, in.id);
+  return o;
+}
+`;
+
+// The parts as modelled (parts.bin, from the board's STEP export): one mesh in board mm, flat
+// colours from the models. A demo part is drawn on its own with a Part of its own, which moves,
+// tints or lights what is above a height: a button's cap, a switch's knob, an LED's lens.
+const MESH_WGSL = SCENE_WGSL + /* wgsl */ `
+struct Part {
+  shift: vec4f,  // offset (scene mm) for what is above the height
+  tint: vec4f,   // rgb, how much of it
+  prm: vec4f,    // half board width, half board height, the height (mm above the board), lit 0..1
+};
+@group(2) @binding(0) var<uniform> PART: Part;
+
+struct VOut {
+  @builtin(position) pos: vec4f,
+  @location(0) n: vec3f,
+  @location(1) wp: vec3f,
+  @location(2) col: vec3f,
+  @location(3) @interpolate(flat) id: f32,
+  @location(4) lit: f32,
+};
+
+@vertex fn vs(@location(0) p: vec4i, @location(1) n: vec4f, @location(2) c: vec4f) -> VOut {
+  let q = vec3f(p.xyz) / 100.0;   // board mm: x, y down the board, z up from its top face
+  let above = step(PART.prm.z, q.z);
+  let lp = vec3f(q.x - PART.prm.x, S.layerY[3] + q.z, q.y - PART.prm.y) + PART.shift.xyz * above;
+  let wp = toWorld(lp);
+  var o: VOut;
+  o.pos = S.viewProj * vec4f(wp, 1.0);
+  o.n = rotY(vec3f(n.x, n.z, n.y));
+  o.wp = wp;
+  o.col = mix(pow(c.rgb, vec3f(2.2)), PART.tint.rgb, PART.tint.w * above);
+  o.id = fract(f32(p.w) * 0.6180339 + 0.17);
+  o.lit = PART.prm.w * above;
+  return o;
+}
+
+@fragment fn fs(in: VOut, @builtin(front_facing) front: bool) -> FragOut {
+  let v = normalize(S.camPos.xyz - in.wp);
+  let n = normalize(in.n) * select(-1.0, 1.0, front);
+  // bright and grey is metal: pins, cans, shells
+  let hi = max(in.col.r, max(in.col.g, in.col.b)); let lo = min(in.col.r, min(in.col.g, in.col.b));
+  let metal = smoothstep(0.25, 0.45, hi) * (1.0 - smoothstep(0.08, 0.2, hi - lo));
+  let col = mix(toon(in.col, n, v, metal, mix(0.6, 0.28, metal)), in.col, in.lit);
+  var o: FragOut;
+  o.color = finish(mix(paper(), col, S.dim[3]));
+  o.g = gbuf(n, in.wp, in.id);
   return o;
 }
 `;
@@ -401,7 +493,7 @@ struct VOut {
   // the focused layer shows its signals; the top layer keeps a few going at rest
   let focus = S.focus[in.layer];
   let rest = select(0.0, 0.55, in.layer == 3u) * clamp((S.dim[in.layer] - 0.5) * 2.0, 0.0, 1.0);
-  let a = dash * core * max(focus, rest) * NODE.look.y * (1.0 - NODE.look.w);
+  let a = dash * core * max(focus, rest) * NODE.look.y * (1.0 - NODE.look.w) * (1.0 - S.motion.y);
   // the top layer's signals take the colour of the hovered project
   let col = select(S.accents[in.layer].rgb, S.params2.yzw, in.layer == 3u);
   var o: FragOut;
@@ -735,13 +827,22 @@ function buildCube() {
   return new Float32Array(v);
 }
 
+const USBC_HEIGHT = 6.4;
+// the slide switch: its knob's place along it (mm) as a box; on the model, the knob is what is
+// above knobFrom of its height and travels `travel`
+const SLIDE = { body: 3.2, off: -1.5, on: 1.5, knobFrom: 0.7, travel: 2 };
+const LED_LENS = '#e8f4ff';
+// a demo button's cap: as a box (up, pressed: its height) and on the model (the top `depth` mm, going down `travel`)
+const BUTTON_CAP = { color: '#f2c230', down: '#c9961c', up: 0.6, pressed: 0.25, depth: 0.5, travel: 0.18 };
+
 function buildParts(data) {
   const C = (hex) => hexLinear(hex);
   const out = [];
-  const half = data.board.w / 2;
+  const dyn = {};   // demo parts: the instance the demo changes (a button's cap, an LED's body)
+  const halfW = data.board.w / 2, halfH = data.board.h / 2;
   // x, z are board-space mm; y is height above the plate
   const box = (x, z, y, sx, sy, sz, rot, col, { rough = 0.5, metal = 0, emit = 0, blink = 0 } = {}) =>
-    out.push(x - half, y, z - half, rot, sx, sy, sz, 3, col[0], col[1], col[2], emit, rough, metal, blink, 0);
+    out.push(x - halfW, y, z - halfH, rot, sx, sy, sz, 3, col[0], col[1], col[2], emit, rough, metal, blink, 0) / 16 - 1;
   const local = (p, lx, ly) => {
     const a = (p.rot * Math.PI) / 180;
     return [p.x + lx * Math.cos(a) + ly * Math.sin(a), p.y - lx * Math.sin(a) + ly * Math.cos(a)];
@@ -750,33 +851,86 @@ function buildParts(data) {
   const chip = (p, bodyCol, ht, opts = {}) => {
     const rot = (p.rot * Math.PI) / 180;
     const term = p.w * 0.22;
-    box(p.x, p.y, 0, p.w - term * 2 + 0.02, ht, p.h * 0.98, rot, bodyCol, opts);
+    const body = box(p.x, p.y, 0, p.w - term * 2 + 0.02, ht, p.h * 0.98, rot, bodyCol, opts);
+    if (p.demo) dyn[p.demo] = body;
     for (const s of [-1, 1]) {
       const [x, z] = local(p, s * (p.w / 2 - term / 2), 0);
       box(x, z, 0, term, ht * 1.02, p.h, rot, tin, { rough: 0.3, metal: 1 });
     }
   };
+  const ranges = {};   // ref -> [first instance, one past the last]
   for (const p of data.parts) {
     const rot = (p.rot * Math.PI) / 180;
+    const first = out.length / 16;
+    ranges[p.ref] = [first, first];
     switch (p.kind) {
       case 'cap': chip(p, C('#a88660'), Math.min(p.h * 0.95, 0.9), { rough: 0.55 }); break;
       case 'res': chip(p, C('#141414'), p.h * 0.7, { rough: 0.6 }); break;
       case 'fuse': chip(p, C('#1c1c1c'), p.h * 0.6, { rough: 0.6 }); break;
       case 'led':
-        chip(p, C('#e8f4ff'), 0.6, { rough: 0.25, emit: 7, blink: 1 });
+        // one LED has a heartbeat in the hero (blink 1); the others are dark until the demo lights them
+        chip(p, C(LED_LENS), 0.6, { rough: 0.25, emit: 7, blink: p.demo && p.demo !== 'ready' ? 2 : 1 });
         break;
+      case 'diode': chip(p, C('#18181a'), Math.min(p.h * 0.8, 0.9), { rough: 0.6 }); break;
+      case 'fpc': {
+        // flat-flex connector: a pale body with a dark latch along its mouth
+        box(p.x, p.y, 0, p.w, 1.9, p.h * 0.62, rot, C('#e6dfcc'), { rough: 0.6 });
+        const [x, z] = local(p, 0, -p.h * 0.36);
+        box(x, z, 0, p.w * 0.94, 1.5, p.h * 0.2, rot, C('#2a2826'), { rough: 0.6 });
+        break;
+      }
+      case 'jst': {
+        // a cream shrouded header, its pins inside
+        const ht = p.vertical ? 4.2 : p.pins <= 2 ? 4.8 : 2.9;
+        box(p.x, p.y, 0, p.w, ht, p.h, rot, C('#ece4cf'), { rough: 0.65 });
+        if (p.vertical) box(p.x, p.y, ht, p.w * 0.78, 0.04, p.h * 0.5, rot, C('#3a3632'), { rough: 0.9 });
+        break;
+      }
+      case 'socket': {
+        // 2.54 mm socket: a tall black body with a hole for every pin
+        box(p.x, p.y, 0, p.w, 8.5, p.h, rot, C('#1d1d1f'), { rough: 0.6 });
+        const rows = 2, n = Math.round((p.pins || 2) / rows);
+        for (let r = 0; r < rows; r++) for (let i = 0; i < n; i++) {
+          const [x, z] = local(p, (r - (rows - 1) / 2) * 2.54, (i - (n - 1) / 2) * 2.54);
+          box(x, z, 8.5, 1.0, 0.04, 1.0, rot, C('#050505'), { rough: 0.9 });
+        }
+        break;
+      }
+      case 'slide': {
+        // slide switch: a metal body, its knob on top to one side
+        box(p.x, p.y, 0, p.w, SLIDE.body, p.h * 0.94, rot, C('#c4c6c8'), { rough: 0.3, metal: 1 });
+        const [x, z] = local(p, 0, SLIDE.off);
+        const knob = box(x, z, SLIDE.body, p.w * 0.5, 1.7, 2.0, rot, C('#151515'), { rough: 0.5 });
+        if (p.demo) dyn[p.demo] = knob;
+        break;
+      }
+      case 'module': {
+        // radio module: its own little board under a shield can
+        box(p.x, p.y, 0, p.w, 0.8, p.h, rot, C('#1f4f37'), { rough: 0.7 });
+        box(p.x, p.y, 0.8, p.w * 0.86, 1.5, p.h * 0.84, rot, C('#cdd0d2'), { rough: 0.28, metal: 1 });
+        break;
+      }
       case 'ind': box(p.x, p.y, 0, p.w, 1.0, p.h, rot, C('#4a4a4c'), { rough: 0.7 }); break;
       case 'xtal': box(p.x, p.y, 0, p.w, 0.7, p.h, rot, C('#c4c6c8'), { rough: 0.3, metal: 1 }); break;
       case 'button': {
         box(p.x, p.y, 0, p.w, 0.9, p.h, rot, C('#b8babc'), { rough: 0.35, metal: 1 });
-        const s = Math.min(p.w, p.h) * 0.5;
-        box(p.x, p.y, 0.9, s, 0.45, s, rot, C('#151515'), { rough: 0.4 });
+        // the demo's buttons have a yellow cap, to be found and pressed
+        const s = Math.min(p.w, p.h) * (p.demo ? 0.62 : 0.5);
+        const cap = box(p.x, p.y, 0.9, s, p.demo ? BUTTON_CAP.up : 0.45, s, rot, C(p.demo ? BUTTON_CAP.color : '#151515'), { rough: 0.4 });
+        if (p.demo) dyn[p.demo] = cap;
+        break;
+      }
+      case 'sensor': {
+        // a little metal can with its port
+        box(p.x, p.y, 0, p.w, 0.95, p.h, rot, C('#d2d4d6'), { rough: 0.25, metal: 1 });
+        const [x, z] = local(p, p.w * 0.22, -p.h * 0.22);
+        box(x, z, 0.95, 0.7, 0.04, 0.7, rot, C('#101010'), { rough: 0.9 });
         break;
       }
       case 'usbc': {
-        box(p.x, p.y, 0, p.w, 3.2, p.h, rot, C('#cfd1d3'), { rough: 0.22, metal: 1 });
-        const [x, z] = local(p, 0, p.h / 2);
-        box(x, z, 0.6, p.w * 0.78, 2.0, 0.05, rot, C('#050505'), { rough: 0.9 });
+        // an upright receptacle: the plug goes in from above
+        box(p.x, p.y, 0, p.w, USBC_HEIGHT, p.h * 0.64, rot, C('#cfd1d3'), { rough: 0.22, metal: 1 });
+        box(p.x, p.y, USBC_HEIGHT, p.w * 0.86, 0.04, p.h * 0.36, rot, C('#050505'), { rough: 0.9 });
         break;
       }
       case 'ic': {
@@ -793,16 +947,17 @@ function buildParts(data) {
         break;
       }
     }
+    ranges[p.ref][1] = out.length / 16;
   }
-  return new Float32Array(out);
+  return { data: new Float32Array(out), dyn, ranges };
 }
 
 function buildPulses(data, layerDefs) {
   const out = [];
   layerDefs.forEach((L, li) => {
     for (const [x1, y1, x2, y2, w, d0, d1] of data.tracks[L.cu] || []) {
-      const h = data.board.w / 2;
-      out.push(x1 - h, y1 - h, x2 - h, y2 - h, w, d0, d1, li);
+      const hx = data.board.w / 2, hz = data.board.h / 2;
+      out.push(x1 - hx, y1 - hz, x2 - hx, y2 - hz, w, d0, d1, li);
     }
   });
   return new Float32Array(out);
@@ -896,13 +1051,72 @@ export async function mountPcbHero(root, opts = {}) {
   }
   root.append(canvas, ink, svg, list, tagBox);
 
+  // --- the live demo: a "Try Me" sign, and controls over the board's buttons and sensor
+  const demo = opts.demo === false ? null : opts.demo || DEMO_BOARD;
+  const api = {
+    el: root, demo, fallback: false, demoInset: 0,
+    onTry: null, onButton: null, onSensor: null,
+    setDemo() {}, setLed() {}, sensorValue: () => null, setFocus() {}, destroy() {},
+  };
+  const trySign = document.createElement('button');
+  trySign.type = 'button';
+  trySign.className = 'pcb-hero__try';
+  trySign.textContent = 'Try Me';
+  trySign.setAttribute('aria-label', 'Try Me: start a live Nerves demo');
+  trySign.addEventListener('click', () => api.onTry?.());
+  const controls = document.createElement('div');
+  controls.className = 'pcb-hero__controls';
+  const hold = (name, down) => { if (held[name] !== down) { held[name] = down; api.onButton?.(name, down); pressButton(name, down); } };
+  const held = {};
+  let pressButton = () => {};
+  const buttonEls = (demo?.buttons || []).map((b) => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'pcb-hero__button';
+    el.setAttribute('aria-label', `Button ${b.label}`);
+    if (b.toggle) {
+      // a switch: every click or key press flips it
+      el.setAttribute('aria-label', `Switch ${b.label}`);
+      el.setAttribute('aria-pressed', 'false');
+      el.addEventListener('pointerdown', (e) => e.preventDefault());
+      el.addEventListener('click', () => { hold(b.name, !held[b.name]); el.setAttribute('aria-pressed', String(!!held[b.name])); });
+    } else {
+      // the pointer holds it down; from the keyboard, space and enter do
+      el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.setPointerCapture?.(e.pointerId); hold(b.name, true); });
+      for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(t, () => hold(b.name, false));
+      el.addEventListener('keydown', (e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); hold(b.name, true); } });
+      el.addEventListener('keyup', (e) => { if (e.key === ' ' || e.key === 'Enter') hold(b.name, false); });
+      el.addEventListener('blur', () => hold(b.name, false));
+    }
+    controls.appendChild(el);
+    return el;
+  });
+  let sensorEl = null, sensorOut = null;
+  if (demo?.sensor) {
+    const sn = demo.sensor;
+    sensorEl = document.createElement('div');
+    sensorEl.className = 'pcb-hero__sensor';
+    sensorEl.innerHTML = `<label><span class="pcb-hero__sensor-name"></span><output>–</output>
+      <input type="range" min="${sn.min}" max="${sn.max}" step="1" value="${sn.value ?? sn.min}"></label>`;
+    sensorEl.querySelector('.pcb-hero__sensor-name').textContent = sn.title;
+    sensorOut = sensorEl.querySelector('output');
+    const range = sensorEl.querySelector('input');
+    range.setAttribute('aria-label', `${sn.title}: set what it reads`);
+    const show = () => { sensorOut.textContent = `${range.value} ${sn.unit}`; };
+    range.addEventListener('input', () => { show(); api.onSensor?.(Number(range.value)); });
+    show();
+    api.sensorValue = () => Number(range.value);
+    controls.appendChild(sensorEl);
+  }
+  if (demo) root.append(trySign, controls);
+
   if (!navigator.gpu) return fail('WebGPU is not available in this browser.');
   const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
   if (!adapter) return fail('No WebGPU adapter.');
   const device = await adapter.requestDevice();
 
   const dataPromise = opts.data ? Promise.resolve(opts.data) : fetch(opts.dataUrl || new URL('./pcb.json', import.meta.url)).then((r) => r.json());
-  const data = await dataPromise;
+  const data = withDemoParts(await dataPromise, demo);
 
   // --- canvas: transparent, premultiplied over the page
   const ctx = canvas.getContext('webgpu');
@@ -910,7 +1124,7 @@ export async function mountPcbHero(root, opts = {}) {
   ctx.configure({ device, format: outFormat, alphaMode: 'premultiplied' });
 
   // --- textures
-  const pxPerMm = opts.pxPerMm || (devicePixelRatio > 1.5 ? 40 : 32);
+  const pxPerMm = opts.pxPerMm || (devicePixelRatio > 1.5 ? 32 : 26);
   // logo files used as layer art are loaded up front; the canvases are drawn synchronously
   const artImages = new Map();
   await Promise.all(LAYER_SOURCES.flatMap((src) => src.art || []).filter((a) => a.image).map(async (a) => {
@@ -920,17 +1134,17 @@ export async function mountPcbHero(root, opts = {}) {
   }));
   // the handwriting, before the plates are drawn: some of it is written on them
   try { await document.fonts.load('700 16px Caveat'); } catch (e) { /* falls back to cursive */ }
-  const { size: texSize, layers: canvases } = buildLayerCanvases(data, pxPerMm, artImages);
-  const mipLevels = Math.floor(Math.log2(texSize)) + 1;
+  const { width: texW, height: texH, layers: canvases } = buildLayerCanvases(data, pxPerMm, artImages);
+  const mipLevels = Math.floor(Math.log2(Math.max(texW, texH))) + 1;
   const mkArray = (format) => device.createTexture({
-    size: [texSize, texSize, 4], format, mipLevelCount: mipLevels,
+    size: [texW, texH, 4], format, mipLevelCount: mipLevels,
     usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
   });
   const albedoTex = mkArray('rgba8unorm-srgb');
   const matTex = mkArray('rgba8unorm');
   canvases.forEach((c, i) => {
-    device.queue.copyExternalImageToTexture({ source: c.albedo }, { texture: albedoTex, origin: [0, 0, i] }, [texSize, texSize]);
-    device.queue.copyExternalImageToTexture({ source: c.mat }, { texture: matTex, origin: [0, 0, i] }, [texSize, texSize]);
+    device.queue.copyExternalImageToTexture({ source: c.albedo }, { texture: albedoTex, origin: [0, 0, i] }, [texW, texH]);
+    device.queue.copyExternalImageToTexture({ source: c.mat }, { texture: matTex, origin: [0, 0, i] }, [texW, texH]);
   });
   const linearClamp = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', addressModeU: 'clamp-to-edge', addressModeV: 'clamp-to-edge' });
   generateMips(device, albedoTex, 'rgba8unorm-srgb', 4, mipLevels, linearClamp);
@@ -974,13 +1188,25 @@ export async function mountPcbHero(root, opts = {}) {
   const slabBuf = mkBuf(slabVerts, GPUBufferUsage.VERTEX);
   const cubeVerts = buildCube();
   const cubeBuf = mkBuf(cubeVerts, GPUBufferUsage.VERTEX);
-  const partData = buildParts(data);
+  const { data: partData, dyn: partDyn, ranges: partRanges } = buildParts(data);
   const partBuf = mkBuf(partData, GPUBufferUsage.VERTEX);
+  // a demo part's instance, changed in place: its height above the plate, colour and glow
+  const setPart = (i, { x, y, z, sy, rgb, lit } = {}) => {
+    if (i === undefined) return;
+    const o = i * 16;
+    if (x !== undefined) partData[o] = x;
+    if (z !== undefined) partData[o + 2] = z;
+    if (y !== undefined) partData[o + 1] = y;
+    if (sy !== undefined) partData[o + 5] = sy;
+    if (rgb) partData.set(rgb, o + 8);
+    if (lit !== undefined) partData[o + 15] = lit;
+    device.queue.writeBuffer(partBuf, o * 4, partData, o, 16);
+  };
   const pulseData = buildPulses(data, layerDefs);
   const pulseBuf = mkBuf(pulseData, GPUBufferUsage.VERTEX);
-  const h = data.board.w / 2;
+  const hx = data.board.w / 2, hz = data.board.h / 2;
   // mounting holes carry the exploded-view guide lines
-  const holeData = new Float32Array(data.holes.filter(([, , d]) => d >= 2).flatMap(([x, y, d, w]) => [x - h, y - h, d, w]));
+  const holeData = new Float32Array(data.holes.filter(([, , d]) => d >= 2).flatMap(([x, y, d, w]) => [x - hx, y - hz, d, w]));
   const holeBuf = mkBuf(holeData, GPUBufferUsage.VERTEX);
   const sceneUBO = device.createBuffer({ size: 272, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
 
@@ -1067,6 +1293,83 @@ export async function mountPcbHero(root, opts = {}) {
     primitive: { topology: 'triangle-list', cullMode: 'none' },
     depthStencil: depthOpaque, multisample: ms,
   });
+  // --- the modelled parts (parts.bin): loaded after the first frames; boxes stand in until then,
+  // and for good for the boards in the distance and for any part without a model
+  const PART_STRIDE = 256;
+  const partBGL = device.createBindGroupLayout({
+    entries: [{ binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { hasDynamicOffset: true, minBindingSize: 48 } }],
+  });
+  const meshMod = mod(MESH_WGSL);
+  const meshPipe = device.createRenderPipeline({
+    layout: device.createPipelineLayout({ bindGroupLayouts: [sceneBGL, nodeBGL, partBGL] }),
+    vertex: {
+      module: meshMod, entryPoint: 'vs',
+      buffers: [{ arrayStride: 16, attributes: [
+        { shaderLocation: 0, offset: 0, format: 'sint16x4' },
+        { shaderLocation: 1, offset: 8, format: 'snorm8x4' },
+        { shaderLocation: 2, offset: 12, format: 'unorm8x4' },
+      ] }],
+    },
+    fragment: { module: meshMod, entryPoint: 'fs', targets: sceneTargets(false) },
+    primitive: { topology: 'triangle-list', cullMode: 'none' },
+    depthStencil: depthOpaque, multisample: ms,
+  });
+  let mesh = null;
+  async function loadMesh(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const buf = await res.arrayBuffer();
+    const headLen = new DataView(buf).getUint32(0, true);
+    const head = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 4, headLen)));
+    const vOff = 4 + headLen, vBytes = head.vertices * head.stride, iBytes = head.indices * 4;
+    const vbuf = device.createBuffer({ size: vBytes, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST });
+    device.queue.writeBuffer(vbuf, 0, buf, vOff, vBytes);
+    const ibuf = device.createBuffer({ size: iBytes, usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST });
+    device.queue.writeBuffer(ibuf, 0, buf, vOff + vBytes, iBytes);
+    // which model is which board part: the model whose footprint holds the part's centre
+    // (the smallest, where several do)
+    const modelOf = new Map();
+    for (const p of data.parts) {
+      let best = null, area = Infinity;
+      for (const m of head.parts) {
+        const [x0, y0, , x1, y1] = m.box;
+        const a = (x1 - x0) * (y1 - y0);
+        if (p.x >= x0 - 0.05 && p.x <= x1 + 0.05 && p.y >= y0 - 0.05 && p.y <= y1 + 0.05 && a < area) { best = m; area = a; }
+      }
+      if (best) modelOf.set(p.ref, best);
+    }
+    // the demo's parts are drawn on their own; everything else in runs between them
+    const dynParts = [...demoButtons, ...demoLeds].filter((d) => d.part && modelOf.has(d.part.ref))
+      .map((d, i) => ({ d, model: modelOf.get(d.part.ref), slot: i + 1 }));
+    const cuts = dynParts.map((q) => q.model).sort((a, b) => a.first - b.first);
+    const runs = [];
+    let at = 0;
+    for (const m of cuts) { if (m.first > at) runs.push([at, m.first - at]); at = m.first + m.count; }
+    if (head.indices > at) runs.push([at, head.indices - at]);
+    const ubo = device.createBuffer({ size: PART_STRIDE * (dynParts.length + 1), usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+    const bg = device.createBindGroup({ layout: partBGL, entries: [{ binding: 0, resource: { buffer: ubo, size: 48 } }] });
+    // boxes stay only for the parts that have no model
+    const rest = [];
+    for (const p of data.parts) if (!modelOf.has(p.ref)) { const [a, b] = partRanges[p.ref]; rest.push(...partData.subarray(a * 16, b * 16)); }
+    const restData = new Float32Array(rest);
+    mesh = { vbuf, ibuf, runs, dynParts, ubo, bg, uniform: new Float32Array((PART_STRIDE / 4) * (dynParts.length + 1)), restBuf: mkBuf(restData, GPUBufferUsage.VERTEX), restCount: restData.length / 16, modelOf };
+    state.dirty++;
+  }
+  // what a demo part shows: its top (cap, knob, lens) moved, tinted or lit
+  const partLook = {};
+  const lookOf = (name) => (partLook[name] ||= { move: [0, 0, 0], tint: [0, 0, 0], mix: 0, lit: 0 });
+  function writeMeshParts() {
+    const u = mesh.uniform, n = PART_STRIDE / 4;
+    u.set([0, 0, 0, 0, 0, 0, 0, 0, hx, hz, 1e6, 0], 0);
+    for (const q of mesh.dynParts) {
+      const L = lookOf(q.d.name), top = q.model.box[5];
+      // above this height is the part's top: an LED's body, a button's cap, a switch's knob
+      const from = q.d.part.kind === 'led' ? 0.12 : q.d.part.kind === 'slide' ? top * SLIDE.knobFrom : top - BUTTON_CAP.depth;
+      u.set([...L.move, 0, ...L.tint, L.mix, hx, hz, from, L.lit], q.slot * n);
+    }
+    device.queue.writeBuffer(mesh.ubo, 0, u);
+  }
+
   const pulseMod = mod(PULSE_WGSL);
   const pulsePipe = device.createRenderPipeline({
     layout: sceneLayout,
@@ -1148,6 +1451,10 @@ export async function mountPcbHero(root, opts = {}) {
     y: [...Array(N)].map((_, i) => i * (cfg.slab + cfg.gapIdle)),
     focusW: new Array(N).fill(0), dim: new Array(N).fill(1), explode: 0,
     viewProj: null, invViewProj: null, cssW: 1, cssH: 1,
+    // the live demo: collapse closes the gaps between the plates, flip turns the camera top
+    // down, deco is how much of the explanatory drawing still shows
+    demoOn: false, demoAt: 0, collapse: 0, flip: 0, c0: 0, f0: 0, deco: 1, shake: 0, dirty: 0,
+    yFree: [...Array(N)].map((_, i) => i * (cfg.slab + cfg.gapIdle)), leds: {}, tryHot: false,
   };
   // reduced motion: time stops and transitions are instant
   // and frames are only drawn when something changes
@@ -1174,7 +1481,7 @@ export async function mountPcbHero(root, opts = {}) {
       for (const yy of [Y, Y - cfg.slab]) {
         const t = (yy - o[1]) / d[1];
         const x = o[0] + d[0] * t, z = o[2] + d[2] * t;
-        if (Math.abs(x) <= h && Math.abs(z) <= h) return i;
+        if (Math.abs(x) <= hx && Math.abs(z) <= hz) return i;
       }
     }
     return -1;
@@ -1196,13 +1503,23 @@ export async function mountPcbHero(root, opts = {}) {
     }
     return best;
   }
+  // a click on one of the demo's buttons starts the demo, as the sign does
+  const nearDemoButton = (e) => {
+    if (!demo || state.demoOn) return false;
+    const r = root.getBoundingClientRect();
+    return demoButtons.some((b) => b.screen && Math.hypot(e.clientX - r.left - b.screen[0], e.clientY - r.top - b.screen[1]) < b.screen[2]);
+  };
+  canvas.addEventListener('click', (e) => { if (nearDemoButton(e)) api.onTry?.(); });
   canvas.addEventListener('pointermove', (e) => {
+    if (state.demoOn) return;
+    state.tryHot = nearDemoButton(e);
+    canvas.style.cursor = state.tryHot ? 'pointer' : '';
     state.hot = hitItem(e.clientX, e.clientY);
     const c = state.hot ? state.hot.layer : pick(e.clientX, e.clientY);
     if (c !== state.candidate) { state.candidate = c; state.candidateSince = performance.now(); }
   });
   canvas.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse') return;
+    if (e.pointerType === 'mouse' || state.demoOn) return;
     state.hover = true;
     const hit = hitItem(e.clientX, e.clientY);
     state.hot = hit && hit !== state.hot ? hit : null;
@@ -1240,20 +1557,31 @@ export async function mountPcbHero(root, opts = {}) {
     const narrow = W < 720;
     const labelCol = narrow ? Math.min(W * 0.36, 200) : Math.min(cfg.labelColumn, W * 0.4);
     const aspect = W / H;
-    const az = (cfg.azimuth * Math.PI) / 180, el = (cfg.elevation * Math.PI) / 180;
+    // the live demo turns the camera to look straight down at the board (f: 0 hero, 1 demo)
+    const f = state.flip, mix = (a, b) => a + (b - a) * f;
+    const az = (mix(cfg.azimuth, 0) * Math.PI) / 180, el = (mix(cfg.elevation, 89.95) * Math.PI) / 180;
     const fov = (cfg.fov * Math.PI) / 180;
     const stackH = (N - 1) * (cfg.slab + cfg.gapOpen) + cfg.lift;
-    const target = [0, stackH * 0.42, 0];
+    const target = [0, mix(stackH * 0.42, (N - 1) * cfg.slab) + state.shake, 0];
     // rough projected extents of the exploded stack
-    const diag = data.board.w * (Math.cos(az) + Math.sin(az)) + 4;
-    const vExt = data.board.w * (Math.cos(az) + Math.sin(az)) * Math.sin(el) + stackH * Math.cos(el) + 6;
+    // (for the hero's own angle; the demo's top-down distance is worked out below)
+    const az0 = (cfg.azimuth * Math.PI) / 180, el0 = (cfg.elevation * Math.PI) / 180;
+    const span = data.board.w * Math.abs(Math.cos(az0)) + data.board.h * Math.abs(Math.sin(az0));
+    const depth = data.board.w * Math.abs(Math.sin(az0)) + data.board.h * Math.abs(Math.cos(az0));
+    const diag = span + 4;
+    const vExt = depth * Math.sin(el0) + stackH * Math.cos(el0) + 6;
     const tanV = Math.tan(fov / 2);
     const availAspect = (W - labelCol) / H;
-    const dist = Math.max((vExt / 2) / tanV, (diag / 2) / (tanV * availAspect)) * (narrow ? 1.18 : 1.04);
+    const distHero = Math.max((vExt / 2) / tanV, (diag / 2) / (tanV * availAspect)) * (narrow ? 1.18 : 1.04);
+    // top down, the board fills what the demo's panel leaves free, above the credit line
+    const inset = Math.min(Math.max(0, api.demoInset || 0), W * 0.7), foot = 40;
+    const edge = narrow ? 3 : 5;
+    const distDemo = Math.max(((hz + edge) / tanV) * (H / (H - foot)), ((hx + edge) / (tanV * aspect)) * (W / (W - inset)));
+    const dist = mix(distHero, distDemo);
     root.classList.toggle('is-narrow', narrow);
     const eye = [target[0] + Math.sin(az) * Math.cos(el) * dist, target[1] + Math.sin(el) * dist, target[2] + Math.cos(az) * Math.cos(el) * dist];
-    const shift = -labelCol / W;
-    const proj = perspective(fov, aspect, dist * 0.5, dist * 6, shift);
+    const shift = mix(-labelCol / W, inset / W);
+    const proj = perspective(fov, aspect, dist * 0.5, dist * 6, shift, mix(0, foot / H));
     const view = lookAt(eye, target, [0, 1, 0]);
     state.viewProj = mul(proj, view);
     state.invViewProj = invert(state.viewProj);
@@ -1263,7 +1591,8 @@ export async function mountPcbHero(root, opts = {}) {
     state.labelCol = labelCol;
     state.dist = dist;
     const key = `${W}x${H}`;
-    if (key !== state.nodesFor) { state.nodesFor = key; placeNodes(dist); placeBackdrop(target); }
+    // the far boards and the backdrop are placed for the hero's camera
+    if (f === 0 && key !== state.nodesFor) { state.nodesFor = key; placeNodes(dist); placeBackdrop(target); }
   }
 
   // the backdrop is centred where the board sits (the camera target, which stays put while the
@@ -1291,9 +1620,17 @@ export async function mountPcbHero(root, opts = {}) {
       const p = add(state.eye, dir, n.spec.depth * dist);
       n.x = p[0]; n.y = p[1] - stackMid; n.z = p[2];
     }
+    writeNodes();
+  }
+  // the boards in the distance fade away with the rest of the drawing when the demo starts
+  function writeNodes() {
     const buf = new Float32Array((NODE_STRIDE / 4) * nodeCount);
-    nodes.forEach((n, i) => buf.set([n.x, n.y, n.z, n.yaw, ...n.look, ...haze, n.t0], i * (NODE_STRIDE / 4)));
+    nodes.forEach((n, i) => {
+      const look = i ? [n.look[0], n.look[1] * state.deco, n.look[2], n.look[3]] : n.look;
+      buf.set([n.x, n.y, n.z, n.yaw, ...look, ...haze, n.t0], i * (NODE_STRIDE / 4));
+    });
     device.queue.writeBuffer(nodeUBO, 0, buf);
+    state.nodesDeco = state.deco;
   }
   const nodeToWorld = (n, x, y, z) => {
     const c = Math.cos(n.yaw), s = Math.sin(n.yaw);
@@ -1305,33 +1642,65 @@ export async function mountPcbHero(root, opts = {}) {
     const dx = toward[0] - n.x, dz = toward[2] - n.z;
     const c = Math.cos(n.yaw), s = Math.sin(n.yaw);
     const lx = dx * c - dz * s, lz = dx * s + dz * c; // inverse yaw
-    const e = h - 0.3, maxSlide = e * 0.55;
+    const ex = hx - 0.3, ez = hz - 0.3;
     let px, pz, nx, nz;
-    if (Math.abs(lx) >= Math.abs(lz)) {
-      nx = Math.sign(lx); nz = 0; px = nx * e;
-      pz = Math.max(-maxSlide, Math.min(maxSlide, (lz / Math.abs(lx)) * e * 0.6));
+    if (Math.abs(lx) * ez >= Math.abs(lz) * ex) {
+      nx = Math.sign(lx); nz = 0; px = nx * ex;
+      pz = Math.max(-ez * 0.55, Math.min(ez * 0.55, (lz / Math.abs(lx)) * ex * 0.6));
     } else {
-      nz = Math.sign(lz); nx = 0; pz = nz * e;
-      px = Math.max(-maxSlide, Math.min(maxSlide, (lx / Math.abs(lz)) * e * 0.6));
+      nz = Math.sign(lz); nx = 0; pz = nz * ez;
+      px = Math.max(-ex * 0.55, Math.min(ex * 0.55, (lx / Math.abs(lz)) * ez * 0.6));
     }
     return { p: nodeToWorld(n, px, y, pz), n: [nx * c + nz * s, 0, -nx * s + nz * c] };
   }
 
   // --- where the annotations attach: apps, slots, the uplink and the cluster links
-  const partTop = (p) => ({ usbc: 3.2, button: 1.35, ind: 1.0, xtal: 0.7 })[p.kind] ?? (p.kind === 'ic' ? (p.w >= 10 ? 1.5 : p.w >= 6 ? 0.9 : 1.0) : 0.6);
+  const partTop = (p) => ({ usbc: USBC_HEIGHT, button: 1.5, ind: 1.0, xtal: 0.7, socket: 8.5, slide: SLIDE.body + 1.7, module: 2.3, fpc: 1.9, jst: p.vertical ? 4.2 : p.pins <= 2 ? 4.8 : 2.9 })[p.kind] ?? (p.kind === 'ic' ? (p.w >= 10 ? 1.5 : p.w >= 6 ? 0.9 : 1.0) : 0.6);
   const anchorOf = (spec) => {
     const p = spec.part && data.parts.find((q) => q.ref === spec.part);
     if (p) {
       const swap = Math.abs(Math.sin((p.rot * Math.PI) / 180)) > 0.5;
-      return { x: p.x - h, z: p.y - h, w: swap ? p.h : p.w, d: swap ? p.w : p.h, top: partTop(p) };
+      return { x: p.x - hx, z: p.y - hz, w: swap ? p.h : p.w, d: swap ? p.w : p.h, top: partTop(p) };
     }
-    const [x, y] = spec.at || [h, h];
+    const [x, y] = spec.at || [hx, hz];
     const [w, d] = spec.size || [6, 6];
-    return { x: x - h, z: y - h, w, d, top: 0 };
+    return { x: x - hx, z: y - hz, w, d, top: 0 };
   };
   // marks are drawn in the brand and layer colours taken a little toward the ink, to read on the board
   const inkLin = hexLinear(INK_HEX);
   const inkOf = (hex, k = 0.22) => hexLinear(hex).map((c, i) => c + (inkLin[i] - c) * k);
+  // the demo's parts: where they are, and the state they show
+  const demoPart = (name) => data.parts.find((p) => p.demo === name);
+  const demoButtons = (demo?.buttons || []).map((b, i) => ({ ...b, part: demoPart(b.name), el: buttonEls[i], screen: null }));
+  const demoLeds = (demo?.leds || []).map((l) => ({ ...l, part: demoPart(l.name), on: false, glow: 0 })).filter((l) => l.part);
+  const demoSensor = demo?.sensor && { ...demo.sensor, part: demoPart(demo.sensor.name) };
+  const lens = hexLinear(LED_LENS);
+  function showLed(l) {
+    // in the hero an LED is a plain lens; in the demo it is dark until lit
+    const rgb = hexLinear(l.color);
+    const off = lens.map((c, k) => c * 0.16 + rgb[k] * 0.1);
+    const lit = state.demoOn && l.on;
+    Object.assign(lookOf(l.name), { tint: lit ? rgb : [0.03, 0.03, 0.03], mix: lit ? 1 : state.demoOn ? 0.55 : 0, lit: lit ? 1 : 0 });
+    setPart(partDyn[l.name], { rgb: lit ? rgb.map((c) => Math.min(1, c * 1.15 + 0.06)) : state.demoOn ? off : lens, lit: lit ? 1 : 0 });
+  }
+  pressButton = (name, down) => {
+    const b = demoButtons.find((q) => q.name === name);
+    if (b?.part?.kind === 'slide') {
+      // the knob slides along the switch (its long side, the part's local y)
+      const a = (b.part.rot * Math.PI) / 180, o = down ? SLIDE.on : SLIDE.off;
+      setPart(partDyn[name], { x: b.part.x + o * Math.sin(a) - hx, z: b.part.y + o * Math.cos(a) - hz });
+      lookOf(name).move = down ? [SLIDE.travel * Math.sin(a), 0, SLIDE.travel * Math.cos(a)] : [0, 0, 0];
+    } else {
+      Object.assign(lookOf(name), { move: [0, down ? -BUTTON_CAP.travel : 0, 0], tint: hexLinear(down ? BUTTON_CAP.down : BUTTON_CAP.color), mix: 1 });
+      setPart(partDyn[name], { sy: down ? BUTTON_CAP.pressed : BUTTON_CAP.up, rgb: hexLinear(down ? BUTTON_CAP.down : BUTTON_CAP.color) });
+    }
+    b?.el.classList.toggle('is-down', down);
+    state.dirty++;
+  };
+  // the demo's push buttons have yellow caps from the start, to be found
+  for (const b of demoButtons) if (b.part?.kind === 'button') Object.assign(lookOf(b.name), { tint: hexLinear(BUTTON_CAP.color), mix: 1 });
+  const tryTarget = demoButtons.find((b) => b.name === demo?.try) || demoButtons[0];
+
   const apps = extras.apps.map((a, i) => ({
     ...a, anchor: anchorOf(a), rgb: hexLinear(a.accent || appAccent), ink: inkOf(a.accent || appAccent, 0.12),
     tilt: (((i * 0.618) % 1) - 0.5) * 0.24,
@@ -1380,6 +1749,7 @@ export async function mountPcbHero(root, opts = {}) {
   // `even` keeps the width the same on screen however far away it runs; `xray` strokes show
   // dashed where something hides them
   function stroke(pts, rgb, { w = 0.42, mode = PAINT.marker, alpha = 1, flat = false, even = false, xray = false, seed = 0, layer = TOP } = {}) {
+    alpha *= state.deco;
     if (alpha <= 0.004 || pts.length < 2) return;
     const n = pts.length;
     const ds = [0];
@@ -1397,6 +1767,7 @@ export async function mountPcbHero(root, opts = {}) {
     }
   }
   function dot(p, r, rgb, alpha, seed, layer) {
+    alpha *= state.deco;
     if (alpha <= 0.004) return;
     const R = state.camRight, U = state.camUp;
     paintQuad(add(add(p, R, -r), U, -r), add(add(p, R, r), U, -r), add(add(p, R, r), U, r), add(add(p, R, -r), U, r),
@@ -1489,7 +1860,7 @@ export async function mountPcbHero(root, opts = {}) {
       const hw = hotW[apps.length + slots.length + j];
       if (hw > 0.02) {
         const s = it.size * 0.8;
-        swipe(it.at[0] - h, state.y[it.layer] + 0.05, it.at[1] - h, s, s * 0.45, hw, rand(200 + j, it.layer), it.layer, j);
+        swipe(it.at[0] - hx, state.y[it.layer] + 0.05, it.at[1] - hz, s, s * 0.45, hw, rand(200 + j, it.layer), it.layer, j);
       }
     });
 
@@ -1522,7 +1893,7 @@ export async function mountPcbHero(root, opts = {}) {
     const yTop = state.y[RUNTIME] + 0.04;
     const rise = Math.min(6, Math.max(1, (state.y[TOP] - state.y[RUNTIME] - cfg.slab) * 0.55));
     const across = (p) => p[0] * R[0] + p[2] * R[2];
-    const ports = cfg.ports.map(([x, z]) => [x - h, yTop, z - h]).sort((a, b) => across(a) - across(b));
+    const ports = cfg.ports.map(([x, z]) => [x - hx, yTop, z - hz]).sort((a, b) => across(a) - across(b));
     const byScreen = nodes.slice(1).map((n, i) => i + 1).sort((a, b) => across([nodes[a].x, 0, nodes[a].z]) - across([nodes[b].x, 0, nodes[b].z]));
     const run = { layer: RUNTIME };
     byScreen.forEach((ni, kk) => {
@@ -1547,7 +1918,67 @@ export async function mountPcbHero(root, opts = {}) {
         const pts = cubic(A.p, add(add(A.p, A.n, len * 0.22), lift), add(add(Bq.p, Bq.n, len * 0.22), lift), Bq.p, 32);
         stroke(shake(pts, 0.8, rand(500 + a * 7 + b, RUNTIME)), runtimeInk, { ...run, w: 0.3 + 0.25 * linkI, mode: PAINT.crayon, alpha: linkI * 0.55, even: true, xray: true, seed: a * 3 + b });
       }
+    // "Try Me": a sign beside the board and a marker arrow from it to one of the demo's buttons
+    geo.try = null;
+    if (tryTarget?.part) {
+      const q = tryTarget.part, rnd = rand(700), hotK = state.tryHot ? 1 : 0;
+      const tip = [q.x - hx, topY + partTop(q) + 0.5, q.y - hz];
+      const narrow = state.cssW < 720;
+      // the sign floats above the board, the arrow comes down from it onto the button
+      const sign = add(add(tip, R, narrow ? -3 : -5), U, narrow ? 13 : 17);
+      geo.try = sign;
+      const from = add(add(sign, R, 1.5), U, narrow ? -3 : -3.6);
+      const bend = add(add(tip, R, 2.5), U, 6);
+      const pts = shake(cubic(from, add(from, U, -3), bend, tip, 14), 0.12, rnd);
+      // white paint pen over a dark edge, so it reads on the board and on the paper alike
+      const pen = hexLinear(PAINT_PEN), wide = 1 + hotK * 0.25;
+      const d = v3.norm(v3.sub(tip, pts[pts.length - 3]));
+      const side = v3.norm(v3.cross(d, v3.sub(state.eye, tip)));
+      // the head: two short strokes back from the tip
+      const head = [-1, 1].map((sgn) => [add(add(tip, d, -3.2), side, sgn * 1.9 + (rnd() - 0.5) * 0.3), add(add(tip, d, -1.3), side, sgn * 0.7), tip]);
+      for (const [rgb, w] of [[inkLin, 1.75 * wide], [pen, 0.95 * wide]]) {
+        stroke(pts, rgb, { w, seed: 7.1 });
+        head.forEach((hp, k) => stroke(hp, rgb, { w, seed: 7.3 + k }));
+      }
+      // a ring round the button it points at
+      const ring = loop(q.x - hx, topY + 0.06, q.y - hz, q.w / 2 + 1.1, q.h / 2 + 1.1, rnd);
+      stroke(ring, pen, { w: 0.55, flat: true, seed: 7.7 });
+    }
     device.queue.writeBuffer(paintBuf, 0, paintData, 0, paintN * PAINT_FLOATS);
+  }
+
+  // the sign, the controls over the board's buttons and the sensor's reading follow the board
+  function layoutDemo() {
+    if (!demo) return;
+    const W = state.cssW, H = state.cssH;
+    const topY = state.y[TOP];
+    if (geo.try) {
+      const [x, y] = project(geo.try);
+      const w = trySign.offsetWidth, hh = trySign.offsetHeight;
+      const left = Math.min(Math.max(4, x - w / 2), W - w - 4), top = Math.min(Math.max(4, y - hh / 2), H - hh - 4);
+      trySign.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px) rotate(-4deg)`;
+    }
+    const live = state.demoOn && state.flip > 0.97;
+    root.classList.toggle('is-live', live);
+    for (const b of demoButtons) {
+      if (!b.part) continue;
+      const p = [b.part.x - hx, topY + partTop(b.part), b.part.y - hz];
+      const [x, y] = project(p);
+      const [ex] = project(add(p, state.camRight, b.part.w / 2));
+      const r = Math.abs(ex - x);
+      b.screen = [x, y, Math.max(r * 1.5, 16)];
+      if (live) {
+        const s = Math.max(r * 2.2, 30);
+        Object.assign(b.el.style, { width: `${s.toFixed(1)}px`, height: `${s.toFixed(1)}px`, transform: `translate(${(x - s / 2).toFixed(1)}px, ${(y - s / 2).toFixed(1)}px)` });
+      }
+    }
+    if (live && demoSensor?.part) {
+      const q = demoSensor.part;
+      const [x, y] = project([q.x - hx, topY + 1, q.y - hz + q.h / 2 + 1.2]);
+      const w = sensorEl.offsetWidth, hh = sensorEl.offsetHeight;
+      const left = Math.min(Math.max(4, x - w * 0.3), W - w - 4), top = Math.max(4, y - hh);
+      sensorEl.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`;
+    }
   }
 
   function layoutTags(focus, k) {
@@ -1587,7 +2018,7 @@ export async function mountPcbHero(root, opts = {}) {
       Object.assign(it, { sx: x, sy: y, r: 26, live: focus === it.layer });
     });
     for (const it of artItems) {
-      const p = [it.at[0] - h, state.y[it.layer] + 0.05, it.at[1] - h];
+      const p = [it.at[0] - hx, state.y[it.layer] + 0.05, it.at[1] - hz];
       const [x, y] = project(p);
       const [ex] = project(add(p, state.camRight, it.size / 2));
       const r = Math.abs(ex - x);
@@ -1632,12 +2063,27 @@ export async function mountPcbHero(root, opts = {}) {
     const W = state.cssW, H = state.cssH;
     ictx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ictx.clearRect(0, 0, W, H);
-    if (uplink && geo.cloud && vis.uplink > 0.01) drawNervesHub(geo.cloud, vis.uplink, W);
-    if (vis.apps > 0.01) apps.forEach((app, i) => {
+    // a lit LED of the demo glows
+    for (const l of demoLeds) {
+      l.glow += ((state.demoOn && l.on ? 1 : 0) - l.glow) * (reduceMotion ? 1 : 0.3);
+      if (l.glow < 0.02) continue;
+      const p = [l.part.x - hx, state.y[TOP] + 0.7, l.part.y - hz];
+      const [x, y] = project(p);
+      const r = Math.abs(project(add(p, state.camRight, 3.2))[0] - x);
+      const g = ictx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, l.color + 'cc'); g.addColorStop(0.35, l.color + '55'); g.addColorStop(1, l.color + '00');
+      ictx.globalAlpha = l.glow;
+      ictx.fillStyle = g;
+      ictx.fillRect(x - r, y - r, r * 2, r * 2);
+      ictx.globalAlpha = 1;
+    }
+    if (state.deco < 0.01) return;
+    if (uplink && geo.cloud && vis.uplink > 0.01) drawNervesHub(geo.cloud, vis.uplink * state.deco, W);
+    if (vis.apps * state.deco > 0.01) apps.forEach((app, i) => {
       const sc = geo.stickerScreen[i];
       if (!sc || !stickers[i]) return;
       ictx.save();
-      ictx.globalAlpha = Math.min(1, vis.apps * 1.2);
+      ictx.globalAlpha = Math.min(1, vis.apps * 1.2) * state.deco;
       ictx.translate(sc.x, sc.y);
       ictx.rotate(app.tilt * (1 - hotW[i] * 0.7));
       const s = sc.size / STICKER_BODY;
@@ -1727,7 +2173,7 @@ export async function mountPcbHero(root, opts = {}) {
     if (reduceMotion) {
       // nothing moves on its own, so redraw only after input, resizes or hover changes
       const hot = hotItem();
-      const sig = [focusTarget(), state.hover, state.candidate, hot ? items.indexOf(hot) : -1, state.cssW, state.cssH].join();
+      const sig = [focusTarget(), state.hover, state.candidate, hot ? items.indexOf(hot) : -1, state.cssW, state.cssH, state.demoOn, api.demoInset, state.dirty].join();
       if (sig !== lastSig) { lastSig = sig; settle = 3; }
       if (settle-- <= 0) { requestAnimationFrame(frame); return; }
     }
@@ -1736,16 +2182,19 @@ export async function mountPcbHero(root, opts = {}) {
       const wait = state.candidate === -1 ? 260 : 90;
       if (now - state.candidateSince > wait) state.pointerFocus = state.candidate;
     }
-    const focus = focusTarget();
-    const open = state.hover || focus >= 0;
+    // in the live demo nothing is in focus and the stack stays shut
+    const focus = state.demoOn ? -1 : focusTarget();
+    const open = !state.demoOn && (state.hover || focus >= 0);
     if (!reduceMotion) clocks[focus >= 0 ? focus : TOP] += dt;
     const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 7);
+    stepDemo(now, dt);
     for (let i = 0; i < N; i++) {
-      state.y[i] += (targetY(i, focus, open) - state.y[i]) * k;
+      state.yFree[i] += (targetY(i, focus, open) - state.yFree[i]) * k;
+      state.y[i] = state.yFree[i] + (i * cfg.slab - state.yFree[i]) * state.collapse;
       state.focusW[i] += ((focus === i ? 1 : 0) - state.focusW[i]) * k;
       state.dim[i] += ((focus < 0 || focus === i ? 1 : 0.42) - state.dim[i]) * k;
     }
-    state.explode += ((open ? 1 : 0.25) - state.explode) * k;
+    state.explode += ((state.demoOn ? 0 : open ? 1 : 0.25) - state.explode) * k;
     camera();
     buildPaint(focus, k);
 
@@ -1761,8 +2210,19 @@ export async function mountPcbHero(root, opts = {}) {
     sceneData.set([cfg.pulseSpeed, ...tint], 40);
     accents.forEach((a, i) => sceneData.set([...a, 1], 44 + i * 4));
     sceneData[60] = reduceMotion ? 0 : 1; // Scene.motion follows the four accents
+    sceneData[61] = 1 - state.deco;
     sceneData.set(clocks, 64);           // then Scene.clock
     device.queue.writeBuffer(sceneUBO, 0, sceneData);
+    if (mesh) {
+      // in the hero the ready LED has a slow heartbeat; the demo drives the LEDs itself
+      const beatLed = demoLeds.find((l) => l.name === 'ready');
+      if (beatLed && !state.demoOn) {
+        const t = (clocks[TOP] * 0.6) % 1;
+        const beat = reduceMotion ? 1 : Math.min(1, Math.exp(-t * 18) + (t > 0.18 ? 0.6 * Math.exp(-(t - 0.18) * 18) : 0));
+        Object.assign(lookOf(beatLed.name), { tint: hexLinear(beatLed.color), mix: beat, lit: beat });
+      }
+      writeMeshParts();
+    }
     // the brush line narrows a little on small heroes, where the board is small too
     const brush = cfg.brush * dpr * Math.min(1, Math.max(0.6, state.cssW / 1100));
     const nodeOutline = vis.nodes > 0.01 ? vis.nodes : 0;
@@ -1778,15 +2238,30 @@ export async function mountPcbHero(root, opts = {}) {
     });
     pass.setBindGroup(0, sceneBG);
     // hero board first so the shadow nodes behind it fail the depth test early
-    for (let n = 0; n < nodeCount; n++) {
+    for (let n = 0; n < (state.deco > 0.01 ? nodeCount : 1); n++) {
       pass.setBindGroup(1, nodeBG, [n * NODE_STRIDE]);
       pass.setPipeline(slabPipe);
       pass.setVertexBuffer(0, slabBuf);
       pass.draw(slabVerts.length / 9, N);
-      pass.setPipeline(boxPipe);
-      pass.setVertexBuffer(0, cubeBuf);
-      pass.setVertexBuffer(1, partBuf);
-      pass.draw(36, partData.length / 16);
+      // the board in front shows the modelled parts once they are loaded
+      const modelled = mesh && n === 0;
+      if (modelled) {
+        pass.setPipeline(meshPipe);
+        pass.setVertexBuffer(0, mesh.vbuf);
+        pass.setIndexBuffer(mesh.ibuf, 'uint32');
+        pass.setBindGroup(2, mesh.bg, [0]);
+        for (const [first, count] of mesh.runs) pass.drawIndexed(count, 1, first);
+        for (const q of mesh.dynParts) {
+          pass.setBindGroup(2, mesh.bg, [q.slot * PART_STRIDE]);
+          pass.drawIndexed(q.model.count, 1, q.model.first);
+        }
+      }
+      if (!modelled || mesh.restCount) {
+        pass.setPipeline(boxPipe);
+        pass.setVertexBuffer(0, cubeBuf);
+        pass.setVertexBuffer(1, modelled ? mesh.restBuf : partBuf);
+        pass.draw(36, modelled ? mesh.restCount : partData.length / 16);
+      }
     }
     pass.setBindGroup(1, nodeBG, [0]);
     pass.setPipeline(pulsePipe);
@@ -1813,9 +2288,54 @@ export async function mountPcbHero(root, opts = {}) {
 
     layoutLabels(focus);
     layoutTags(focus, k);
+    layoutDemo();
     drawInk();
     requestAnimationFrame(frame);
   }
+
+  // the live demo's transition. On: the plates fall together (collapse), land with a jolt, then
+  // the camera swings round to look straight down (flip). Off: the same, the other way round.
+  const clamp01 = (x) => Math.min(1, Math.max(0, x));
+  const easeIn = (x) => x * x * x, easeOut = (x) => 1 - (1 - x) ** 3;
+  const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
+  const SMACK = 0.3;   // seconds for the plates to meet
+  function stepDemo(now, dt) {
+    const t = (now - state.demoAt) / 1000, on = state.demoOn;
+    state.shake = 0;
+    if (reduceMotion) { state.collapse = state.flip = on ? 1 : 0; state.deco = on ? 0 : 1; }
+    else if (on) {
+      state.collapse = state.c0 + (1 - state.c0) * easeIn(clamp01(t / SMACK));
+      state.flip = state.f0 + (1 - state.f0) * easeInOut(clamp01((t - SMACK - 0.08) / 0.95));
+      if (t > SMACK && state.c0 < 0.5) state.shake = -0.9 * Math.exp(-(t - SMACK) * 11) * Math.cos((t - SMACK) * 46);
+      state.deco += (0 - state.deco) * (1 - Math.exp(-dt * 14));
+    } else {
+      state.flip = state.f0 * (1 - easeInOut(clamp01(t / 0.8)));
+      state.collapse = state.c0 * (1 - easeOut(clamp01((t - 0.45) / 0.5)));
+      state.deco += ((t > 0.7 ? 1 : 0) - state.deco) * (1 - Math.exp(-dt * 6));
+    }
+    if (state.deco < 0.002) state.deco = 0;
+    if (state.deco > 0.998) state.deco = 1;
+    if (Math.abs(state.deco - (state.nodesDeco ?? 1)) > 0.001) writeNodes();
+    tagBox.style.opacity = state.deco.toFixed(3);
+  }
+  api.setDemo = (on) => {
+    on = !!on;
+    if (!demo || on === state.demoOn) return;
+    Object.assign(state, { demoOn: on, demoAt: performance.now(), c0: state.collapse, f0: state.flip });
+    if (on) Object.assign(state, { hover: false, pointerFocus: -1, labelFocus: -1, candidate: -1, hot: null, hotTag: null, tryHot: false });
+    else for (const b of demoButtons) if (!b.toggle) hold(b.name, false);
+    canvas.style.cursor = '';
+    root.classList.toggle('is-demo', on);
+    demoLeds.forEach(showLed);
+    state.dirty++;
+  };
+  api.setLed = (name, on) => {
+    const l = demoLeds.find((q) => q.name === name);
+    if (!l || l.on === !!on) return;
+    l.on = !!on;
+    showLed(l);
+    state.dirty++;
+  };
 
   // how far above a point you have to go for it to land at screen height sy
   function heightAt(p, sy) {
@@ -1836,7 +2356,7 @@ export async function mountPcbHero(root, opts = {}) {
     const W = state.cssW, H = state.cssH;
     // the plate corner that sits furthest right on screen
     const inset = data.board.r * 0.3;
-    const corners = [[h - inset, -h + inset], [h - inset, h - inset], [-h + inset, h - inset], [-h + inset, -h + inset]];
+    const corners = [[hx - inset, -hz + inset], [hx - inset, hz - inset], [-hx + inset, hz - inset], [-hx + inset, -hz + inset]];
     let best = corners[0], bx = -Infinity;
     for (const c of corners) { const [sx] = project([c[0], state.y[0], c[1]]); if (sx > bx) { bx = sx; best = c; } }
     const anchors = state.y.map((y) => project([best[0], y - cfg.slab * 0.5, best[1]]));
@@ -1874,20 +2394,25 @@ export async function mountPcbHero(root, opts = {}) {
 
   requestAnimationFrame(frame);
   root.classList.add('is-ready');
+  if (opts.partsUrl !== false) {
+    loadMesh(opts.partsUrl || new URL('./parts.bin', import.meta.url)).catch((e) => console.warn('[pcb-hero] part models not loaded, keeping the boxes:', e.message));
+  }
 
   device.lost.then((info) => { running = false; if (info.reason !== 'destroyed') fail('GPU device lost.'); });
 
+  // without WebGPU the layers show as a list; the sign still starts the demo (api.fallback)
   function fail(msg) {
     root.classList.add('is-fallback');
     root.dataset.reason = msg;
     console.warn('[pcb-hero]', msg);
-    return null;
+    api.fallback = true;
+    api.setDemo = (on) => root.classList.toggle('is-demo', !!on);
+    return api;
   }
 
-  return {
-    destroy() { running = false; ro.disconnect(); T?.destroy(); device.destroy(); },
-    setFocus(i) { state.labelFocus = i; },
-  };
+  api.destroy = () => { running = false; ro.disconnect(); T?.destroy(); device.destroy(); };
+  api.setFocus = (i) => { state.labelFocus = i; };
+  return api;
 }
 
 function generateMips(device, texture, format, layers, levels, sampler) {
