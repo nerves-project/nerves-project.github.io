@@ -1,0 +1,30 @@
+# Sponsors, by tier. Used on the homepage and the Sponsors page.
+# logo_h is the logo height in pixels on the Sponsors page; dim darkens logos that are too light.
+tiers:
+  - name: Platinum
+    sponsors:
+      - name: Troodon Software
+        url: https://www.linkedin.com/company/troodon-software-llc/about/
+        logo: /img/Troodon_logo.png
+        logo_h: 140
+  - name: Gold
+    sponsors:
+      - name: Underjord
+        url: https://underjord.io/
+        logo: /img/Underjord_logo.png
+        logo_h: 58
+      - name: Protolux Electronics
+        url: https://protolux.io/
+        logo: /img/Protolux_logo.svg
+        logo_h: 64
+      - name: Device.io
+        url: https://device.io/
+        logo: /img/DeviceIO_logo.svg
+        logo_h: 54
+  - name: Silver
+    sponsors:
+      - name: SmartRent
+        url: https://smartrent.com/
+        logo: /img/SmartRent_logo.png
+        logo_h: 66
+        dim: true

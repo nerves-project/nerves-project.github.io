@@ -1,0 +1,12 @@
+// Breakpoints. The designs are drawn at 1440 (desktop) and 390 (mobile).
+$wide: 1200px;
+$tablet: 1024px;
+$mobile: 720px;
+
+@mixin below($bp) {
+  @media (max-width: ($bp - 0.02px)) { @content; }
+}
+
+@mixin above($bp) {
+  @media (min-width: $bp) { @content; }
+}

@@ -1,154 +1,161 @@
 ---
-# The content of the Homepage.
-tagline: |
-  Elixir ❤️ Embedded
-aboutNerves: |
-  **Nerves** is an open-source platform that combines the rock-solid BEAM virtual machine
-  and Elixir ecosystem to easily build and deploy production embedded systems.
-getStartedURL: './getting_started'
-introduction: |
-  Hardware doesn't have to be hard. Nerves makes edge computing easier by solving
-  the most complex infrastructure problems. Let Nerves take care of the network,
-  discovery, I/O, firmware updates, and more. Focus your team on what matters —
-  writing robust and maintainable software.
-features:
-  - name: Portable
-    image: img/portable.svg
-    description: |
-      Nerves runs out-of-the-box on commonly available hardware. Nerves
-      leverages Linux and Buildroot to minimize the effort to port to other
-      devices.
-  - name: Lean
-    image: img/scalable.svg
-    description: |
-      Nerves uses Elixir Mix releases to include only the code you need. Most
-      Nerves ports provide a Linux kernel and runtime with the basics so that
-      you build up rather than trim down. Firmware sizes start in the 20-30 MB
-      range.
-  - name: Reliable
-    image: 'img/high-reliability.svg'
-    description: |
-      Nerves uses the
-      [Erlang runtime system](https://en.wikipedia.org/wiki/Erlang_(programming_language)),
-      known for being distributed, fault-tolerant, soft real-time, and highly
-      available. Nerves firmware is immutable so you know exactly what software
-      is running.
-  - name: Secure
-    image: 'img/secure.svg'
-    description: |
-      Avoid hidden bugs and vulnerabilities with Nerves' secure opt-in approach
-      to building. Nerves starts minimal and provides regular security updates
-      to Erlang and Linux components. SBOM information is available via the
-      Buildroot integration.
-  - name: Efficient
-    image: img/agile.svg
-    description: |
-      Take advantage of Erlang and Elixir's I/O optimizations such as IOData
-      that minimize data copies over the entire stack. Thanks to common
-      abstractions, much of the ecosystem uses these features already.
-  - name: Extensible
-    image: 'img/extensible.svg'
-    description: |
-      Nerves is just one part of the vibrant Elixir ecosystem. Take advantage of
-      other Elixir projects like Phoenix, Nx, Livebook, and more in embedded
-      projects.
-technologies:
-  - name: 'Erlang'
-    image: 'img/erlang.svg'
-    URL: https://en.wikipedia.org/wiki/Erlang_(programming_language)
-    description: |
-      - Simple strategy for building reliable programs
-      that's consistent through the whole language and ecosystem
-        - There's really only one way to build things and it involves message
-        passing to fine-grained lightweight processes that are monitored and
-        recovered via supervision trees
-        - No other language or ecosystem has such
-      consistency here and it gives confidence that the blast radius from
-      failures is contained
-      - Virtual machine with fine-grained Garbage collection (GC)
-        - You get the benefits of a higher level language without the GC cost
-  - name: 'Elixir'
-    image: 'img/elixir.svg'
-    URL: https://en.wikipedia.org/wiki/Elixir_(programming_language)
-    description: |
-      - Built on top of the Erlang virtual machine (BEAM)
-      - Fun language - among the most admired programming languages since 2019
-      in the [Stack Overflow Developer Survey](https://survey.stackoverflow.co/2025/#technology-admired-and-desired)
-      - Vibrant and friendly community
-  - name: 'Linux'
-    image: 'img/linux.svg'
-    URL: https://en.wikipedia.org/wiki/Linux
-    description: |
-      - Allows Nerves to run on lots of hardware
-      - Enables use of code that's not yet available for the
-      [Erlang virtual machine](https://en.wikipedia.org/wiki/BEAM_(Erlang_virtual_machine))
-newsletter:
-  description: |
-    The Nerves newsletter is managed with ❤️ by
-    <span class="icon-text">
-      <span><a href="https://underjord.io">Underjord.io</a></span>
-      <span class="icon">
-        <img src="https://underjord.io/img/logo2.svg"></img>
-      </span>
-    </span>
+# The homepage. The hero board is the live PCB demo in static/hero-pcb/.
+description: Nerves is the open-source embedded framework for shipping products with Elixir. Made for teams putting devices in the field, and happy to help with weekend projects too.
+hero:
+  title: Hardware doesn’t have to be <span class="hl">hard.</span>
+  text: |
+    **Nerves** is the open-source embedded framework for shipping products with Elixir.
+    Made for teams putting devices in the field, and happy to help with weekend projects too.
+  install: mix archive.install hex nerves_bootstrap
+  credit: The board is the Nerves Starter Kit, open hardware by [Protolux Electronics](https://protolux.io).
 
-    Some topics in each issue include:
+start:
+  eyebrow: Start here
+  title: Pick your starting point
+  aside: Not sure? Livebook gets real hardware doing things before you’ve installed anything.
+  paths:
+    - kind: livebook
+      label: Try it out
+      badge: No build required
+      title: Nerves Livebook
+      text: Flash a prebuilt image, boot your board and work through guided tutorials from the comfort of your browser.
+      link: https://github.com/nerves-livebook/nerves_livebook/blob/main/README.md
+      link_text: Get Nerves Livebook
+    - kind: examples
+      label: Build an example
+      title: Working examples
+      text: Set up your toolchain, pick a maintained example (Wi-Fi, LiveView, a blinking LED) and make it yours.
+      link: https://github.com/nerves-project/nerves_examples
+      link_text: Browse the examples
+    - kind: diy
+      label: Full DIY
+      title: Your own firmware
+      text: Install the toolchain, generate a fresh project for your target and build firmware from scratch.
+      link: https://hexdocs.pm/nerves/installation.html
+      link_text: Installation guide
+  boards_title: Runs on boards you probably have in a drawer
+  boards: [Raspberry Pi, BeagleBone, QEMU, OSD32MP1, MangoPi MQ-Pro, x86_64]
+  targets_link: https://hexdocs.pm/nerves/supported-targets.html
 
-    - Project news and releases
-    - Featured projects
-    - Featured talks
-    - Technical notes explaining parts of Nerves, straight from the core team
-    - Community contribution opportunities
-    - Possibly sponsors if there is interest
-  subscriptionURL: 'https://underjord.io/nerves-newsletter.html'
-  archiveURL: 'https://embedded-elixir.com/page/newsletter'
-  feedURL: 'https://underjord.io/feed.xml'
-featuredCases:
-  - name: 'Farmbot'
-    image: 'img/Farmbot-case-cover.jpg'
-    URL: cases/farmbot
-    description: |
-      Managing Fleets of Smart Farming Devices with Nerves
-  - name: 'Hop'
-    image: 'img/Hop-case-cover.jpg'
-    URL: cases/hop
-    description: |
-      Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System
-  - name: 'Le Tote'
-    image: 'img/LeTote-case-cover.jpg'
-    URL: cases/letote
-    description: |
-      Increasing Warehouse Efficiency with Nerves
-getting_started:
-  - name: 'Try it out'
-    image: 'img/nerves_livebook.png'
+stack:
+  eyebrow: What’s in the box
+  title: Everything between the silicon and your code
+  aside: Nerves takes care of networking, logging, watchdogs, firmware updates and the rest of the plumbing, so your team can focus on what makes the device yours.
+  layers:
+    - name: Application
+      key: app
+      code: L1 · F.Cu
+      text: "Your Elixir application, with the whole ecosystem along for the ride: web UIs, inference, media, robotics."
+      parts: [Phoenix, Nx, Membrane, BEAM Bots, Elixir Circuits]
+    - name: BEAM
+      key: beam
+      code: L2 · In1.Cu
+      text: Boots straight into the Erlang VM. Supervisors restart what breaks, with a hardware watchdog as backup.
+      parts: [VintageNet, RingLogger, Nerves Heart]
+    - name: System
+      key: system
+      code: L3 · In2.Cu
+      text: "A minimal Linux built with Buildroot: read-only root filesystem, A/B partitions, data kept separate."
+      parts: [Linux, Buildroot, U-Boot, SquashFS]
+    - name: Tooling
+      key: tooling
+      code: L4 · B.Cu
+      text: Plain Mix tasks build firmware and get it onto devices, by SD card or over the network.
+      parts: [mix firmware, mix burn, mix upload, fwup]
+  why: and why it holds up in the field
+  features:
+    - name: Reliable
+      text: A fault-tolerant Erlang runtime and immutable firmware, so you know exactly what’s running.
+    - name: Lean
+      text: Build up instead of trimming down. Firmware starts in the 20–30 MB range.
+    - name: Secure
+      text: Minimal and opt-in, with regular Erlang and Linux updates and SBOMs via Buildroot.
+    - name: Portable
+      text: Runs out of the box on common boards. Linux and Buildroot make porting to new ones easier.
+    - name: Efficient
+      text: Erlang’s I/O optimisations, like IOData, keep data copies down across the whole stack.
+    - name: Extensible
+      text: Nerves is one part of a lively ecosystem. Phoenix, Nx and Livebook all come along.
+
+audience:
+  eyebrow: Who it’s for
+  title: Built for production devices, friendly to tinkerers
+  aside: Nerves runs in commercial products in the field. The same tools work just as well on your desk.
+  teams:
+    eyebrow: For teams shipping products
+    title: Ship it and sleep at night
+    points:
+      - Immutable firmware, so every device runs exactly what you built
+      - A/B firmware updates that fall back to the last good version
+      - Regular Erlang and Linux security updates, with SBOMs via Buildroot
+      - Custom systems for your own boards, built the same way as the official ones
+    link: /cases/
+    link_text: Read the case studies
+  tinkerers:
+    eyebrow: For tinkerers and the curious
+    title: Come play, no badge needed
+    points:
+      - Start on a Raspberry Pi you already own
+      - Guided Livebook tutorials, no toolchain required
+      - Books, talks and a newsletter to learn from
+      - A Discord where beginner questions are welcome
     link: https://github.com/nerves-livebook/nerves_livebook/blob/main/README.md
-    link_text: Nerves Livebook
-    description: |
-      Use a prebuilt firmware image loaded with Livebook so you can start playing
-      on real hardware immediately. No build required. You'll be able to run through
-      guided Nerves tutorials from the comfort of your browser.
-  - name: 'Build an example'
-    image: 'img/compile.svg'
-    link: https://nerves.hexdocs.pm/getting-started.html#nerves-examples
-    link_text: See all examples
-    description: |
-      Nerves maintains several common application examples. Set up your development
-      environment and use one of these as a starting point for your specific situation.
-    examples:
-      - link: https://github.com/nerves-project/nerves_examples/tree/main/hello_wifi
-        image: img/wifi.svg
-      - link: https://github.com/nerves-project/nerves_examples/tree/main/hello_live_view
-        image: img/phoenix.svg
-      - link: https://github.com/nerves-project/nerves_examples/tree/main/blinky
-        image: img/led.svg
-      - link: https://github.com/nerves-project/nerves_examples/
-        image: img/nerves_motd.png
-  - name: 'Full DIY'
-    image: 'img/nerves_new.png'
-    link: https://nerves.hexdocs.pm/getting-started.html#creating-a-new-nerves-app
-    link_text: Create a new Nerves app
-    description: |
-      Installation instructions to set up your development environment and make your
-      own firmware from scratch.
+    link_text: Try Nerves Livebook
+
+cases:
+  eyebrow: Out in the world
+  title: Running in real products
+  items:
+    - name: FarmBot
+      sector: Agriculture
+      text: Managing fleets of open-source farming robots with Nerves.
+      image: img/Farmbot-case-cover.jpg
+      url: /cases/farmbot/
+    - name: Hop
+      sector: Hospitality
+      text: A beer kiosk that pours with facial recognition.
+      image: img/Hop-case-cover.jpg
+      url: /cases/hop/
+    - name: Le Tote
+      sector: Logistics
+      text: Keeping a fashion rental warehouse humming.
+      image: img/LeTote-case-cover.jpg
+      url: /cases/letote/
+
+community:
+  eyebrow: Community
+  title: Come do Nerves with us
+  text: Questions are welcome, beginners especially. We love hearing what you’re building.
+  channels:
+    - name: Discord
+      icon: img/discord.svg
+      text: Questions, answers and hanging out with fellow tinkerers
+      url: https://discord.gg/7TqSpepHw7
+    - name: Nerves Meetup
+      icon: img/meetup.svg
+      text: Talks and demos from the community, recorded for YouTube
+      url: https://www.meetup.com/nerves
+    - name: GitHub
+      icon: img/github.svg
+      text: The code, the issues and your first contribution
+      url: https://github.com/nerves-project
+  also:
+    - name: Bluesky
+      icon: img/bsky.svg
+      url: https://bsky.app/profile/nerves-project.org
+    - name: Mastodon
+      icon: img/mastodon.svg
+      url: https://fosstodon.org/@NervesProject
+    - name: Conference talks
+      icon: img/videos.svg
+      url: /videos/
+  newsletter:
+    eyebrow: Straight to your inbox
+    title: The Nerves Newsletter
+    text: Releases, featured projects and talks, plus technical notes straight from the core team.
+  writing_title: Fresh from the community
+
+sponsors:
+  eyebrow: Sponsors
+  title: Kept going by people who build with it
 ---

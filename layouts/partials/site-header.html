@@ -1,24 +1,34 @@
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="{{.Site.BaseURL}}">
-      <img src='{{ relURL "img/nerves.svg" }}' alt="Nerves" style="max-height: 4rem">
-    </a>
-    <a role="button" class="navbar-burger" aria-label="menu" data-target="appHeaderNavbarMenu">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-
-  <div id="appHeaderNavbarMenu" class="navbar-menu">
-    {{ if .Site.Menus.main }}
-      <div class="navbar-end">
-        {{ range .Site.Menus.main }}
-          <a href="{{ .URL }}" class='navbar-item has-text-centered {{ cond (eq $.RelPermalink .URL) " is-active" "" }}'>
-            {{ cond (eq .Name "Github") (partial "github-logo" .)  .Name }}
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" data-site-header>
+  <div class="wrap site-header__bar">
+    <div class="site-header__left">
+      <a class="site-header__logo" href="{{ relURL "/" }}" aria-label="Nerves, home">
+        <img src="{{ relURL "img/nerves.svg" }}" alt="Nerves" width="140" height="30">
+      </a>
+      <nav class="nav" id="site-nav" aria-label="Main">
+        {{- $current := .RelPermalink }}
+        {{- if hasPrefix $current "/newsletter/" }}{{ $current = "/blog/" }}{{ end }}
+        {{- if hasPrefix $current "/tags/" }}{{ $current = "/articles/" }}{{ end }}
+        {{- range .Site.Menus.main }}
+          {{- $external := .Params.external }}
+          {{- $active := and (not $external) (hasPrefix $current .URL) }}
+          <a class="nav__link{{ if $active }} is-active{{ end }}" href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>
+            {{- .Name -}}
+            {{- if $external }}{{ partial "ui/icon" (dict "name" "external" "size" 12) }}{{ end -}}
           </a>
-        {{ end }}
-      </div>
-    {{ end }}
+        {{- end }}
+        <a class="nav__link nav__github" href="{{ .Site.Params.github }}">GitHub</a>
+      </nav>
+    </div>
+    <div class="site-header__right">
+      <a class="site-header__github" href="{{ .Site.Params.github }}">
+        {{ partial "ui/icon" (dict "name" "github" "size" 20) }}<span>GitHub</span>
+      </a>
+      <span class="site-header__divider" aria-hidden="true"></span>
+      <a class="btn btn--sm site-header__cta" href="{{ relURL "getting_started/" }}">Get started</a>
+      <button class="site-header__burger" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Menu" data-nav-toggle>
+        {{ partial "ui/icon" (dict "name" "menu" "size" 24) }}
+      </button>
+    </div>
   </div>
-</nav>
+</header>

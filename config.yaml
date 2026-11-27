@@ -7,66 +7,103 @@ Copyright: 'The Nerves Project Authors'
 # https://gohugo.io/variables/site/#the-siteparams-variable
 params:
   description: >
-    Nerves is the open-source platform and infrastructure you need to build,
-    deploy, and securely manage your fleet of IoT devices at speed and scale.
+    Nerves is the open-source embedded framework for shipping products with
+    Elixir. Made for teams putting devices in the field, and happy to help with
+    weekend projects too.
   dateFormat: "January 2, 2006"
+  github: https://github.com/nerves-project
+  discord: https://discord.gg/7TqSpepHw7
+  docs: https://hexdocs.pm/nerves
 
 # https://gohugo.io/content-management/menus
+# main: the header nav. The footer columns are footer_learn, footer_project,
+# footer_community and footer_blog.
 menu:
   main:
+    - name: Docs
+      url: https://hexdocs.pm/nerves
+      weight: 1
+      params:
+        external: true
     - name: Learn
-      url: /learn
-      weight: 1
+      url: /learn/
+      weight: 2
     - name: Code
-      url: /code
-      weight: 2
-    - name: 'Community'
-      url: '/community'
+      url: /code/
       weight: 3
-    - name: 'Sponsors'
-      url: '/sponsors'
+    - name: Related projects
+      url: /related_projects/
       weight: 4
-    - name: 'Videos'
-      url: '/videos'
+    - name: Community
+      url: /community/
       weight: 5
-    - name: 'Articles'
-      url: '/articles'
+    - name: Blog
+      url: /blog/
       weight: 6
-  footer1:
-    - name: 'Docs'
-      url: 'https://hexdocs.pm/nerves'
+    - name: Videos
+      url: /videos/
+      weight: 7
+    - name: Articles
+      url: /articles/
+      weight: 8
+    - name: Sponsors
+      url: /sponsors/
+      weight: 9
+  footer_learn:
+    - name: Docs
+      url: https://hexdocs.pm/nerves
       weight: 1
-    - name: 'Newsletter'
-      url: '/newsletter'
+    - name: Getting started
+      url: /getting_started/
       weight: 2
-    - name: 'Cases'
-      url: '/cases'
+    - name: Books
+      url: /learn/#books
       weight: 3
-  footer2:
-    - name: 'Forum'
-      url: 'https://elixirforum.com/nerves'
-      pre: 'img/elixir-forum.svg'
+    - name: Videos
+      url: /videos/
+      weight: 4
+  footer_project:
+    - name: Code
+      url: /code/
       weight: 1
-    - name: 'Github'
-      url: 'https://github.com/nerves-project'
-      pre: 'img/github.svg'
+    - name: Cases
+      url: /cases/
       weight: 2
-    - name: 'Discord'
-      url: 'https://discord.gg/7TqSpepHw7'
-      pre: 'img/discord.svg'
+    - name: Articles
+      url: /articles/
       weight: 3
-    - name: 'Bluesky'
-      url: 'https://bsky.app/profile/nerves-project.org'
-      pre: 'img/bsky.svg'
+    - name: Related projects
+      url: /related_projects/
       weight: 4
-    - name: 'Mastodon'
-      url: 'https://fosstodon.org/@NervesProject'
-      pre: 'img/mastodon.svg'
-      weight: 4
-    - name: 'Meetup'
-      url: 'https://www.meetup.com/nerves'
-      pre: 'img/meetup.svg'
+    - name: Sponsors
+      url: /sponsors/
       weight: 5
+  footer_community:
+    - name: Discord
+      url: https://discord.gg/7TqSpepHw7
+      weight: 1
+    - name: GitHub
+      url: https://github.com/nerves-project
+      weight: 2
+    - name: Meetup
+      url: https://www.meetup.com/nerves
+      weight: 3
+    - name: Bluesky
+      url: https://bsky.app/profile/nerves-project.org
+      weight: 4
+    - name: Mastodon
+      url: https://fosstodon.org/@NervesProject
+      weight: 5
+  footer_blog:
+    - name: Subscribe
+      url: /blog/#subscribe
+      weight: 1
+    - name: All posts
+      url: /blog/
+      weight: 2
+    - name: RSS feed
+      url: /blog/index.xml
+      weight: 3
 
 # https://gohugo.io/content-management/taxonomies/
 taxonomies:

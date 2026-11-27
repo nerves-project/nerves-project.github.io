@@ -1,41 +1,31 @@
-<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>
-    {{- if and .Title (not (eq .Title .Site.Title)) -}}
+    {{- if and .Title (not .IsHome) -}}
       {{ .Title }} | {{ .Site.Title }}
     {{- else -}}
-      {{ .Site.Title }}
+      {{ .Site.Title }}: Elixir ❤️ Embedded
     {{- end -}}
   </title>
-
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#42a7c6">
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description | plainify | strings.TrimSpace }}{{ end }}">
+  <meta name="theme-color" content="#f4efe4">
   {{ template "_internal/twitter_cards.html" . }}
   {{ template "_internal/opengraph.html" . }}
 
-  <link rel="shortcut icon" type="image/png" href="{{ relURL "img/icon.png" }}">
+  <link rel="icon" type="image/png" href="{{ relURL "img/icon.png" }}">
+  {{ with .OutputFormats.Get "rss" }}<link rel="alternate" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Title }}">{{ end }}
+  <link rel="preload" href="{{ relURL "fonts/nunito-sans-normal-latin.woff2" }}" as="font" type="font/woff2" crossorigin>
 
-  {{/* https://gohugo.io/functions/css/sass/ */}}
-  {{/* Dart Sass is provided by the sass-embedded npm package (see bin/server). */}}
-  {{/* The silenced deprecations come from Bulma 0.9 and our use of @import. */}}
-  {{ $silence := slice "import" "global-builtin" "color-functions" "if-function" }}
+  {{/* Dart Sass comes from the sass-embedded npm package (see bin/server). */}}
+  {{ $opts := dict "targetPath" "css/main.css" "enableSourceMap" hugo.IsServer }}
+  {{ $styles := resources.Get "scss/main.scss" | css.Sass $opts }}
   {{ if hugo.IsServer }}
-    {{ $cssOpts := (dict "targetPath" "css/main.css" "enableSourceMap" true "silenceDeprecations" $silence) }}
-    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | css.Sass $cssOpts }}
-    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}">
   {{ else }}
-    {{ $cssOpts := (dict "targetPath" "css/main.css" "silenceDeprecations" $silence) }}
-    {{ $styles := resources.Get "scss/main.scss" | resources.ExecuteAsTemplate "style.main.css" . | css.Sass $cssOpts | minify | fingerprint }}
-    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}" crossorigin="anonymous" media="screen" />
+    {{ $styles = $styles | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}" crossorigin="anonymous">
   {{ end }}
 
-  {{/* https://gohugo.io/hugo-pipes/js */}}
-  {{ if hugo.IsServer }}
-    {{ $script := resources.Get "js/main.js" | js.Build }}
-    <script src="{{ $script.RelPermalink }}"></script>
-  {{ else }}
-    {{ $script := resources.Get "js/main.js" | js.Build | minify | fingerprint }}
-    <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}"></script>
-  {{ end }}
-</head>
+  {{ $js := resources.Get "js/main.js" | js.Build (dict "minify" (not hugo.IsServer)) }}
+  {{ if not hugo.IsServer }}{{ $js = $js | fingerprint }}{{ end }}
+  <script src="{{ $js.RelPermalink }}" defer{{ with $js.Data.Integrity }} integrity="{{ . }}"{{ end }}></script>

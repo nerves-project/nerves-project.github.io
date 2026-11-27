@@ -1,0 +1,47 @@
+// The palette: paper, ink and pencil from the PCB hero, Nerves blue, and the four layer colours
+// the hero uses for Application, BEAM, System and Tooling.
+:root {
+  --paper: #f4efe4;
+  --paper-deep: #eae3d4;
+  --sheet: #fbf8f1;
+  --card: #fffdf6;
+  --white: #ffffff;
+
+  --ink: #26221f;
+  --ink-2: #3b3631;
+  --pencil: #4a453f;
+  --pencil-2: #5b5650;
+  --muted: #6e685f;
+  --faint: #8a847b;
+  --placeholder: #9a9287;
+
+  --rule: #ddd4c3;
+  --rule-2: #d3cab8;
+  --line: #e2daca;
+  --tag: #eae3d4;
+
+  --blue: #33647e;
+  --blue-dark: #1f4152;
+  --night: #1f3742;
+  --sky: #42a7c6;
+  --sky-tint: #d9eaf0;
+  --heart: #e4573d;
+
+  --app: #42c6e8;
+  --beam: #a46fe0;
+  --system: #f0a03c;
+  --tooling: #4fd18b;
+  --app-ink: #378498;
+  --beam-ink: #725093;
+  --system-ink: #9f6e30;
+  --tooling-ink: #3f8b60;
+  --tooling-tint: #eef6ef;
+
+  --sans: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --hand: 'Caveat', 'Segoe Print', cursive;
+
+  --gutter: clamp(20px, 6.67vw, 96px);
+  --content: 1248px;
+  --radius: 16px;
+}

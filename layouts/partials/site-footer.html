@@ -1,25 +1,26 @@
-<footer class="has-background-primary-light has-text-centered pt-6 pb-2">
-  <div class="has-text-centered mb-4"><img src='{{ relURL "img/nerves.svg" }}' style="height:4rem"></div>
-  <div class="is-justify-content-center my-4">
-    {{ range .Site.Menus.footer2 }}
-      <a href="{{ .URL }}" class="mx-2" title="{{ .Name }}">
-        <img src="{{ relURL .Pre }}" width="30rem">
-      </a>
-    {{ end }}
-  </div>
-  <div class="navbar-start is-justify-content-center my-4">
-    {{ range .Site.Menus.footer1 }}
-      <a href="{{ .URL }}" class='navbar-item {{ cond (eq $.RelPermalink .URL) " is-active" "" }}'>
-        {{ .Name }}
-      </a>
-    {{ end }}
-  </div>
-  <div class="has-text-grey is-size-6">
-    &copy;
-    {{ with .Site.Copyright | default .Site.Title }}
-      {{ . | safeHTML }} {{ now.Format "2006"}}
-    {{ end }}
-    <br>
-    Nerves and the Nerves logo are <a href="{{ relURL "trademarks" }}">trademarks of the Nerves Project Authors</a>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <img src="{{ relURL "img/nerves.svg" }}" alt="Nerves" width="150" height="32">
+        <p>Craft and deploy bulletproof embedded software in Elixir. Made with care by the core team and a lot of lovely contributors.</p>
+      </div>
+      <div class="site-footer__cols">
+        {{- range slice (slice "Learn" "footer_learn") (slice "Project" "footer_project") (slice "Community" "footer_community") (slice "Blog" "footer_blog") }}
+        <div class="site-footer__col">
+          <h2>{{ index . 0 }}</h2>
+          <ul>
+            {{- range index site.Menus (index . 1) }}
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            {{- end }}
+          </ul>
+        </div>
+        {{- end }}
+      </div>
+    </div>
+    <div class="site-footer__legal">
+      <p>&copy; {{ now.Format "2006" }} {{ .Site.Copyright }}. Nerves and the Nerves logo are <a href="{{ relURL "trademarks/" }}">trademarks</a> of the Nerves Project Authors.</p>
+      <p class="site-footer__love" aria-label="Elixir loves embedded">Elixir {{ partial "ui/icon" (dict "name" "heart" "size" 18) }} Embedded</p>
+    </div>
   </div>
 </footer>

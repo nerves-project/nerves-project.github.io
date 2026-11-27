@@ -1,0 +1,8 @@
+{{- /* A plain page header: eyebrow, title and lede. Usage: partial "page-head" (dict "eyebrow" "" "title" "" "lede" "") */ -}}
+<header class="page-head">
+  <div class="wrap">
+    {{ with .eyebrow }}<span class="eyebrow">{{ . }}</span>{{ end }}
+    <h1 class="display">{{ .title | safeHTML }}</h1>
+    {{ with .lede }}<div class="lede page-head__lede">{{ . | markdownify }}</div>{{ end }}
+  </div>
+</header>

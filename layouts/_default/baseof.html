@@ -1,12 +1,14 @@
 <!doctype html>
-<html lang="{{ $.Site.Language.Locale | default "en" }}">
-  {{ partial "head" . }}
-
-  <body data-type="{{.Type}}" data-kind="{{.Kind}}" data-is-home="{{.IsHome}}">
-    {{ block "header" . }}{{ partial "site-header" . }}{{end}}
-
-    {{ block "main" . }}{{ end }}
-
-    {{ block "footer" . }}{{ partial "site-footer" . }}{{end}}
+<html lang="{{ site.Language.Locale | default "en" }}">
+  <head>
+    {{ partial "head" . }}
+    {{ block "head" . }}{{ end }}
+  </head>
+  <body class="page-{{ .Type }}{{ if .IsHome }} page-home{{ end }}">
+    {{ block "header" . }}{{ partial "site-header" . }}{{ end }}
+    <main id="main">
+      {{ block "main" . }}{{ end }}
+    </main>
+    {{ block "footer" . }}{{ partial "site-footer" . }}{{ end }}
   </body>
 </html>

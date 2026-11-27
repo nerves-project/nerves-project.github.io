@@ -1,0 +1,27 @@
+{{- /* Inline SVG icons. Usage: partial "ui/icon" (dict "name" "arrow" "size" 16) */ -}}
+{{- $s := .size | default 16 -}}
+{{- $n := .name -}}
+{{- if eq $n "arrow" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{{- else if eq $n "arrow-left" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{{- else if eq $n "arrow-down" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{{- else if eq $n "external" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2h6v6M10 2 3 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{{- else if eq $n "github" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+{{- else if eq $n "copy" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 18 18" aria-hidden="true"><rect x="6" y="6" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 4v-.5A1.5 1.5 0 0 0 10.5 2h-6A1.5 1.5 0 0 0 3 3.5v6A1.5 1.5 0 0 0 4.5 11H5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+{{- else if eq $n "check" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{{- else if eq $n "heart" -}}
+<svg width="{{ $s }}" height="{{ mul $s 0.9 }}" viewBox="0 0 30 27" aria-hidden="true"><path d="M15 25C9 20.5 2.5 15.5 2.2 9.3 2 5 5 2.2 8.4 2.3c2.9.1 5 2 6.4 4.8C16.3 4 18.7 1.9 21.8 2c3.6.1 6.4 3 6 7.3-.5 6.2-6.6 11-12.8 15.7z" fill="#E4573D" stroke="#26221F" stroke-width="2.2" stroke-linejoin="round"/></svg>
+{{- else if eq $n "menu" -}}
+<svg class="icon-open" width="{{ $s }}" height="{{ $s }}" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+<svg class="icon-close" width="{{ $s }}" height="{{ $s }}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+{{- else if eq $n "wave" -}}
+<svg class="year-rule__wave" viewBox="0 0 1100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 5c40-4 80 4 120 0s80-4 120 0 80 4 120 0 80-4 120 0 80 4 120 0 80-4 120 0 80 4 120 0 80-4 120 0 80 4 120 0" fill="none" stroke="#C9BFAD" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+{{- else if eq $n "play" -}}
+<svg width="{{ $s }}" height="{{ $s }}" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+{{- end -}}

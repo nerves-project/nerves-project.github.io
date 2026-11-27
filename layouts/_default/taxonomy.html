@@ -1,17 +1,12 @@
 {{ define "main" }}
-
-{{/*
-  Example URL: /tags/case/
-*/}}
-
-<section class="hero is-primary hero-gradient">
-  <div class="hero-body">
-    <p class="title">Tag: {{.Title}}</p>
-  </div>
-</section>
-<main class="container my-6 px-4">
-  <div class="content">{{ .Content }}</div>
-  {{ partial "articles.html" . }}
-</main>
-
+{{ partial "page-head" (dict "eyebrow" .Params.eyebrow "title" .Title "lede" .Params.lede) }}
+<div class="wrap section--tight">
+  {{ with .Content }}<div class="prose prose--page">{{ . }}</div>{{ end }}
+  <ul class="simple-list">
+    {{ range .Paginator.Pages }}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> <span>{{ .Date.Format "Jan 2, 2006" }}</span></li>
+    {{ end }}
+  </ul>
+  {{ partial "pager" .Paginator }}
+</div>
 {{ end }}

@@ -1,116 +1,284 @@
-{{ define "main" }}
+{{ define "head" }}
+  <link rel="stylesheet" href="{{ relURL "hero-pcb/pcb-hero.css" }}">
+  <link rel="stylesheet" href="{{ relURL "hero-pcb/nerves-demo.css" }}">
+  <link rel="modulepreload" href="{{ relURL "hero-pcb/pcb-hero.js" }}">
+{{ end }}
 
-<header class="hero is-primary is-medium"
-  style="background-image:url(img/smart-city.svg);background-repeat:no-repeat;background-position:100%">
-  <div class="hero-body" style="background:linear-gradient(135deg, rgba(51,100,126,0.9) 0%, rgba(66,167,198,0.8) 100%)">
-    <div class="container">
-      <p class="title is-2 mb-4">{{ .Params.Tagline }}</p>
-      <p class="is-size-5 mb-6 hero-blurb">
-        {{ .Params.aboutNerves | markdownify }}
+{{ define "main" }}
+{{ $p := .Params }}
+
+{{/* ------------------------------------------------------------ hero */}}
+{{ with $p.hero }}
+<section class="home-hero" data-hero>
+  <div class="wrap home-hero__inner">
+    <div class="home-hero__copy" data-hero-copy>
+      <p class="home-hero__love" aria-label="Elixir loves embedded">
+        <span>Elixir</span>
+        <svg width="30" height="27" viewBox="0 0 30 27" aria-hidden="true"><path d="M15 25C9 20.5 2.5 15.5 2.2 9.3 2 5 5 2.2 8.4 2.3c2.9.1 5 2 6.4 4.8C16.3 4 18.7 1.9 21.8 2c3.6.1 6.4 3 6 7.3-.5 6.2-6.6 11-12.8 15.7z" fill="#E4573DE6" stroke="#26221F" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 7.2c-1.3.6-2 1.8-2 3.1" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/></svg>
+        <span>Embedded</span>
       </p>
-      <a href="#getting_started" class="button is-primary is-light is-large mb-2 mr-2 hero-cta">
-        Get started
-      </a>
-      <a href="#features" class="button is-primary is-light is-large mb-2 hero-cta">
-        Features
-      </a>
+      <h1 class="home-hero__title">{{ .title | safeHTML }}</h1>
+      <div class="home-hero__text">{{ .text | markdownify }}</div>
+      <div class="home-hero__actions">
+        <a class="btn" href="{{ relURL "getting_started/" }}">Get started {{ partial "ui/icon" (dict "name" "arrow") }}</a>
+        <a class="btn btn--ghost" href="{{ site.Params.docs }}">Read the docs</a>
+      </div>
+      <div class="cmd">
+        <span><span class="cmd__prompt">$</span><code>{{ .install }}</code></span>
+        <button class="cmd__copy" type="button" aria-label="Copy" data-copy>{{ partial "ui/icon" (dict "name" "copy" "size" 18) }}</button>
+      </div>
     </div>
   </div>
-</header>
-<section id="getting_started" class="container pt-6">
-  <ul class="rows mb-6">
-    {{ range $index, $el := .Params.getting_started }}
-    <li class="row section">
-      <div class="columns">
-        {{ with .examples }}
-        <div class="column">
-          <div class="content">
-            <h3 class="title is-3 has-text-centered">{{ $el.name }}</h3>
-            {{ $el.description }}
-            <a href="{{ $el.link }}" class="cta-link">
-              <span>{{ $el.link_text }}</span>
-              <span class="cta-arrow">&rarr;</span>
-            </a>
-          </div>
-        </div>
-        <div class="column">
-          <div class="columns is-mobile">
-            {{ range . }}
-            <div class="column">
-              <a href="{{ .link }}" class="px-3">
-                <img src="{{ relURL .image }}" width="100rem">
-              </a>
+  <div class="home-hero__stack" id="hero-stack">
+    <p class="home-hero__credit">{{ .credit | markdownify }}</p>
+  </div>
+  <p class="home-hero__hint" aria-hidden="true">
+    <span>psst, hover the board to peel back the layers</span>
+    <svg width="44" height="40" viewBox="0 0 44 40"><path d="M3 34c10 2 22-2 29-12 3-5 4-10 4-15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M29 11l7-6 4 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </p>
+</section>
+<script type="module">
+  import { mountPcbHero } from '{{ relURL "hero-pcb/pcb-hero.js" }}';
+  import { mountNervesDemo } from '{{ relURL "hero-pcb/nerves-demo.js" }}';
+  const host = document.querySelector('[data-hero]');
+  const stack = document.getElementById('hero-stack');
+  try {
+    const hero = await mountPcbHero(stack, { dataUrl: '{{ relURL "hero-pcb/pcb.json" }}', backdrop: '{{ relURL "hero-pcb/nerves-mark.svg" }}' });
+    host.classList.add('is-live');
+    // "Try Me" on the board: Nerves boots in the page and the terminal opens over the copy
+    mountNervesDemo({ hero, host, copy: host.querySelector('[data-hero-copy]') });
+  } catch (e) {
+    console.warn('[hero] the board did not load:', e);
+    host.classList.add('is-static');
+  }
+</script>
+{{ end }}
+
+{{/* ------------------------------------------------------------ start here */}}
+{{ with $p.start }}
+<section class="section home-start" aria-labelledby="start-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="h2" id="start-title">{{ .title }}</h2>
+      </div>
+      <p class="section-head__aside">{{ .aside }}</p>
+    </div>
+    <div class="paths">
+      {{ range .paths }}
+      <a class="card path path--{{ .kind }}" href="{{ .link }}">
+        <div class="path__art" aria-hidden="true">
+          {{ if eq .kind "livebook" }}
+            <img src="{{ relURL "img/nerves_livebook.png" }}" alt="" loading="lazy">
+          {{ else if eq .kind "examples" }}
+            <div class="path__tree">
+              <strong>nerves_examples/</strong>
+              <ul><li>blinky/</li><li>hello_live_view/</li><li>hello_phoenix/</li><li>hello_wifi/</li></ul>
             </div>
-            {{ end }}
-          </div>
+          {{ else }}
+            <div class="path__term">
+              <div class="path__dots"><i></i><i></i><i></i></div>
+<pre><span class="d">$</span> mix nerves.new my_device
+<span class="c">* creating</span> my_device/mix.exs
+<span class="c">* creating</span> my_device/config/target.exs
+<span class="d">$</span> MIX_TARGET=rpi5 mix firmware</pre>
+            </div>
+          {{ end }}
         </div>
-        {{ else}}
-        <div class="column">
-          <figure class="image">
-            <a href="{{ .link }}">
-              <img src="{{ relURL .image }}">
-            </a>
-          </figure>
+        <div class="path__body">
+          <div class="path__label"><span class="eyebrow eyebrow--muted">{{ .label }}</span>{{ with .badge }}<span class="pill">{{ . }}</span>{{ end }}</div>
+          <h3 class="h3">{{ .title }}</h3>
+          <p class="path__text">{{ .text }}</p>
+          <span class="arrow-link">{{ .link_text }} {{ partial "ui/icon" (dict "name" "arrow") }}</span>
         </div>
-        <div class="column">
-          <div class="content">
-            <h3 class="title is-3 has-text-centered">{{ .name }}</h3>
-            {{ .description }}
-            <a href="{{ .link }}" class="cta-link">
-              <span>{{ .link_text }}</span>
-              <span class="cta-arrow">&rarr;</span>
-            </a>
-          </div>
+      </a>
+      {{ end }}
+    </div>
+    <div class="boards">
+      <div class="boards__list">
+        <strong>{{ .boards_title }}</strong>
+        <ul>{{ range .boards }}<li class="board-chip">{{ . }}</li>{{ end }}</ul>
+      </div>
+      <a class="arrow-link arrow-link--sm" href="{{ .targets_link }}">All targets {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* ------------------------------------------------------------ the stack */}}
+{{ with $p.stack }}
+<section class="section home-stack" aria-labelledby="stack-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head__title home-stack__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="h2" id="stack-title">{{ .title }}</h2>
+      </div>
+      <p class="section-head__aside">{{ .aside }}</p>
+    </div>
+    <ol class="layers">
+      {{ range .layers }}
+      <li class="layer layer--{{ .key }}">
+        <div class="layer__name">
+          <span class="layer__bar" aria-hidden="true"></span>
+          <div><span class="layer__code">{{ .code }}</span><h3>{{ .name }}</h3></div>
+        </div>
+        <p class="layer__text">{{ .text }}</p>
+        <ul class="layer__parts">{{ range .parts }}<li>{{ . }}</li>{{ end }}</ul>
+      </li>
+      {{ end }}
+    </ol>
+    <div class="why">
+      <p class="why__note"><span class="note">{{ .why }}</span>
+        <svg width="60" height="14" viewBox="0 0 60 14" aria-hidden="true"><path d="M2 8c8-5 14 4 22 0s14-5 22 0c4 2.5 8 2 12-1" fill="none" stroke="#33647E" stroke-width="2" stroke-linecap="round"/></svg></p>
+      <ul class="why__list">
+        {{ range .features }}
+        <li>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12" fill="none" stroke="#26221F" stroke-width="1.8"/><path d="M8.5 14.5l3.8 3.7 7.4-8" fill="none" stroke="#33647E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><h3>{{ .name }}</h3><p>{{ .text }}</p></div>
+        </li>
+        {{ end }}
+      </ul>
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* ------------------------------------------------------------ who it's for */}}
+{{ with $p.audience }}
+<section class="section home-audience" aria-labelledby="audience-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="h2" id="audience-title">{{ .title }}</h2>
+      </div>
+      <p class="section-head__aside">{{ .aside }}</p>
+    </div>
+    <div class="audience">
+      {{ range $i, $a := slice .teams .tinkerers }}
+      <div class="audience__card audience__card--{{ cond (eq $i 0) "teams" "tinkerers" }}">
+        <div class="audience__head"><span class="eyebrow">{{ $a.eyebrow }}</span><h3>{{ $a.title }}</h3></div>
+        <ul>
+          {{ range $a.points }}
+          <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M5 11.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>{{ . }}</span></li>
+          {{ end }}
+        </ul>
+        <a class="arrow-link" href="{{ $a.link }}">{{ $a.link_text }} {{ partial "ui/icon" (dict "name" "arrow") }}</a>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* ------------------------------------------------------------ cases */}}
+{{ with $p.cases }}
+<section class="section home-cases" aria-labelledby="cases-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="h2" id="cases-title">{{ .title }}</h2>
+      </div>
+      <a class="arrow-link" href="{{ relURL "cases/" }}">All case studies {{ partial "ui/icon" (dict "name" "arrow") }}</a>
+    </div>
+    <div class="cases">
+      {{ range .items }}
+      <a class="case" href="{{ .url }}">
+        <img src="{{ relURL .image }}" alt="" loading="lazy">
+        <span class="eyebrow eyebrow--muted">{{ .sector }}</span>
+        <h3 class="h3">{{ .name }}</h3>
+        <p>{{ .text }}</p>
+      </a>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* ------------------------------------------------------------ community */}}
+{{ with $p.community }}
+<section class="section home-community" aria-labelledby="community-title">
+  <div class="wrap home-community__inner">
+    <div class="home-community__main">
+      <div class="section-head__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="h2" id="community-title">{{ .title }}</h2>
+        <p class="home-community__text">{{ .text }}</p>
+      </div>
+      <ul class="channels">
+        {{ range .channels }}
+        <li><a href="{{ .url }}">
+          <img src="{{ relURL .icon }}" alt="" width="30" height="30">
+          <strong>{{ .name }}</strong>
+          <span>{{ .text }}</span>
+          {{ partial "ui/icon" (dict "name" "arrow") }}
+        </a></li>
+        {{ end }}
+      </ul>
+      <p class="also">
+        <span>Also on</span>
+        {{ range .also }}<a href="{{ .url }}"><img src="{{ relURL .icon }}" alt="" width="18" height="18">{{ .name }}</a>{{ end }}
+      </p>
+    </div>
+    <aside class="home-community__side">
+      {{ with .newsletter }}
+      <div class="nl-card" id="subscribe">
+        <div class="nl-card__top">
+          <span class="eyebrow eyebrow--muted">{{ .eyebrow }}</span>
+          <img src="{{ relURL "img/newsletter.svg" }}" alt="" width="34" height="34">
+        </div>
+        <h3>{{ .title }}</h3>
+        <p>{{ .text }}</p>
+        {{ partial "newsletter-form" (dict "page" $ "id" "home") }}
+        {{ with first 1 (where site.RegularPages "Section" "newsletter").ByDate.Reverse }}
+        {{ range . }}
+        <div class="nl-card__latest">
+          <span>Latest issue · {{ .Date.Format "Jan 2" }}</span>
+          <div><a href="{{ .RelPermalink }}">{{ .Title }}</a><a class="nl-card__blog" href="{{ relURL "blog/" }}">Read the blog →</a></div>
         </div>
         {{ end }}
+        {{ end }}
       </div>
-    </li>
-    {{ end }}
-  </ul>
-</section>
-
-{{ partial "home/features.html" . }}
-
-<section id="newsletter" class="hero is-white py-6">
-  <div class="hero-body">
-    <div class="columns">
-      <div class="column">
-        <h2 class="title is-2 pb-2">Newsletter</h2>
-        <p class="subtitle">
-          Stay on top of Nerves development and community news by subscribing to our biweekly newsletter provided with ❤️ by
-          <span class="icon-text">
-            <span><a href="https://underjord.io">Underjord.io</a></span>
-            <span class="icon">
-              <img src="https://underjord.io/img/logo2.svg"></img>
-            </span>
-          </span>
-        </p>
-        <div class="content py-4">
-          Some topics in each issue include:
-
-          <ul>
-            <li>Project news and releases</li>
-            <li>Featured projects</li>
-            <li>Featured talks</li>
-            <li>Technical notes explaining parts of Nerves, straight from the core team</li>
-            <li>Community contribution opportunities</li>
-            <li>Possibly sponsors if there is interest</li>
-          </ul>
-        </div>
-        {{ partial "newsletter-signup.html" }}
-        <div class="has-text-link mt-2">
-          <a href="https://underjord.io/nerves-newsletter.html">More info</a> |
-          <a href="{{ relURL "newsletter" }}">Past issues</a> |
-          <a href="https://underjord.io/feed.xml">RSS feed</a>
-        </div>
+      {{ end }}
+      <div class="fresh">
+        <h3 class="eyebrow eyebrow--muted">{{ .writing_title }}</h3>
+        <ul>
+          {{ range first 3 (where site.RegularPages "Section" "articles").ByDate.Reverse }}
+          <li>
+            <a href="{{ with .Params.external }}{{ . }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Title }}</a>
+            <span>Article · {{ if eq (.Date.Year) now.Year }}{{ .Date.Format "Jan 2" }}{{ else }}{{ .Date.Format "Jan 2, 2006" }}{{ end }}{{ with .Params.author }} · {{ . }}{{ end }}</span>
+          </li>
+          {{ end }}
+        </ul>
       </div>
-      <div class="column is-hidden-mobile">
-        <figure class="image is-1by1">
-          <img src='{{ relURL "img/system.svg" }}'>
-        </figure>
-      </div>
-    </div>
+    </aside>
   </div>
 </section>
+{{ end }}
+
+{{/* ------------------------------------------------------------ sponsors */}}
+{{ with $p.sponsors }}
+<section class="section home-sponsors" aria-labelledby="sponsors-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="home-sponsors__title" id="sponsors-title">{{ .title }}</h2>
+      </div>
+      <a class="btn btn--ghost btn--sm" href="{{ relURL "sponsors/" }}">Become a sponsor</a>
+    </div>
+    <ul class="sponsor-strip">
+      {{ range site.Data.sponsors.tiers }}
+        {{ range .sponsors }}
+        <li><a href="{{ .url }}" title="{{ .name }}"><img src="{{ .logo }}" alt="{{ .name }}"{{ if .dim }} class="is-dim"{{ end }} loading="lazy"></a></li>
+        {{ end }}
+      {{ end }}
+    </ul>
+  </div>
+</section>
+{{ end }}
 
 {{ end }}

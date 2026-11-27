@@ -1,10 +1,14 @@
-import modal from './modal'
-import Navbar from './navbar'
-import videos from './videos'
+// Small progressive enhancements. Every page works without them.
+import { initNav } from './nav'
+import { initCopy } from './copy'
+import { initFilters } from './filters'
+import { initToc } from './toc'
 
-Navbar.init()
-modal.init()
+const ready = (fn) => (document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', fn) : fn())
 
-if (window.location.href.indexOf("videos") != -1) {
-  videos.init()
-}
+ready(() => {
+  initNav()
+  initCopy()
+  initFilters()
+  initToc()
+})

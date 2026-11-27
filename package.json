@@ -1,6 +1,5 @@
 {
   "devDependencies": {
-    "bulma": "^0.9.4",
     "sass-embedded": "^1.108.2"
   }
 }

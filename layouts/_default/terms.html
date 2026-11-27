@@ -1,24 +1,11 @@
 {{ define "main" }}
-
-{{/*
-  Example URL: /tags/
-*/}}
-
-{{ partial "simple-hero" . }}
-
-<main class="container my-6 px-4">
-  <div class="columns is-multiline">
-    {{ range $key, $value := .Data.Terms.ByCount }}
-      <div class="column">
-        <a href="/tags/{{ $value.Name | urlize }}" class="button">
-          <span>{{ $value.Name }}</span>
-          <span class="tag is-rounded is-primary is-light">
-            {{ $value.Count }}
-          </span>
-        </a>
-      </div>
+{{ partial "page-head" (dict "eyebrow" .Params.eyebrow "title" .Title "lede" .Params.lede) }}
+<div class="wrap section--tight">
+  {{ with .Content }}<div class="prose prose--page">{{ . }}</div>{{ end }}
+  <ul class="simple-list">
+    {{ range .Data.Terms.ByCount }}
+    <li><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a> <span>{{ .Count }}</span></li>
     {{ end }}
-  </div>
-</main>
-
+  </ul>
+</div>
 {{ end }}

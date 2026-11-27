@@ -1,0 +1,23 @@
+{{- /*
+  The newsletter signup (Campaign Monitor, run by Underjord with tracking turned off).
+  Usage: partial "newsletter-form" (dict "page" . "id" "home" "button" "Subscribe")
+  The consent line is required by the form. The script that posts it is loaded once per page.
+*/ -}}
+{{- $id := .id | default "newsletter" -}}
+<form class="nl-form js-cm-form" id="nl-{{ $id }}" action="https://www.createsend.com/t/subscribeerror?description=" method="post" data-id="2BE4EF332AA2E32596E38B640E905619B3E6FE651D46DAC4A7C16AC3F71311A0451D1A231E3067593FFBB359236AFE1DEF2D25DD3E0DDA04BA4855B8188A4135">
+  <div class="nl-form__row">
+    <label class="sr-only" for="nl-{{ $id }}-email">Email address</label>
+    <input class="input js-cm-email-input" id="nl-{{ $id }}-email" name="cm-jrllyhk-jrllyhk" type="email" autocomplete="email" placeholder="you@example.com" maxlength="200" required>
+    <button class="btn btn--sm nl-form__submit" type="submit">{{ .button | default "Subscribe" }}</button>
+  </div>
+  <label class="nl-form__consent" for="nl-{{ $id }}-consent">
+    <input id="nl-{{ $id }}-consent" name="cm-privacy-consent" type="checkbox" required>
+    <span>Email me the newsletter. No tracking, unsubscribe any time.</span>
+  </label>
+  <input name="cm-privacy-consent-hidden" type="hidden" value="true">
+  <input name="cm-privacy-email-hidden" type="hidden" value="true">
+</form>
+{{- if and .page (not (.page.Store.Get "cm-script")) }}
+  {{- .page.Store.Set "cm-script" true }}
+  <script src="https://js.createsend1.com/javascript/copypastesubscribeformlogic.js" defer></script>
+{{- end }}

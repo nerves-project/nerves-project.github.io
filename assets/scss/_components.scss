@@ -1,0 +1,463 @@
+@use 'mixins' as *;
+
+// ---------------------------------------------------------------- type
+
+.eyebrow {
+  display: inline-block;
+  font: 500 13px/16px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+.eyebrow--muted { color: var(--pencil-2); font-size: 12px; }
+
+.display {
+  font: 900 64px/68px var(--sans);
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  @include below($tablet) { font-size: 52px; line-height: 56px; }
+  @include below($mobile) { font-size: 40px; line-height: 44px; letter-spacing: -0.03em; }
+}
+
+.h2 {
+  font: 900 46px/50px var(--sans);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  @include below($mobile) { font-size: 34px; line-height: 38px; }
+}
+
+.h3 {
+  font: 900 24px/30px var(--sans);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.lede {
+  font-size: 19px;
+  line-height: 30px;
+  color: var(--pencil);
+  @include below($mobile) { font-size: 17px; line-height: 27px; }
+}
+
+.muted { color: var(--pencil-2); }
+
+// A short handwritten margin note, kept to a few per page.
+.note {
+  font: 600 23px/1.05 var(--hand);
+  color: var(--blue);
+  display: inline-block;
+  transform: rotate(-2deg);
+}
+.note--pencil { color: var(--pencil-2); }
+
+// The highlighter swipe behind a word or two of a heading.
+.hl {
+  position: relative;
+  z-index: 0;
+  white-space: nowrap;
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: -0.06em;
+    right: -0.08em;
+    bottom: 0.04em;
+    height: 0.42em;
+    background: var(--sky);
+    opacity: 0.38;
+    border-radius: 4px 14px 6px 12px;
+    transform: rotate(-1.5deg);
+  }
+}
+.hl--green::before { background: var(--tooling); opacity: 0.4; }
+
+// ---------------------------------------------------------------- section heads
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 40px;
+  &__title { display: flex; flex-direction: column; gap: 12px; }
+  &__aside {
+    width: 420px;
+    flex-shrink: 0;
+    font-size: 17px;
+    line-height: 26px;
+    color: var(--pencil-2);
+  }
+  @include below($tablet) {
+    flex-direction: column;
+    align-items: flex-start;
+    &__aside { width: auto; max-width: 560px; }
+  }
+}
+
+// ---------------------------------------------------------------- links and buttons
+
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--blue);
+  svg { flex-shrink: 0; transition: transform 160ms ease; }
+  &:hover { text-decoration: none; svg { transform: translateX(3px); } }
+}
+.arrow-link--sm { font-size: 15px; gap: 6px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 24px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--blue);
+  box-shadow: 0 2px 0 var(--blue-dark);
+  color: var(--white);
+  font: 800 17px/22px var(--sans);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+  &:hover { text-decoration: none; background: #2d5a71; transform: translateY(-1px); box-shadow: 0 3px 0 var(--blue-dark); }
+  &:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--blue-dark); }
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  padding-inline: 22px;
+  &:hover { background: rgba(38, 34, 31, 0.05); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  &:active { box-shadow: inset 0 0 0 1.5px var(--ink); }
+}
+// keep the ghost outline on small ghost buttons
+.btn--ghost.btn--sm, .btn--ghost.btn--sm:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn--sm {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 15px;
+  line-height: 18px;
+  box-shadow: none;
+  &:hover { box-shadow: none; }
+}
+// the chunky inked button used on cards
+.btn--ink {
+  background: var(--white);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 11px 18px;
+  font-size: 15px;
+  line-height: 20px;
+  border-radius: 10px;
+  &:hover { background: var(--white); box-shadow: 4px 4px 0 var(--ink); }
+  &:active { box-shadow: 1px 1px 0 var(--ink); transform: translate(2px, 2px); }
+}
+
+// ---------------------------------------------------------------- chips and tags
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 13px/16px var(--mono);
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover { text-decoration: none; background: rgba(38, 34, 31, 0.05); }
+  &.is-active,
+  &[aria-pressed='true'],
+  &[aria-current='page'] {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 3px 3px 0 var(--blue);
+  }
+  &__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--tag);
+  color: var(--pencil);
+  font: 500 12px/16px var(--mono);
+  white-space: nowrap;
+  text-decoration: none;
+  &:hover { text-decoration: none; background: #e0d7c5; color: var(--ink); }
+}
+
+.board-chip {
+  display: inline-block;
+  padding: 6px 11px;
+  border: 1px solid var(--rule-2);
+  border-radius: 8px;
+  color: var(--pencil);
+  font: 500 13px/16px var(--mono);
+  white-space: nowrap;
+}
+
+.pill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #dceff4;
+  color: #24566b;
+  font: 800 12px/16px var(--sans);
+}
+
+// ---------------------------------------------------------------- surfaces
+
+// Inked card: thick ink border with an offset shadow, like the stickers in the hero.
+.ink-card {
+  background: var(--sheet);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+// Quiet card: the plain paper card.
+.card {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+// Ruled index card with a red margin line, for handwritten lists.
+.ruled {
+  --rule-h: 32px;
+  position: relative;
+  padding: 14px 24px 18px 54px;
+  background: repeating-linear-gradient(var(--card) 0, var(--card) calc(var(--rule-h) - 1px), #cfe3ea calc(var(--rule-h) - 1px), #cfe3ea var(--rule-h));
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 6px 8px 0 var(--ink);
+  line-height: var(--rule-h);
+  &::before {
+    content: '';
+    position: absolute;
+    left: 38px;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    background: #e7a598;
+  }
+  &__title { font: 900 19px/var(--rule-h) var(--sans); color: var(--ink); }
+  &__hand { font: 600 22px/var(--rule-h) var(--hand); color: var(--blue); }
+}
+
+// A tilted pill sticker with handwriting on it.
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--tooling);
+  color: var(--ink);
+  font: 700 21px/22px var(--hand);
+  transform: rotate(-4deg);
+  white-space: nowrap;
+}
+
+// The copyable command line.
+.cmd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 430px;
+  padding: 12px 14px 12px 16px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: 500 14px/20px var(--mono);
+  color: var(--ink);
+  > span { display: flex; min-width: 0; overflow: hidden; }
+  &__prompt { color: var(--placeholder); margin-right: 10px; user-select: none; }
+  code { font: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  &__copy {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    margin: -6px -6px -6px 0;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--pencil-2);
+    cursor: pointer;
+    flex-shrink: 0;
+    &:hover { background: var(--tag); color: var(--ink); }
+  }
+  &.is-copied &__copy { color: var(--tooling-ink); }
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: var(--blue);
+  color: var(--white);
+  font: 900 13px/1 var(--sans);
+  &--green { background: var(--tooling); color: var(--ink); }
+  &--lg { width: 64px; height: 64px; font-size: 22px; border-width: 2px; }
+}
+
+// Year marker in a list: handwritten year and a wavy rule.
+.year-rule {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 44px 0 8px;
+  &__year {
+    font: 700 34px/34px var(--hand);
+    color: var(--blue);
+    transform: rotate(-3deg);
+    flex-shrink: 0;
+  }
+  &__wave { flex: 1; height: 10px; min-width: 0; }
+  &:first-child { padding-top: 12px; }
+}
+
+// ---------------------------------------------------------------- forms
+
+.input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+  font: 400 16px/20px var(--sans);
+  &::placeholder { color: var(--faint); }
+}
+
+// ---------------------------------------------------------------- long-form text
+
+.prose {
+  font-size: 18px;
+  line-height: 30px;
+  color: var(--ink-2);
+  overflow-wrap: break-word;
+  > * + * { margin-top: 22px; }
+  h2 { margin-top: 44px; font: 900 28px/34px var(--sans); letter-spacing: -0.02em; color: var(--ink); }
+  h3 { margin-top: 32px; font: 900 22px/28px var(--sans); color: var(--ink); }
+  h4 { margin-top: 24px; font: 800 18px/26px var(--sans); color: var(--ink); }
+  h2 + *, h3 + *, h4 + * { margin-top: 12px; }
+  a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  strong, b { font-weight: 800; color: var(--ink); }
+  ul, ol { padding-left: 1.4em; }
+  ul { list-style: disc; }
+  ol { list-style: decimal; }
+  li + li { margin-top: 6px; }
+  li::marker { color: var(--faint); }
+  img { border-radius: 10px; }
+  figure figcaption { margin-top: 10px; font-size: 15px; line-height: 22px; color: var(--pencil-2); }
+  blockquote {
+    padding-left: 20px;
+    border-left: 3px solid var(--sky);
+    color: var(--pencil);
+    font-style: italic;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin-block: 40px; }
+  :not(pre) > code {
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--tag);
+    font-size: 0.85em;
+  }
+  pre {
+    padding: 18px 20px;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    background: var(--ink) !important;
+    box-shadow: 5px 5px 0 var(--ink);
+    color: var(--paper);
+    font-size: 14px;
+    line-height: 22px;
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 16px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--rule); text-align: left; }
+}
+
+// ---------------------------------------------------------------- pagination
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 40px;
+  a, span {
+    display: inline-grid;
+    place-items: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1.5px solid var(--ink);
+    border-radius: 10px;
+    font: 700 15px/1 var(--sans);
+    color: var(--ink);
+  }
+  a:hover { text-decoration: none; background: rgba(38, 34, 31, 0.05); }
+  .is-current { background: var(--ink); color: var(--paper); }
+  .is-disabled { opacity: 0.35; }
+}
+
+// ---------------------------------------------------------------- newsletter form
+
+.nl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  &__row { display: flex; gap: 8px; }
+  &__submit { height: 48px; flex-shrink: 0; padding-inline: 20px; font-size: 16px; }
+  &__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--pencil-2);
+    cursor: pointer;
+    input { margin: 2px 0 0; accent-color: var(--blue); flex-shrink: 0; }
+  }
+  @include below($mobile) {
+    &__row { flex-direction: column; }
+    &__submit { width: 100%; }
+  }
+}
+
+// ---------------------------------------------------------------- page head
+
+.page-head {
+  padding-block: 72px 48px;
+  .wrap { display: flex; flex-direction: column; gap: 16px; }
+  &__lede { max-width: 640px; padding-top: 4px; }
+  @include below($mobile) { padding-block: 40px 32px; }
+}
+.prose--page { max-width: 760px; }
+.simple-list {
+  li { display: flex; justify-content: space-between; gap: 16px; padding-block: 14px; border-top: 1px solid var(--rule); }
+  a { font-weight: 800; color: var(--ink); }
+  span { font: 13px/20px var(--mono); color: var(--faint); flex-shrink: 0; }
+}

@@ -1,0 +1,10 @@
+{{- /* Pagination. Usage: partial "pager" .Paginator */ -}}
+{{- if gt .TotalPages 1 }}
+<nav class="pager" aria-label="Pages">
+  {{ if .HasPrev }}<a href="{{ .Prev.URL }}" rel="prev">← Newer</a>{{ else }}<span class="is-disabled">← Newer</span>{{ end }}
+  {{ range .Pagers }}
+    {{ if eq . $.Paginator }}<span class="is-current" aria-current="page">{{ .PageNumber }}</span>{{ else }}<a href="{{ .URL }}">{{ .PageNumber }}</a>{{ end }}
+  {{ end }}
+  {{ if .HasNext }}<a href="{{ .Next.URL }}" rel="next">Older →</a>{{ else }}<span class="is-disabled">Older →</span>{{ end }}
+</nav>
+{{- end }}
