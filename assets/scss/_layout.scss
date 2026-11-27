@@ -103,13 +103,15 @@
     .icon-close { display: block; }
   }
 }
-.nav__github { display: none; }
+.nav__github,
+.nav__cta { display: none; }
 
 @include below($mobile) {
   .site-header__bar { height: 68px; }
   .site-header__logo img { width: 116px; height: 25px; }
   .site-header .nav { top: 62px; }
   .site-header__cta { display: none; }
+  .site-header .nav__cta { display: inline-flex; margin: 8px 4px 4px; }
 }
 
 // ---------------------------------------------------------------- footer
