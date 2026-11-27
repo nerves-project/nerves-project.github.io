@@ -4,31 +4,146 @@ title: Videos
 current_year: 2026
 videos_by_year:
   2026:
-    # 95 views
+    # 207 views
     - title: "Sneak Peak: Official Nerves Hardware Starter Kit"
       url: https://youtu.be/0igh46GLI6c
       thumbnail: https://img.youtube.com/vi/0igh46GLI6c/maxresdefault.jpg
       duration: "68:03"
-    # 139 views
-    - title: From concept to bright lights
-      url: https://youtu.be/pqlkyTZ0r6Y
-      thumbnail: https://img.youtube.com/vi/pqlkyTZ0r6Y/maxresdefault.jpg
-      duration: "48:16"
-    # 118 views
-    - title: Getting ready for the Nerves Starter Kit with the Simulator
-      url: https://youtu.be/Zj-qgU1TS_Q
-      thumbnail: https://img.youtube.com/vi/Zj-qgU1TS_Q/maxresdefault.jpg
-      duration: "1:29"
-    # 106 views
-    - title: Bringing Nerves and Home Assistant together
-      url: https://youtu.be/9Bu8JjFVjsM
-      thumbnail: https://img.youtube.com/vi/9Bu8JjFVjsM/maxresdefault.jpg
-      duration: "68:36"
-    # 5 views
+    # 1939 views
+    - title: The Everything App
+      url: https://youtu.be/CsB0CroGHsk
+      thumbnail: https://img.youtube.com/vi/CsB0CroGHsk/maxresdefault.jpg
+      duration: "40:06"
+    # 995 views
+    - title: Update from the Nerves Core Team
+      url: https://youtu.be/7VbPvlKxF9k
+      thumbnail: https://img.youtube.com/vi/7VbPvlKxF9k/maxresdefault.jpg
+      duration: "13:12"
+    # 693 views
+    - title: "Nerves, NIFs, and Snake"
+      url: https://youtu.be/oTuoPu4pYVs
+      thumbnail: https://img.youtube.com/vi/oTuoPu4pYVs/maxresdefault.jpg
+      duration: "38:40"
+    # 563 views
+    - title: Testing Concurrency and Fault Tolerance in Elixir/Nerves
+      url: https://youtu.be/PsreHakOr3c
+      thumbnail: https://img.youtube.com/vi/PsreHakOr3c/maxresdefault.jpg
+      duration: "24:24"
+    # 404 views
+    - title: Teaching the BEAM to See
+      url: https://youtu.be/zvFyCl4XEZI
+      thumbnail: https://img.youtube.com/vi/zvFyCl4XEZI/maxresdefault.jpg
+      duration: "32:59"
+    # 387 views
+    - title: "MoodBot: Raising a Tiny Robot with Elixir, Nerves, and AI"
+      url: https://youtu.be/7Z18Z99reTM
+      thumbnail: https://img.youtube.com/vi/7Z18Z99reTM/maxresdefault.jpg
+      duration: "21:23"
+    # 386 views
+    - title: Live coding a Nerves robot with Livebook
+      url: https://youtu.be/fOMoSvDGda4
+      thumbnail: https://img.youtube.com/vi/fOMoSvDGda4/maxresdefault.jpg
+      duration: "43:55"
+    # 277 views
+    - title: Connecting Nerves and AtomVM with Erlang Distribution
+      url: https://youtu.be/7kn5O4OOFF8
+      thumbnail: https://img.youtube.com/vi/7kn5O4OOFF8/maxresdefault.jpg
+      duration: "65:54"
+    # 255 views
+    - title: "Don't Get Pwned by Mythos"
+      url: https://youtu.be/CqaCVkIX2yQ
+      thumbnail: https://img.youtube.com/vi/CqaCVkIX2yQ/maxresdefault.jpg
+      duration: "56:31"
+    # 226 views
     - title: Will It Run Nerves? Bringing Nerves to New or Exotic Devices
       url: https://youtu.be/Wsy07qXk2xo
       thumbnail: https://img.youtube.com/vi/Wsy07qXk2xo/maxresdefault.jpg
       duration: "76:10"
+    # 201 views
+    - title: From OpenWRT to Nerves on the OpenWRT One
+      url: https://youtu.be/ZsUapEmk5Ec
+      thumbnail: https://img.youtube.com/vi/ZsUapEmk5Ec/maxresdefault.jpg
+      duration: "63:06"
+    # 192 views
+    - title: Creating the arcade game Grand Piano Keys with Nerves
+      url: https://youtu.be/x5f7SU5_Xjw
+      thumbnail: https://img.youtube.com/vi/x5f7SU5_Xjw/maxresdefault.jpg
+      duration: "27:54"
+    # 181 views
+    - title: From concept to bright lights
+      url: https://youtu.be/pqlkyTZ0r6Y
+      thumbnail: https://img.youtube.com/vi/pqlkyTZ0r6Y/maxresdefault.jpg
+      duration: "48:16"
+    # 165 views
+    - title: "From One LED to 10,000 Devices: Omer Kilic & Frank Hunleth on Nerves"
+      url: https://youtu.be/Wfl9Vp-jdN8
+      thumbnail: https://img.youtube.com/vi/Wfl9Vp-jdN8/maxresdefault.jpg
+      duration: "65:22"
+    # 161 views
+    - title: Getting ready for the Nerves Starter Kit with the Simulator
+      url: https://youtu.be/Zj-qgU1TS_Q
+      thumbnail: https://img.youtube.com/vi/Zj-qgU1TS_Q/maxresdefault.jpg
+      duration: "1:29"
+    # 159 views
+    - title: Designing a GUI framework for Nerves
+      url: https://youtu.be/0uDlsoPpoFE
+      thumbnail: https://img.youtube.com/vi/0uDlsoPpoFE/maxresdefault.jpg
+      duration: "91:42"
+    # 145 views
+    - title: Bringing Nerves and Home Assistant together
+      url: https://youtu.be/9Bu8JjFVjsM
+      thumbnail: https://img.youtube.com/vi/9Bu8JjFVjsM/maxresdefault.jpg
+      duration: "68:36"
+    # 106 views
+    - title: Nerves and Elixir as a full-stack solution for autonomy
+      url: https://youtu.be/W3JOzTwXMLM
+      thumbnail: https://img.youtube.com/vi/W3JOzTwXMLM/maxresdefault.jpg
+      duration: "37:54"
+    # 73 views
+    - title: "What's new with Nerves"
+      url: https://youtu.be/TEfSdKq10QA
+      thumbnail: https://img.youtube.com/vi/TEfSdKq10QA/maxresdefault.jpg
+      duration: "38:31"
+    # 66 views
+    - title: Numerical Elixir on Embedded Devices
+      url: https://youtu.be/JsJ0-Nr91tI
+      thumbnail: https://img.youtube.com/vi/JsJ0-Nr91tI/maxresdefault.jpg
+      duration: "56:53"
+    # 65 views
+    - title: So you want to develop a product with Nerves
+      url: https://youtu.be/g-r23Xu38bc
+      thumbnail: https://img.youtube.com/vi/g-r23Xu38bc/maxresdefault.jpg
+      duration: "45:44"
+    # 58 views
+    - title: Keeping secrets
+      url: https://youtu.be/cEguyV2q1oU
+      thumbnail: https://img.youtube.com/vi/cEguyV2q1oU/maxresdefault.jpg
+      duration: "33:42"
+    # 57 views
+    - title: The life of a thermostat from concept to production
+      url: https://youtu.be/ZQ_LZ3di89s
+      thumbnail: https://img.youtube.com/vi/ZQ_LZ3di89s/maxresdefault.jpg
+      duration: "51:11"
+    # 48 views
+    - title: "Etch A Sketch on a Raspberry Pi, built with Elixir and Nerves"
+      url: https://youtu.be/y-zRC5xajFg
+      thumbnail: https://img.youtube.com/vi/y-zRC5xajFg/maxresdefault.jpg
+      duration: "0:53"
+    # 42 views
+    - title: Practical challenges in maturing IoT systems
+      url: https://youtu.be/Rn4us3Oc-yc
+      thumbnail: https://img.youtube.com/vi/Rn4us3Oc-yc/maxresdefault.jpg
+      duration: "42:01"
+    # 36 views
+    - title: Introduction to the relationship between Nerves and Linux
+      url: https://youtu.be/G7g_lUt8hTw
+      thumbnail: https://img.youtube.com/vi/G7g_lUt8hTw/maxresdefault.jpg
+      duration: "33:44"
+    # 35 views
+    - title: "Can It Run Nerves? Adventures in Unsupported Hardware"
+      url: https://youtu.be/8wPLX4NHgzY
+      thumbnail: https://img.youtube.com/vi/8wPLX4NHgzY/maxresdefault.jpg
+      duration: "51:28"
   2025:
     # 227 views
     - title: A Nerves Car
@@ -45,6 +160,21 @@ videos_by_year:
       url: https://youtu.be/XgMDTAKd7-4
       thumbnail: https://img.youtube.com/vi/XgMDTAKd7-4/maxresdefault.jpg
       duration: "22:09"
+    # 721 views
+    - title: The Nerves Community Fleet
+      url: https://youtu.be/yjBFlY1zqDA
+      thumbnail: https://img.youtube.com/vi/yjBFlY1zqDA/maxresdefault.jpg
+      duration: "43:10"
+    # 681 views
+    - title: Tying it all together
+      url: https://youtu.be/jPaU7-sqv_s
+      thumbnail: https://img.youtube.com/vi/jPaU7-sqv_s/maxresdefault.jpg
+      duration: "23:54"
+    # 623 views
+    - title: "From Concept to Hardware: Cross-Continental IoT Development on the BEAM"
+      url: https://youtu.be/Cs6Qc0F_0rE
+      thumbnail: https://img.youtube.com/vi/Cs6Qc0F_0rE/maxresdefault.jpg
+      duration: "38:37"
     # 555 views
     - title: "Soleil: Open Source Power Management"
       url: https://youtu.be/G2wTGnElw-8
@@ -65,6 +195,16 @@ videos_by_year:
       url: https://youtu.be/cDKyI0cLEQM
       thumbnail: https://img.youtube.com/vi/cDKyI0cLEQM/maxresdefault.jpg
       duration: "31:47"
+    # 380 views
+    - title: Design a hardware product with Nerves
+      url: https://youtu.be/VFmlNZ_BQHQ
+      thumbnail: https://img.youtube.com/vi/VFmlNZ_BQHQ/maxresdefault.jpg
+      duration: "34:04"
+    # 368 views
+    - title: "Nerves ❤️ Flutter"
+      url: https://youtu.be/ZKX9lkQZmKE
+      thumbnail: https://img.youtube.com/vi/ZKX9lkQZmKE/maxresdefault.jpg
+      duration: "29:01"
     # 327 views
     - title: Overcoming my hardware phobia and getting the Nerves
       url: https://youtu.be/y5WlNELKLaU
@@ -120,6 +260,16 @@ videos_by_year:
       url: https://youtu.be/FWrzBOhhEhw
       thumbnail: https://img.youtube.com/vi/FWrzBOhhEhw/maxresdefault.jpg
       duration: "44:53"
+    # 142 views
+    - title: Building an SDK Library for a Robot Arm and Running from Nerves
+      url: https://youtu.be/5pWV2FUyrpg
+      thumbnail: https://img.youtube.com/vi/5pWV2FUyrpg/maxresdefault.jpg
+      duration: "22:55"
+    # 130 views
+    - title: "Sound the alarm: Recovering devices at scale"
+      url: https://youtu.be/QhuULAaooRA
+      thumbnail: https://img.youtube.com/vi/QhuULAaooRA/maxresdefault.jpg
+      duration: "41:25"
     # 112 views
     - title: Small Hydro Power Plants with Elixir
       url: https://youtu.be/07ybjC7lan0
@@ -141,11 +291,21 @@ videos_by_year:
       url: https://youtu.be/6_DIZUIw_MI
       thumbnail: https://img.youtube.com/vi/6_DIZUIw_MI/maxresdefault.jpg
       duration: "41:43"
+    # 1167 views
+    - title: "The Tamagotchi in my Hands: Anarcho-transhumanist Biohacking with Nerves"
+      url: https://youtu.be/1hiJjHFdZbQ
+      thumbnail: https://img.youtube.com/vi/1hiJjHFdZbQ/maxresdefault.jpg
+      duration: "37:25"
     # 1022 views
     - title: State (Machine) Of Enlightenment
       url: https://youtu.be/5ym6va__LW8
       thumbnail: https://img.youtube.com/vi/5ym6va__LW8/maxresdefault.jpg
       duration: "68:18"
+    # 836 views
+    - title: "Retro Meets Modern: Transforming a Vintage Rotary Dial MonoPhone into a Cellphone with Elixir/Nerves"
+      url: https://youtu.be/uQuwkgpeFOY
+      thumbnail: https://img.youtube.com/vi/uQuwkgpeFOY/maxresdefault.jpg
+      duration: "29:23"
     # 776 views
     - title: Nerves Update
       url: https://youtu.be/q0RoVk7h0Fo
@@ -171,6 +331,11 @@ videos_by_year:
       url: https://youtu.be/ysOIlNuXt8c
       thumbnail: https://img.youtube.com/vi/ysOIlNuXt8c/maxresdefault.jpg
       duration: "58:40"
+    # 447 views
+    - title: Integrating Industrial Communication Protocols with Elixir and Nerves (in Spanish)
+      url: https://youtu.be/YMIFY7rnth8
+      thumbnail: https://img.youtube.com/vi/YMIFY7rnth8/maxresdefault.jpg
+      duration: "34:04"
     # 400 views
     - title: "FLOSS Weekly: Elixir & Nerves - Real Embedded Linux"
       url: https://youtu.be/ZGKxutJVw_g
@@ -196,6 +361,11 @@ videos_by_year:
       url: https://youtu.be/M6vbVjR9KEU
       thumbnail: https://img.youtube.com/vi/M6vbVjR9KEU/maxresdefault.jpg
       duration: "71:42"
+    # 232 views
+    - title: A Nerves history from a non-embedded devs team building an IoT AI product (in Spanish)
+      url: https://youtu.be/zFHMCDEWRAI
+      thumbnail: https://img.youtube.com/vi/zFHMCDEWRAI/hqdefault.jpg
+      duration: "32:02"
   2023:
     # 4818 views
     - title: "The Incredible Migration from C++ to Elixir for Embedded Systems"
@@ -207,6 +377,11 @@ videos_by_year:
       url: https://youtu.be/56sSifvyKxA
       thumbnail: https://img.youtube.com/vi/56sSifvyKxA/maxresdefault.jpg
       duration: "42:11"
+    # 1336 views
+    - title: Drawing to 7-color e-ink screens with Scenic and Nerves
+      url: https://youtu.be/Whp1Xv5Lt88
+      thumbnail: https://img.youtube.com/vi/Whp1Xv5Lt88/maxresdefault.jpg
+      duration: "30:49"
     # 1287 views
     - title: The Technology Behind GridPoint
       url: https://youtu.be/3WHzant4jZc
