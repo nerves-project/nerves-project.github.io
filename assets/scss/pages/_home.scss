@@ -318,7 +318,7 @@
   .eyebrow { color: #7fc8dd; }
   .h2 { color: var(--paper); max-width: 720px; }
   .section-head { margin-bottom: 48px; }
-  .section-head__aside { width: 400px; color: #c3cfd3; }
+  .section-head__aside { width: 400px; color: #c3cfd3; @include below($tablet) { width: auto; } }
 }
 
 .audience {
