@@ -4,8 +4,10 @@
 // board's power switch on. While the firmware downloads the panel shows a progress bar; then a
 // terminal opens there, at the IEx prompt of a machine restored from a snapshot. Meanwhile the
 // board's plates smack together and it turns top down: its buttons press GPIO lines of the
-// machine, its LEDs follow them, its temperature sensor answers on I2C, and its power switch
-// cuts the power and gives it back.
+// machine, its LEDs follow them, its temperature sensor answers on I2C, its power switch cuts
+// the power and gives it back, and a card under its storage chip updates the firmware: a delta
+// of about 140 KB is fetched, written to the machine's disk and applied by fwup, and the machine
+// reboots into the other slot (vm/updates/, see "Firmware updates" in jsnerves' README).
 //
 // The machine is jsnerves (vm/, copied by tools/pcb-hero/sync_jsnerves.sh): TinyEMU compiled to
 // WebAssembly, emulating a RISC-V board that boots a Nerves firmware. It runs in a frame of its
@@ -43,6 +45,8 @@ function bytes(n) {
 function seconds(s) {
   return s < 10 ? `${s.toFixed(1)} s` : s < 90 ? `${Math.round(s)} s` : `${Math.round(s / 60)} min`;
 }
+// "1.2.10" is newer than "1.2.9"
+const newer = (a, b) => a.localeCompare(b, undefined, { numeric: true }) > 0;
 const h = (tag, cls, text) => {
   const el = document.createElement(tag);
   if (cls) el.className = cls;
@@ -91,11 +95,61 @@ export function mountNervesDemo({ hero, host, copy, vmUrl = VM_URL, autoAttachLo
   // without the 3D board: its lights, buttons and power switch as a strip under the terminal
   const strip = h('div', 'nerves-demo__strip');
   strip.hidden = true;
+  // the firmware card: under the storage chip on the board, or in the panel without one
+  const store = hero.storageEl || h('div', 'nerves-demo__storage');
   panel.append(bar, loader, screen, off, strip, hints, foot);
+  if (!hero.storageEl) panel.insertBefore(store, hints);
   host.append(panel);
 
   // powered: the switch is on. running: the machine runs (it is past its download).
   const state = { open: false, powered: false, running: false, frame: null, vm: null, board: null, status: '', disk: '' };
+  // --- firmware: what runs (fw: {active, a, b, valid}, as the board reports it), the updates
+  // on offer (updates: vm/updates/index.json) and what is going on with one (job)
+  Object.assign(state, { fw: null, updates: null, job: '' });
+  fetch(new URL('updates/index.json', base)).then((r) => (r.ok ? r.json() : null)).then((u) => { state.updates = u; showStore(); }).catch(() => {});
+  function showStore() {
+    store.replaceChildren();
+    const { fw, updates, job } = state;
+    if (!updates || !state.powered || !state.running) return;
+    const running = fw && fw[fw.active], other = fw && fw[fw.active === 'a' ? 'b' : 'a'];
+    store.append(h('span', 'pcb-hero__storage-title', running ? `Firmware v${running}, slot ${fw.active.toUpperCase()}` : 'Firmware'));
+    const note = job || (!fw ? 'starting…' : !fw.valid ? 'checking that the new firmware is good…' : '');
+    store.append(h('span', 'pcb-hero__storage-note', note));
+    if (note || !fw) return;
+    const button = (label, primary, act) => {
+      const b = h('button', primary ? 'is-primary' : '', label);
+      b.type = 'button';
+      b.addEventListener('click', act);
+      store.append(b);
+    };
+    for (const d of updates.deltas.filter((q) => q.from === running)) {
+      button(`${newer(d.to, running) ? 'Update' : 'Downgrade'} to v${d.to}`, newer(d.to, running), () => update(d));
+    }
+    if (other) button('Revert to previous', false, revert);
+  }
+  const job = (text) => { state.job = text; showStore(); };
+  // fetch the delta, put it on the machine's disk and have the firmware apply it
+  async function update(delta) {
+    const { vm, board } = state;
+    try {
+      job(`downloading ${bytes(delta.size)}…`);
+      const res = await fetch(new URL(`updates/${delta.file}`, base));
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const file = new Uint8Array(await res.arrayBuffer());
+      if (state.vm !== vm) return;
+      await board.sendUpdate(file);
+      job(`applying v${delta.to} with fwup…`);
+      state.pending = `rebooting into v${delta.to}…`;
+      run('WebDemoNerves.Update.install()');
+    } catch (e) {
+      if (state.vm === vm) { job(`could not update: ${e.message}`); setTimeout(() => { if (state.vm === vm) job(''); }, 4000); }
+    }
+  }
+  function revert() {
+    job('reverting to the previous firmware…');
+    run('WebDemoNerves.Update.revert()');
+  }
+
   const showFoot = () => { foot.textContent = [state.status, state.disk].filter(Boolean).join(' · '); };
 
   // how much of the hero's own element the panel covers, for the board to keep clear of
@@ -193,7 +247,8 @@ export function mountNervesDemo({ hero, host, copy, vmUrl = VM_URL, autoAttachLo
 
   function powerOff() {
     state.frame?.remove();
-    Object.assign(state, { frame: null, vm: null, board: null, running: false, status: 'powered off', disk: '' });
+    Object.assign(state, { frame: null, vm: null, board: null, running: false, status: 'powered off', disk: '', fw: null, job: '' });
+    showStore();
     for (const led of LEDS) { hero.setLed(led, false); stripLed?.(led, false); }
     screen.hidden = true;
     loader.hidden = true;
@@ -242,6 +297,14 @@ export function mountNervesDemo({ hero, host, copy, vmUrl = VM_URL, autoAttachLo
     for (const name of LEDS) led(name, !!board.leds[name]);
     board.addEventListener('led', (e) => { if (live()) led(e.detail.led, e.detail.on); });
 
+    // the firmware says what it runs when it starts, and how an update goes
+    board.addEventListener('firmware', (e) => { if (live()) { state.fw = e.detail; state.job = ''; showStore(); } });
+    board.addEventListener('update', (e) => {
+      if (!live()) return;
+      if (e.detail.status === 'ok') job(state.pending || 'rebooting…');
+      else if (e.detail.status === 'failed') { job('the update failed'); setTimeout(() => { if (live()) job(''); }, 4000); }
+    });
+
     vm.addEventListener('download', (e) => {
       if (!live()) return;
       const p = e.detail;
@@ -259,6 +322,11 @@ export function mountNervesDemo({ hero, host, copy, vmUrl = VM_URL, autoAttachLo
       if (s.stage === 'downloading' || s.stage === 'loading') return;
       if (s.stage === 'restoring') { loaderText.textContent = 'Waking it up…'; return; }
       if (!state.running) { state.running = true; reveal(); }
+      // a machine restored from the snapshot has not said what it runs: it is the disk image's
+      // firmware, in slot A. One that reboots says so once it is up.
+      if (s.stage === 'ready' && s.restored && state.updates) state.fw = { active: 'a', a: state.updates.base, b: null, valid: true };
+      if (s.stage === 'reset') { state.fw = null; if (!state.job) state.job = 'rebooting…'; }
+      showStore();
       state.status = s.stage === 'ready'
         ? (s.restored ? 'restored from a snapshot, already booted' : `booted in ${seconds(s.sinceBoot / 1000)}`)
         : s.stage === 'reset' ? 'rebooting' : s.stage === 'off' ? 'it powered itself off' : `booting: ${s.label}`;

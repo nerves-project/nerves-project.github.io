@@ -51,6 +51,7 @@ downloaded (about 40 MB, fetched only on that click).
   | D18 (white) | power: lit while the machine runs |
   | D2 (green), D3 (red) | `LED_READY`, `LED_SLOT_A`, driven by the firmware |
   | U12 (TMP103) | an I2C temperature sensor at `0x70`; a slider on the board sets what it reads |
+  | U9 (the SD NAND the firmware is on) | a card under it says which firmware runs and offers "Update to v1.2.3", "Downgrade to v1.2.2" and "Revert to previous" |
 
   The firmware's frame-rate sensor (I2C `0x10`, `WebDemoNerves.Board.fps()`) is there too; it
   has no part. `LED_SLOT_B` has no LED on this board and `BUTTON_3` no button.
@@ -58,13 +59,19 @@ downloaded (about 40 MB, fetched only on that click).
   a document can run one machine once, so power off removes the frame and power on makes a new
   one. A machine that wrote to its disk boots for real when it gets power back (15 to 20 s,
   log in the terminal); one that did not is restored from the snapshot again.
+- Firmware updates are real: the page fetches a fwup delta (about 140 KB, `vm/updates/`), writes
+  it to a scratch area of the machine's disk, and the firmware applies it with fwup to the slot
+  that is not running and reboots into it. The new firmware validates itself a few seconds after
+  it is up; until then the card offers nothing. Revert switches back to the other slot.
+  The 1.2.3 firmware gives the green LED a heartbeat, so the difference shows on the board.
 - Without WebGPU the terminal still opens, with the LEDs and buttons in a strip under it.
 - The log is attached to the console when the prompt is ready (`RingLogger.attach()`), so that
   a button press shows at once.
 
 `static/hero-pcb/vm/` is a copy of what jsnerves serves (emulator, `nerves-vm.js`, `board.js`,
-terminal, OpenSBI, U-Boot, the disk image in blocks and its snapshot). Update it from a jsnerves
-checkout, after `extract_firmware.sh` there has made a new image:
+terminal, OpenSBI, U-Boot, the disk image in blocks, its snapshot and the firmware updates).
+Update it from a jsnerves checkout, after `extract_firmware.sh` and `tools/make_deltas.exs`
+there have made a new image and its updates:
 
 ```sh
 tools/pcb-hero/sync_jsnerves.sh ../jsnerves

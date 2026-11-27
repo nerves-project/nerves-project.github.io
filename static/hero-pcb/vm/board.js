@@ -17,8 +17,18 @@
  *   board.fps.set(59.8)         report this rate instead of measuring it;
  *   board.fps.measure()         back to measuring this page's frame rate
  *
+ *   updates  the firmware tells the page what it runs through a mailbox
+ *            on I2C (0x51): board.firmware is {active, a, b, valid}, the
+ *            slot that runs, the version in each and whether what runs is
+ *            validated (it can be updated only then), once it has said so
+ *            (when it starts, and again when it is validated; a machine
+ *            restored from a snapshot has not).
+ *            await board.sendUpdate(bytes) puts a .fw file into the disk's
+ *            scratch area, for WebDemoNerves.Update.install() to apply;
+ *            board.update is how that goes: "applying", "ok", "failed".
+ *
  * Events (CustomEvents on the board): led {led, on}, button {name,
- * pressed}.
+ * pressed}, firmware {active, a, b, valid}, update {status}.
  */
 "use strict";
 
@@ -87,6 +97,16 @@ class FPSSensor {
     }
 }
 
+/* The mailbox at I2C address 0x51: the firmware writes a register number
+   and a line of text. Register 0 is what runs ("active=a a=1.2.2 b= valid=1"),
+   register 1 how an update goes. */
+const MAILBOX_ADDRESS = 0x51;
+
+/* The scratch area for firmware updates: the last 8 MB of the disk (see
+   extract_firmware.sh), "NFWU", the file's size (32 bits, big-endian) and
+   the file. */
+const SCRATCH_BYTES = 8 * 1024 * 1024;
+
 class Board extends EventTarget {
     constructor(vm) {
         super();
@@ -97,7 +117,18 @@ class Board extends EventTarget {
         BUTTONS.forEach(function(name) { board.buttons[name] = false; });
         this.fps = new FPSSensor();
         vm.attachI2C(FPS_ADDRESS, this.fps);
+        this.firmware = null;    /* {active, a, b} once the firmware said so */
+        this.update = null;      /* "applying", "ok" or "failed" */
+        vm.attachI2C(MAILBOX_ADDRESS, {
+            write: function(bytes) { board._mail(bytes); },
+            read: function(length) { return new Uint8Array(length); },
+        });
 
+        /* a reboot: the firmware that starts says what it is */
+        vm.addEventListener("reset", function() {
+            board.firmware = null;
+            board.update = null;
+        });
         vm.addEventListener("power", function(e) {
             board._setLed("power", e.detail.on);
         });
@@ -137,6 +168,36 @@ class Board extends EventTarget {
                 resolve();
             }, ms === undefined ? 150 : ms);
         });
+    }
+
+    /* Put a firmware file (a Uint8Array) where WebDemoNerves.Update.install()
+       looks for it. */
+    async sendUpdate(bytes) {
+        const data = new Uint8Array(8 + bytes.length);
+        if (data.length > SCRATCH_BYTES)
+            throw new Error("NervesBoard: the update is larger than the scratch area");
+        if (!this.vm.diskBytes)
+            throw new Error("NervesBoard: no disk yet");
+        data.set([0x4e, 0x46, 0x57, 0x55]);    /* "NFWU" */
+        new DataView(data.buffer).setUint32(4, bytes.length);
+        data.set(bytes, 8);
+        await this.vm.writeDisk(this.vm.diskBytes - SCRATCH_BYTES, data);
+    }
+
+    _mail(bytes) {
+        const text = new TextDecoder().decode(Uint8Array.from(bytes).subarray(1)).trim();
+        let m;
+        if (bytes[0] === 0) {
+            m = /^active=(\w*) a=(\S*) b=(\S*) valid=(\d)$/.exec(text);
+            if (!m)
+                return;
+            this.firmware = { active: m[1], a: m[2] || null, b: m[3] || null,
+                              valid: m[4] == "1" };
+            this.dispatchEvent(new CustomEvent("firmware", { detail: this.firmware }));
+        } else if (bytes[0] === 1) {
+            this.update = text;
+            this.dispatchEvent(new CustomEvent("update", { detail: { status: text } }));
+        }
     }
 
     _setLed(led, on) {

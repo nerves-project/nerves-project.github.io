@@ -297,3 +297,54 @@
 .pcb-hero.is-fallback .pcb-hero__try { position: static; opacity: 1; margin: 0 2rem 2rem; }
 .pcb-hero.is-still .pcb-hero__try,
 .pcb-hero.is-still .pcb-hero__controls { transition: none; }
+
+/* the card under the storage chip: what firmware runs, and the demo's update buttons */
+.pcb-hero__storage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem 0.45rem;
+  max-width: min(24rem, calc(100% - 8px));
+  box-sizing: border-box;
+  padding: 0.35rem 0.6rem 0.45rem;
+  border-radius: 0.6rem;
+  background: #fffdf7;
+  box-shadow: 2px 3px 0 rgba(38, 34, 31, 0.25);
+  color: var(--ink);
+  pointer-events: auto;
+}
+.pcb-hero__storage:empty { display: none; }
+/* a tick up to the chip */
+.pcb-hero__storage::before {
+  content: '';
+  position: absolute;
+  left: var(--tick, 50%);
+  top: -9px;
+  width: 2px;
+  height: 9px;
+  background: var(--ink);
+  opacity: 0.6;
+}
+.pcb-hero__storage-title { flex: 1 0 100%; text-align: center; font: 700 1.2rem/1.1 'Caveat', cursive; }
+.pcb-hero__storage-note { flex: 1 0 100%; text-align: center; font: 500 0.7rem/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink-soft); }
+.pcb-hero__storage-note:empty { display: none; }
+.pcb-hero__storage button {
+  padding: 0.22rem 0.6rem 0.26rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--ink);
+  font: 600 0.74rem/1.2 inherit;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pcb-hero__storage button.is-primary { background: var(--ink); color: #fffdf7; }
+.pcb-hero__storage button:hover, .pcb-hero__storage button:focus-visible { background: #d9ff3a; color: var(--ink); outline: none; }
+.pcb-hero__storage button:disabled { opacity: 0.4; cursor: default; background: transparent; color: var(--ink); }
+.pcb-hero.is-narrow .pcb-hero__storage { padding: 0.25rem 0.45rem 0.35rem; }
+.pcb-hero.is-narrow .pcb-hero__storage-title { font-size: 1.05rem; }

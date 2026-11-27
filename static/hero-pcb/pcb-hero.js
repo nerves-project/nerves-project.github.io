@@ -18,6 +18,7 @@
 //   setLed(name, on)   light an LED;  onButton(name, pressed)  a button is held or let go, or
 //                      a switch (the power switch, 'POWER') was moved;  setSwitch(name, on)  move it
 //   sensorValue()      what the sensor's slider is set to;  onSensor(value)  it was moved
+//   storageEl          an element kept under the board's storage chip, for the demo to fill
 
 import { buildLayerCanvases, LAYER_SOURCES } from './textures.js';
 import { drawLogo } from './logos.js';
@@ -81,6 +82,8 @@ export const DEMO_BOARD = {
     { name: 'ready', part: 'D2', color: '#30d158' },
     { name: 'slotA', part: 'D3', color: '#ff3b30' },
   ],
+  // the SD NAND the firmware is on: a card under it holds the demo's update buttons
+  storage: { part: 'U9' },
   // the TMP103 by the board's thermal slot
   sensor: { name: 'temp', part: 'U12', title: 'TMP103', unit: '°C', min: -10, max: 60, value: 23 },
   try: 'BUTTON_1',     // the button the "Try Me" sign points at
@@ -1125,6 +1128,13 @@ export async function mountPcbHero(root, opts = {}) {
     api.sensorValue = () => Number(range.value);
     controls.appendChild(sensorEl);
   }
+  // a card under the storage chip: the demo puts the firmware's version and its updates there
+  let storageEl = null;
+  if (demo?.storage) {
+    storageEl = api.storageEl = document.createElement('div');
+    storageEl.className = 'pcb-hero__storage';
+    controls.appendChild(storageEl);
+  }
   if (demo) root.append(trySign, controls);
 
   if (!navigator.gpu) return fail('WebGPU is not available in this browser.');
@@ -1996,6 +2006,15 @@ export async function mountPcbHero(root, opts = {}) {
         const s = Math.max(r * 2.2, 30);
         Object.assign(b.el.style, { width: `${s.toFixed(1)}px`, height: `${s.toFixed(1)}px`, transform: `translate(${(x - s / 2).toFixed(1)}px, ${(y - s / 2).toFixed(1)}px)` });
       }
+    }
+    const store = live && storageEl && data.parts.find((p) => p.ref === demo.storage.part);
+    if (store) {
+      // under the board's edge below the chip, a tick joining the two
+      const [x, y] = project([store.x - hx, topY, hz + 1.2]);
+      const w = storageEl.offsetWidth;
+      const left = Math.min(Math.max(4, x - w / 2), W - w - 4);
+      storageEl.style.transform = `translate(${left.toFixed(1)}px, ${(y + 6).toFixed(1)}px)`;
+      storageEl.style.setProperty('--tick', `${(x - left).toFixed(1)}px`);
     }
     if (live && demoSensor?.part) {
       const q = demoSensor.part;

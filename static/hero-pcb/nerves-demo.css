@@ -69,6 +69,14 @@
 .nerves-demo__foot { margin: 0.45rem 0 0; min-height: 1.1em; color: var(--dim); font-size: 0.68rem; }
 .nerves-demo__foot:empty { display: none; }
 
+/* the firmware card in the panel, where there is no board to put it on */
+.nerves-demo__storage { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; margin-top: 0.55rem; --ink-soft: var(--dim); }
+.nerves-demo__storage:empty { display: none; }
+.nerves-demo__storage .pcb-hero__storage-title { font: 700 1.15rem/1 'Caveat', cursive; color: #fffdf7; }
+.nerves-demo__storage .pcb-hero__storage-note { color: var(--dim); font-size: 0.7rem; }
+.nerves-demo__storage button { padding: 0.18rem 0.55rem; border: 1px solid #4a443c; border-radius: 1rem; background: transparent; color: #e8e3d8; font: inherit; font-size: 0.72rem; cursor: pointer; }
+.nerves-demo__storage button:hover, .nerves-demo__storage button:focus-visible { border-color: var(--lit); color: var(--lit); outline: none; }
+
 /* the board as a strip, where WebGPU is missing */
 .nerves-demo__strip { display: flex; align-items: center; gap: 0.9rem; margin-top: 0.6rem; color: var(--dim); font-size: 0.7rem; }
 .nerves-demo__strip[hidden] { display: none; }

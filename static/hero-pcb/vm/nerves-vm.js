@@ -72,6 +72,9 @@
  *                               see NervesVM.I2CRegisters. Nothing attached:
  *                               no acknowledge
  *   vm.detachI2C(address)
+ *
+ * Disk: vm.diskBytes is its size, and vm.writeDisk(offset, bytes) writes
+ * to it from the page (a file for the guest, see board.js).
  */
 "use strict";
 
@@ -304,6 +307,40 @@ class NervesVM extends EventTarget {
         this._i2c.delete(address);
     }
 
+    /* Write bytes (a Uint8Array) to the disk at a byte offset that is a
+       multiple of 512, as the guest would: the write is kept with the
+       guest's own (see Persistence in the README). For handing the guest a
+       file, in a part of the disk that it does not use otherwise and that
+       is all zeros in the image (see board.sendUpdate). The guest has to
+       read it past its cache (drop_caches). Resolves when it is written. */
+    async writeDisk(offset, bytes) {
+        const CHUNK = 16 * 512;
+        let done = 0, n, chunk, r, tries;
+        if (!this._diskWrite)
+            throw new Error("NervesVM: the machine is not running");
+        if (offset % 512 !== 0)
+            throw new Error("NervesVM: the offset has to be a multiple of 512");
+        while (done < bytes.length) {
+            n = Math.min(CHUNK, bytes.length - done);
+            chunk = bytes.subarray(done, done + n);
+            if (n % 512 !== 0) {    /* the last sector, padded with zeros */
+                chunk = new Uint8Array(Math.ceil(n / 512) * 512);
+                chunk.set(bytes.subarray(done, done + n));
+            }
+            for (tries = 0; ; tries++) {
+                r = this._diskWrite((offset + done) / 512, chunk, chunk.length / 512);
+                if (r !== -1 || tries > 500)
+                    break;
+                /* the guest waits for a block: after it */
+                await new Promise(function(resolve) { setTimeout(resolve, 10); });
+            }
+            if (r !== 0)
+                throw new Error("NervesVM: could not write to the disk at " +
+                                (offset + done) + " (" + r + ")");
+            done += n;
+        }
+    }
+
     /* A network adapter (see net/nerves-net.js) is an object with
        receive(frame), which gets every Ethernet frame the guest sends, and
        optionally attach(vm), called once the machine exists. It gives
@@ -338,6 +375,7 @@ class NervesVM extends EventTarget {
         this._netWrite = M.cwrap("net_write_packet", null, ["array", "number"]);
         this._netCarrier = M.cwrap("net_set_carrier", null, ["number"]);
         this._gpioSet = M.cwrap("gpio_set_input", null, ["number", "number"]);
+        this._diskWrite = M.cwrap("disk_write", "number", ["number", "array", "number"]);
         M.ccall("vm_start", null,
                 ["string", "number", "string", "string", "number", "number", "number"],
                 [url, this.options.memory, this.options.cmdline, null, 0, 0, net ? 1 : 0]);
@@ -633,6 +671,8 @@ class NervesVM extends EventTarget {
     /* disk image download */
 
     _diskInfo(info) {
+        /* the disk's size in bytes */
+        this.diskBytes = info.blockBytes * info.blocks;
         this._image = {
             prefix: info.url,
             blockBytes: info.blockBytes,
