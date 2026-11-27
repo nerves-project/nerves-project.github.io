@@ -47,13 +47,17 @@ downloaded (about 40 MB, fetched only on that click).
   | Part | In the demo |
   | ---- | ----------- |
   | SW1, SW4 (push buttons) | `BUTTON_1`, `BUTTON_2`: GPIO inputs, 1 while held |
-  | SW3 (slide switch) | `BUTTON_3`, stays where it is put |
+  | SW3 (slide switch) | the power switch, as on the real board: off cuts the machine's power, on starts it again |
   | D18 (white) | power: lit while the machine runs |
   | D2 (green), D3 (red) | `LED_READY`, `LED_SLOT_A`, driven by the firmware |
   | U12 (TMP103) | an I2C temperature sensor at `0x70`; a slider on the board sets what it reads |
 
   The firmware's frame-rate sensor (I2C `0x10`, `WebDemoNerves.Board.fps()`) is there too; it
-  has no part. `LED_SLOT_B` has no LED on this board.
+  has no part. `LED_SLOT_B` has no LED on this board and `BUTTON_3` no button.
+- The machine runs in a frame of its own (`vm/frame.html`, which is the site's, not jsnerves'):
+  a document can run one machine once, so power off removes the frame and power on makes a new
+  one. A machine that wrote to its disk boots for real when it gets power back (15 to 20 s,
+  log in the terminal); one that did not is restored from the snapshot again.
 - Without WebGPU the terminal still opens, with the LEDs and buttons in a strip under it.
 - The log is attached to the console when the prompt is ready (`RingLogger.attach()`), so that
   a button press shows at once.
@@ -66,9 +70,7 @@ checkout, after `extract_firmware.sh` there has made a new image:
 tools/pcb-hero/sync_jsnerves.sh ../jsnerves
 ```
 
-The script points `nerves.cfg` at `/hero-pcb/vm/disk/...`: the emulator resolves the disk image
-against the page, not against the configuration file, so the copy has to name it from the site
-root. `vm/VERSION` records the jsnerves commit. The firmware is
+`vm/VERSION` records the jsnerves commit. The firmware is
 [web-demo-nerves](https://github.com/lawik/web-demo-nerves) on
 [nerves_system_jslinux](https://github.com/underjord/nerves_system_jslinux); the emulator is
 built from [TinyEMU](https://github.com/lawik/TinyEMU) (branch `emscripten-modern`, MIT).

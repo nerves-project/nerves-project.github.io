@@ -15,7 +15,8 @@
 //   setDemo(on)        the plates smack together, the board turns top down and everything
 //                      explanatory goes away; the buttons and the sensor can then be used
 //   demoInset          css px on the hero's left that something covers while the demo is on
-//   setLed(name, on)   light an LED;  onButton(name, pressed)  a button is held or let go
+//   setLed(name, on)   light an LED;  onButton(name, pressed)  a button is held or let go, or
+//                      a switch (the power switch, 'POWER') was moved;  setSwitch(name, on)  move it
 //   sensorValue()      what the sensor's slider is set to;  onSensor(value)  it was moved
 
 import { buildLayerCanvases, LAYER_SOURCES } from './textures.js';
@@ -72,7 +73,8 @@ export const DEMO_BOARD = {
   buttons: [
     { name: 'BUTTON_1', label: '1', part: 'SW1' },
     { name: 'BUTTON_2', label: '2', part: 'SW4' },
-    { name: 'BUTTON_3', label: '3', part: 'SW3', toggle: true },   // the slide switch stays where it is put
+    // the slide switch is the board's power switch: it stays where it is put
+    { name: 'POWER', label: 'Power', part: 'SW3', toggle: true },
   ],
   leds: [
     { name: 'power', part: 'D18', color: '#fff1c4' },   // on VBUS on the real board too
@@ -1076,6 +1078,14 @@ export async function mountPcbHero(root, opts = {}) {
   const hold = (name, down) => { if (held[name] !== down) { held[name] = down; api.onButton?.(name, down); pressButton(name, down); } };
   const held = {};
   let pressButton = () => {};
+  // put a switch where it belongs without reporting it as moved
+  api.setSwitch = (name, on) => {
+    on = !!on;
+    if (!!held[name] === on) return;
+    held[name] = on;
+    pressButton(name, on);
+    buttonEls[(demo?.buttons || []).findIndex((b) => b.name === name)]?.setAttribute('aria-pressed', String(on));
+  };
   const buttonEls = (demo?.buttons || []).map((b) => {
     const el = document.createElement('button');
     el.type = 'button';
@@ -1083,7 +1093,7 @@ export async function mountPcbHero(root, opts = {}) {
     el.setAttribute('aria-label', `Button ${b.label}`);
     if (b.toggle) {
       // a switch: every click or key press flips it
-      el.setAttribute('aria-label', `Switch ${b.label}`);
+      el.setAttribute('aria-label', `${b.label} switch`);
       el.setAttribute('aria-pressed', 'false');
       el.addEventListener('pointerdown', (e) => e.preventDefault());
       el.addEventListener('click', () => { hold(b.name, !held[b.name]); el.setAttribute('aria-pressed', String(!!held[b.name])); });

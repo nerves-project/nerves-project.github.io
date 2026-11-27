@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nerves machine</title>
+<!--
+  The machine of the hero's live demo, in a frame of its own (../nerves-demo.js makes it).
+
+  One page runs one machine, for as long as the page lives: the emulator keeps its state in
+  globals and cannot start twice. So the demo's power switch removes this frame (a power cut)
+  and makes a new one (power on). Being its own document, the terminal's key handling also stays
+  out of the site's page, and nerves.cfg finds its disk image beside this file.
+
+  This file is not part of jsnerves: tools/pcb-hero/sync_jsnerves.sh leaves it in place.
+
+  The parent reads window.nervesVM and window.nervesBoard, wires the board to them and then
+  calls window.powerOn().
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #171411; overflow: hidden; }
+  body { cursor: text; }
+  .term { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace; font-size: 13px; color: #e8e3d8; background: #171411; }
+  .term_content { white-space: pre; }
+  .term_content > div { height: 1.2em; }
+  .term_content a { color: #d9ff3a; }
+  .term_cursor { color: #171411; background: #d9ff3a; }
+  /* a block element: one cell, drawn by its background (see term.js) */
+  .term_block { display: inline-block; width: 1ch; height: 1.2em; vertical-align: top; overflow: hidden; -webkit-text-fill-color: transparent; }
+  .term_scrollbar { float: right; position: relative; width: 8px; height: 100%; }
+  .term_track { position: relative; height: 100%; }
+  .term_thumb { position: absolute; left: 1px; width: 6px; border-radius: 3px; background: #3a352f; cursor: pointer; }
+  .term_end { display: none; }
+  .noSelect { user-select: none; -webkit-user-select: none; }
+  #input { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; padding: 0; border: 0; margin: 0; opacity: 0; font-size: 16px; resize: none; overflow: hidden; }
+</style>
+</head>
+<body>
+<div id="term"></div>
+<textarea id="input" rows="1" aria-label="Terminal input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+<script src="term.js"></script>
+<script src="nerves-vm.js"></script>
+<script src="board.js"></script>
+<script>
+"use strict";
+(function() {
+  // the console's size: what fits the frame at a readable size, 80 columns at most (the
+  // snapshot's console was 80 wide)
+  var ADVANCE = 0.62;   // a monospace cell is about this wide, in em
+  var narrow = innerWidth < 520;
+  var font = narrow ? 11 : 13;
+  var cols = Math.max(40, Math.min(80, Math.floor((innerWidth - 16) / (font * ADVANCE))));
+  var rows = Math.max(8, Math.min(30, Math.floor(innerHeight / (font * 1.2))));
+  var input = document.getElementById("input");
+
+  var vm = window.nervesVM = new NervesVM({ config: "nerves.cfg", cols: cols, rows: rows });
+  window.nervesBoard = NervesBoard.attach(vm);
+
+  var term = new Term(cols, rows, function(str) { vm.write(str); }, 5000);
+  term.open(document.getElementById("term"), input);
+  term.term_el.style.fontSize = font + "px";
+  vm.addEventListener("console", function(e) { term.write(e.detail.data); });
+  vm.addEventListener("poweroff", function() {
+    term.write("\r\n\x1b[1m[ The machine powered itself off. Slide the power switch to start it again. ]\x1b[0m\r\n");
+  });
+
+  // the font scales so that the console fills the frame's width and stays inside its height
+  function fit() {
+    var el = term.term_el, size = parseFloat(el.style.fontSize) || font, i, r, next;
+    for (i = 0; i < 3; i++) {
+      r = el.getBoundingClientRect();
+      if (!r.width || !innerWidth) return;
+      next = Math.max(6, Math.min(15, Math.floor(size * Math.min(innerWidth / r.width, innerHeight / r.height) * 10) / 10));
+      if (Math.abs(next - size) < 0.1) break;
+      size = next;
+      el.style.fontSize = size + "px";
+    }
+  }
+  addEventListener("resize", fit);
+  fit();
+
+  // phones deliver text through "input" events on a focused field, which term.js does not
+  // listen for: changes of the hidden textarea become terminal input (after jsnerves' page.js)
+  var prev = "";
+  function send(str) { term.show_cursor(); term.handler(term.utf8 ? term.to_utf8(str) : str); }
+  input.addEventListener("input", function() {
+    var cur = input.value, nl = cur.indexOf("\n"), i = 0, n;
+    if (nl >= 0) cur = cur.replace(/\n/g, "");
+    n = Math.min(prev.length, cur.length);
+    while (i < n && prev.charCodeAt(i) === cur.charCodeAt(i)) i++;
+    if (prev.length > i) send("\x7f".repeat(prev.length - i));
+    if (cur.length > i) send(cur.substring(i));
+    if (nl >= 0) { send("\r"); prev = ""; input.value = ""; } else prev = cur;
+  });
+  input.addEventListener("compositionend", function() { if (input.value.length > 64) { input.value = ""; prev = ""; } });
+  function focus() { if (document.activeElement !== input) input.focus({ preventScroll: true }); }
+  document.addEventListener("click", focus);
+  window.focusTerminal = focus;
+
+  window.powerOn = function() { return vm.start(); };
+})();
+</script>
+</body>
+</html>

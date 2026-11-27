@@ -1,5 +1,5 @@
 /* The hero's live demo (nerves-demo.js): a panel over the hero's left side with a download
-   bar, then a terminal. The terminal's own rules (.term*) are for vm/term.js. */
+   bar, then the machine's terminal in a frame of its own (vm/frame.html). */
 
 .nerves-demo {
   --ink: #26221f;
@@ -49,23 +49,13 @@
 .nerves-demo__loader-detail { margin: 0.6rem 0 0; color: var(--dim); font-variant-numeric: tabular-nums; }
 .nerves-demo.is-failed .nerves-demo__fill { background: #ff5b4f; }
 
-.nerves-demo__screen { position: relative; min-height: 0; overflow: hidden; cursor: text; }
+.nerves-demo__screen { position: relative; min-height: 0; overflow: hidden; }
 .nerves-demo__screen[hidden] { display: none; }
-.nerves-demo__input {
-  position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; padding: 0; border: 0; margin: 0;
-  opacity: 0; font-size: 16px; resize: none; overflow: hidden;
-}
-.nerves-demo .term { font-family: inherit; font-size: 13px; color: #e8e3d8; background: var(--screen); }
-.nerves-demo .term_content { white-space: pre; }
-.nerves-demo .term_content > div { height: 1.2em; }
-.nerves-demo .term_content a { color: var(--lit); }
-.nerves-demo .term_cursor { color: var(--screen); background: var(--lit); }
-.nerves-demo .term_block { display: inline-block; width: 1ch; height: 1.2em; vertical-align: top; overflow: hidden; -webkit-text-fill-color: transparent; }
-.nerves-demo .term_scrollbar { float: right; position: relative; width: 8px; height: 100%; }
-.nerves-demo .term_track { position: relative; height: 100%; }
-.nerves-demo .term_thumb { position: absolute; left: 1px; width: 6px; border-radius: 3px; background: #3a352f; cursor: pointer; }
-.nerves-demo .term_end { display: none; }
-.nerves-demo .noSelect { user-select: none; -webkit-user-select: none; }
+/* the machine's frame (vm/frame.html): out of sight until it runs */
+.nerves-demo__screen.is-waiting { height: 0 !important; visibility: hidden; }
+.nerves-demo__frame { display: block; width: 100%; height: 100%; border: 0; background: var(--screen); color-scheme: dark; }
+.nerves-demo__off { margin: 0; padding: 2.2rem 0.5rem 2.4rem; font: 700 1.5rem/1.2 'Caveat', cursive; color: var(--dim); }
+.nerves-demo__off[hidden] { display: none; }
 
 .nerves-demo__hints { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.4rem; margin-top: 0.55rem; }
 .nerves-demo__hints[hidden] { display: none; }
@@ -88,6 +78,7 @@
 .nerves-demo__led.is-ready.is-on::before { background: #30d158; box-shadow: 0 0 6px #30d158; }
 .nerves-demo__key { width: 1.8rem; height: 1.8rem; border: 1px solid #4a443c; border-radius: 50%; background: #221e1a; color: #e8e3d8; font: inherit; cursor: pointer; touch-action: none; }
 .nerves-demo__key.is-down { background: var(--lit); color: var(--ink); }
+.nerves-demo__key.is-switch { width: auto; padding: 0 0.7rem; border-radius: 1rem; }
 
 /* small screens: the panel takes the copy's place above the board, and stays tight */
 @media (max-width: 860px) {
@@ -105,6 +96,7 @@
   .nerves-demo__loader { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0.3rem 0.6rem; padding: 0.3rem 0.1rem 0.5rem; }
   .nerves-demo__loader-text { margin: 0; font-size: 1.15rem; }
   .nerves-demo__loader-detail { grid-column: 1 / -1; margin: 0; font-size: 0.66rem; }
+  .nerves-demo__off { padding: 0.6rem 0.1rem 0.8rem; font-size: 1.15rem; }
   .nerves-demo__hints { flex-wrap: nowrap; overflow-x: auto; margin-top: 0.4rem; scrollbar-width: none; }
   .nerves-demo__hint { white-space: nowrap; }
   .nerves-demo__foot { display: none; }
