@@ -1,6 +1,23 @@
 ---
 type: videos
 title: Videos
+description: Conference talks, meetup recordings and community-submitted videos about Nerves, grouped by the year they were published.
+# Page copy. The talks themselves are in videos_by_year below.
+eyebrow: Videos
+heading: Talks and <span class="hl">recordings</span>
+lede: Conference talks, meetup recordings and community-submitted videos, grouped by the year they were published.
+submit_url: https://github.com/nerves-project/nerves-project.github.io/blob/main/content/videos.md
+# The dark "Crowd favourites" film strip. List the URLs of talks from videos_by_year:
+# the most-viewed ones, going by the view counts in the comments below.
+favourites:
+  eyebrow: From the archive
+  title: Crowd favourites
+  note: the most-watched talks, if you only have an evening
+  videos:
+    - https://youtu.be/kpzQrFC55q4
+    - https://youtu.be/mrpQHZcy3CI
+    - https://youtu.be/IU8epH8FAI4
+    - https://youtu.be/118-g0ODfgg
 current_year: 2026
 videos_by_year:
   2026:

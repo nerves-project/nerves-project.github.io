@@ -1,0 +1,32 @@
+{{- /*
+  The tag chips above an article list: "all" plus the most used article tags, with counts.
+  Usage: partial "articles/chips" (dict "active" "all")  or  (dict "active" .Data.Term) on a tag page.
+  "nerves" is left out (nearly every article has it). The active tag is added when it is not
+  among the top ones, so a tag page always shows its own chip.
+*/ -}}
+{{- $active := .active | default "all" -}}
+{{- $limit := 8 -}}
+{{- $section := site.GetPage "/articles" -}}
+{{- $all := where site.RegularPages "Section" "articles" -}}
+{{- $chips := slice -}}
+{{- range site.Taxonomies.tags.ByCount -}}
+  {{- $n := len (where .Pages "Section" "articles") -}}
+  {{- if and (gt $n 0) (ne .Name "nerves") -}}
+    {{- $chips = $chips | append (dict "name" .Name "title" .Page.LinkTitle "url" .Page.RelPermalink "n" $n) -}}
+  {{- end -}}
+{{- end -}}
+{{- $chips = first $limit (sort $chips "n" "desc") -}}
+{{- if and (ne $active "all") (not (where $chips "name" $active)) -}}
+  {{- with site.GetPage (printf "/tags/%s" $active) -}}
+    {{- $chips = $chips | append (dict "name" $active "title" .LinkTitle "url" .RelPermalink "n" (len .Pages)) -}}
+  {{- end -}}
+{{- end -}}
+<nav class="wrap art-chips" aria-label="Tags">
+  <ul class="art-chips__list">
+    <li><a class="chip art-chip{{ if eq $active "all" }} is-active{{ end }}" href="{{ $section.RelPermalink }}"{{ if eq $active "all" }} aria-current="page"{{ end }}>all · {{ len $all }}</a></li>
+    {{- range $chips }}
+    <li><a class="chip art-chip{{ if eq .name $active }} is-active{{ end }}" href="{{ .url }}"{{ if eq .name $active }} aria-current="page"{{ end }}>{{ .title }} · {{ .n }}</a></li>
+    {{- end }}
+  </ul>
+  {{ with site.GetPage "/tags" }}<a class="arrow-link arrow-link--sm art-chips__all" href="{{ .RelPermalink }}">All tags {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>{{ end }}
+</nav>

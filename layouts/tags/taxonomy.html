@@ -1,0 +1,57 @@
+{{ define "main" }}
+{{- /* All tags (/tags/), most used first. The chips get smaller as the counts drop. */ -}}
+{{ $p := .Params }}
+{{ $show := 40 }}
+{{ $terms := .Data.Terms.ByCount }}
+{{ $articles := site.GetPage "/articles" }}
+
+<header class="art-head art-head--tags">
+  <div class="wrap art-head__inner">
+    <div class="art-head__copy">
+      <span class="eyebrow">{{ $p.eyebrow | default "Tags" }}</span>
+      <h1 class="display">{{ $p.heading | default .Title | safeHTML }}</h1>
+      <p class="lede art-head__lede">
+        {{ $p.lede }}
+        {{ with $articles }}<a class="art-head__back" href="{{ .RelPermalink }}">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 16) }} All articles</a>{{ end }}
+      </p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap tag-cloud" data-tag-cloud>
+  <ul class="tag-cloud__list">
+    {{ range $i, $t := $terms }}
+      {{ $n := $t.Count }}
+      {{ $size := "s" }}
+      {{ if eq $i 0 }}{{ $size = "top" }}{{ else if ge $n 10 }}{{ $size = "xl" }}{{ else if ge $n 5 }}{{ $size = "l" }}{{ else if ge $n 3 }}{{ $size = "m" }}{{ end }}
+      <li{{ if ge $i $show }} data-extra{{ end }}>
+        <a class="tag-cloud__chip tag-cloud__chip--{{ $size }}" href="{{ $t.Page.RelPermalink }}">
+          {{- $t.Page.LinkTitle }}{{ if gt $n 1 }} · {{ $n }}{{ end -}}
+          {{ if eq $n 1 }}<span class="sr-only"> · 1</span>{{ end -}}
+        </a>
+      </li>
+    {{ end }}
+    {{ if gt (len $terms) $show }}
+      <li class="tag-cloud__more" hidden><button class="tag-cloud__chip tag-cloud__chip--s" type="button" data-tag-more>+ {{ sub (len $terms) $show }} more</button></li>
+    {{ end }}
+  </ul>
+</div>
+
+{{/* Fold the long tail of one-off tags behind a "+ N more" chip. Without this script they all show. */}}
+<script>
+(() => {
+  const cloud = document.querySelector('[data-tag-cloud]');
+  const more = cloud && cloud.querySelector('[data-tag-more]');
+  if (!more) return;
+  const extra = cloud.querySelectorAll('[data-extra]');
+  extra.forEach((li) => { li.hidden = true; });
+  more.parentElement.hidden = false;
+  more.addEventListener('click', () => {
+    extra.forEach((li) => { li.hidden = false; });
+    more.parentElement.hidden = true;
+    const first = extra[0] && extra[0].querySelector('a');
+    if (first) first.focus();
+  });
+})();
+</script>
+{{ end }}

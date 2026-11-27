@@ -1,0 +1,40 @@
+{{ define "main" }}
+{{- /* One tag, e.g. /tags/raspberry-pi/. Tags are used by articles (which link out) and case studies. */ -}}
+{{ $term := .Data.Term }}
+{{ $pages := .Pages.ByDate.Reverse }}
+{{ $articles := site.GetPage "/articles" }}
+{{ $nArticles := len (where $pages "Section" "articles") }}
+{{ $nCases := len (where $pages "Section" "cases") }}
+{{ $nOther := sub (len $pages) (add $nArticles $nCases) }}
+{{ $parts := slice }}
+{{ if $nArticles }}{{ $parts = $parts | append (printf "%d %s" $nArticles (cond (eq $nArticles 1) "article" "articles")) }}{{ end }}
+{{ if $nCases }}{{ $parts = $parts | append (printf "%d %s" $nCases (cond (eq $nCases 1) "case study" "case studies")) }}{{ end }}
+{{ if $nOther }}{{ $parts = $parts | append (printf "%d %s" $nOther (cond (eq $nOther 1) "page" "pages")) }}{{ end }}
+
+<header class="art-head art-head--tag">
+  <div class="wrap art-head__inner">
+    <div class="art-head__copy">
+      <span class="eyebrow">Tag</span>
+      <h1 class="art-head__tag"><span class="hl">{{ .LinkTitle }}</span></h1>
+      <p class="lede art-head__lede">
+        {{ delimit $parts ", " " and " }} tagged {{ .LinkTitle }}.
+        {{ with $articles }}<a class="art-head__back" href="{{ .RelPermalink }}">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 16) }} All articles</a>{{ end }}
+      </p>
+    </div>
+  </div>
+</header>
+
+{{ partial "articles/chips" (dict "active" $term) }}
+
+{{ $pag := .Paginate $pages 15 }}
+{{ $items := $pag.Pages }}
+<div class="wrap art-list art-list--flat">
+  {{ if and (eq $pag.PageNumber 1) $items }}
+    {{ partial "articles/row" (dict "page" (index $items 0) "h" 2 "featured" true) }}
+    {{ $items = after 1 $items }}
+  {{ end }}
+  {{ range $items }}{{ partial "articles/row" (dict "page" . "h" 2) }}{{ end }}
+</div>
+
+{{ partial "articles/foot" (dict "pager" $pag) }}
+{{ end }}

@@ -1,0 +1,212 @@
+{{ define "main" }}
+{{ $p := .Params }}
+{{ $byYear := $p.videos_by_year }}
+{{ $current := string $p.current_year }}
+
+{{/* Years in ascending order (map keys range sorted), their counts, the total and the busiest year. */}}
+{{ $years := slice }}
+{{ $total := 0 }}
+{{ $max := 0 }}
+{{ $maxYear := "" }}
+{{ range $year, $videos := $byYear }}
+  {{ $years = $years | append (string $year) }}
+  {{ $total = add $total (len $videos) }}
+  {{ if gt (len $videos) $max }}{{ $max = len $videos }}{{ $maxYear = string $year }}{{ end }}
+{{ end }}
+{{ if not (in $years $current) }}{{ $current = index (last 1 $years) 0 }}{{ end }}
+
+{{/* ------------------------------------------------------------ header and chart */}}
+<header class="vid-head">
+  <div class="wrap vid-head__inner">
+    <div class="vid-head__copy">
+      <span class="eyebrow">{{ $p.eyebrow }}</span>
+      <h1 class="display">{{ $p.heading | safeHTML }}</h1>
+      <p class="lede vid-head__lede">{{ $p.lede }}</p>
+      <p class="vid-head__submit">Missing a video? <a href="{{ $p.submit_url }}">Submit a pull request</a></p>
+    </div>
+
+    <nav class="vid-chart" aria-label="Talks per year">
+      <p class="vid-chart__note" aria-hidden="true">{{ $total }} talks and counting. Pick a year</p>
+      <svg class="vid-chart__arrow" width="60" height="44" viewBox="0 0 60 44" aria-hidden="true"><path d="M4 6c18 0 36 8 44 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M40 30l8 8 6-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <ol class="vid-chart__bars">
+        {{ range $years }}
+          {{ $n := len (index $byYear .) }}
+          {{ $h := math.Max 10 (math.Round (div (mul $n 150.0) $max)) }}
+          <li class="vid-chart__col">
+            {{ if eq . $maxYear }}<span class="vid-chart__bumper" aria-hidden="true">a bumper year!</span>{{ end }}
+            <a class="vid-chart__bar{{ if eq . $current }} is-active{{ end }}" href="#year-{{ . }}" data-year-link="{{ . }}"{{ if eq . $current }} aria-current="true"{{ end }}>
+              <span class="vid-chart__n">{{ $n }}</span>
+              <span class="vid-chart__fill" style="height: {{ $h }}px"></span>
+              <span class="vid-chart__year"><span aria-hidden="true">’{{ substr . 2 }}</span><span class="sr-only">{{ . }}, {{ $n }} talks</span></span>
+            </a>
+          </li>
+        {{ end }}
+      </ol>
+    </nav>
+  </div>
+</header>
+
+{{/* ------------------------------------------------------------ one folder panel per year, newest first */}}
+<div class="wrap vid-years" data-vid-years data-current="{{ $current }}">
+  {{ $desc := sort $years "value" "desc" }}
+  {{ range $i, $year := $desc }}
+    {{ $videos := index $byYear $year }}
+    {{ $newer := "" }}{{ if gt $i 0 }}{{ $newer = index $desc (sub $i 1) }}{{ end }}
+    {{ $older := "" }}{{ if lt (add $i 1) (len $desc) }}{{ $older = index $desc (add $i 1) }}{{ end }}
+    {{ $n := len $videos }}
+    <section class="vid-year" id="year-{{ $year }}" data-year="{{ $year }}" aria-labelledby="year-{{ $year }}-title">
+      <div class="vid-year__head">
+        <div class="vid-year__title">
+          <h2 id="year-{{ $year }}-title" tabindex="-1">{{ $year }}</h2>
+          <span class="vid-year__count">{{ $n }} {{ cond (eq $n 1) "talk" "talks" }}{{ if eq $year (string now.Year) }} so far{{ end }}</span>
+        </div>
+        <nav class="vid-year__nav" aria-label="Other years">
+          {{ with $older }}
+            <a class="vid-year__step" href="#year-{{ . }}" data-year-link="{{ . }}" data-step="older">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 14) }} {{ . }}</a>
+          {{ else }}
+            <span class="vid-year__step is-disabled" aria-disabled="true">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 14) }} Previous</span>
+          {{ end }}
+          {{ with $newer }}
+            <a class="vid-year__step" href="#year-{{ . }}" data-year-link="{{ . }}" data-step="newer">{{ . }} {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>
+          {{ else }}
+            <span class="vid-year__step is-disabled" aria-disabled="true">Next {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</span>
+          {{ end }}
+        </nav>
+      </div>
+
+      {{ with index $videos 0 }}
+        {{/* Round "mm:ss" (or "h:mm:ss") to whole minutes. */}}
+        {{ $mins := 0 }}
+        {{ with .duration }}
+          {{ $parts := split . ":" }}
+          {{ $nums := slice }}
+          {{ range $parts }}{{ $nums = $nums | append (int (strings.TrimLeft "0" . | default "0")) }}{{ end }}
+          {{ if eq (len $nums) 3 }}
+            {{ $mins = add (mul (index $nums 0) 60) (index $nums 1) }}
+            {{ if ge (index $nums 2) 30 }}{{ $mins = add $mins 1 }}{{ end }}
+          {{ else if eq (len $nums) 2 }}
+            {{ $mins = index $nums 0 }}
+            {{ if ge (index $nums 1) 30 }}{{ $mins = add $mins 1 }}{{ end }}
+          {{ end }}
+        {{ end }}
+        {{ $words := split .title " " }}
+        {{ $nw := len $words }}
+        <article class="vid-feature">
+          <a class="vid-feature__thumb" href="{{ .url }}" tabindex="-1" aria-hidden="true">
+            <img src="{{ .thumbnail }}" alt="" width="720" height="405" loading="lazy" decoding="async">
+            <span class="vid-feature__play">{{ partial "ui/icon" (dict "name" "play" "size" 40) }}</span>
+            {{ with .duration }}<span class="vid-badge vid-badge--lg">{{ . }}</span>{{ end }}
+          </a>
+          <div class="vid-feature__body">
+            <p class="vid-feature__note">pick of the year</p>
+            <h3 class="vid-feature__title">
+              {{- /* The highlighter goes on the last two words, or the last one when they are long. */ -}}
+              {{- $k := cond (and (ge $nw 3) (le (len (delimit (last 2 $words) " ")) 16)) 2 1 -}}
+              {{- if gt $nw $k -}}{{ delimit (first (sub $nw $k) $words) " " }} {{ end -}}
+              <span class="hl">{{ delimit (last $k $words) " " }}</span>
+            </h3>
+            {{ if gt $mins 0 }}<p class="vid-feature__meta">{{ $mins }} {{ cond (eq $mins 1) "minute" "minutes" }}</p>{{ end }}
+            <div class="vid-feature__cta">
+              <a class="btn btn--sm vid-feature__btn" href="{{ .url }}">Watch the talk<span class="sr-only">: {{ .title }}</span>{{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+            </div>
+          </div>
+        </article>
+      {{ end }}
+
+      {{ if gt $n 1 }}
+        <div class="vid-more">
+          <h3 class="vid-more__title">More from {{ $year }}</h3>
+          <ul class="vid-grid">
+            {{ range after 1 $videos }}
+              <li>
+                <a class="vid-card" href="{{ .url }}">
+                  <span class="vid-card__thumb">
+                    <img src="{{ .thumbnail }}" alt="" width="480" height="270" loading="lazy" decoding="async">
+                    {{ with .duration }}<span class="vid-badge"><span class="sr-only">Duration </span>{{ . }}</span>{{ end }}
+                  </span>
+                  <span class="vid-card__title">{{ .title }}</span>
+                </a>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
+    </section>
+  {{ end }}
+</div>
+
+{{/* ------------------------------------------------------------ crowd favourites */}}
+{{ with $p.favourites }}
+  {{ $picks := slice }}
+  {{ range .videos }}
+    {{ $url := . }}
+    {{ range $year, $videos := $byYear }}
+      {{ range where $videos "url" $url }}{{ $picks = $picks | append (merge . (dict "year" (string $year))) }}{{ end }}
+    {{ end }}
+  {{ end }}
+  {{ if $picks }}
+  <section class="vid-favs" aria-labelledby="favs-title">
+    <div class="wrap vid-favs__head">
+      <div class="vid-favs__titles">
+        <span class="eyebrow vid-favs__eyebrow">{{ .eyebrow }}</span>
+        <h2 class="vid-favs__title" id="favs-title">{{ .title }}</h2>
+      </div>
+      <p class="vid-favs__note">{{ .note }}</p>
+    </div>
+    <div class="vid-favs__reel">
+      <ul class="wrap vid-favs__list">
+        {{ range $picks }}
+          <li>
+            <a class="vid-fav" href="{{ .url }}">
+              <span class="vid-fav__frame">
+                <img src="{{ .thumbnail }}" alt="" width="480" height="270" loading="lazy" decoding="async">
+                {{ with .duration }}<span class="vid-badge"><span class="sr-only">Duration </span>{{ . }}</span>{{ end }}
+              </span>
+              <span class="vid-fav__title">{{ .title }}</span>
+              <span class="vid-fav__year">{{ .year }}</span>
+            </a>
+          </li>
+        {{ end }}
+      </ul>
+    </div>
+  </section>
+  {{ end }}
+{{ end }}
+
+{{/* Show one year at a time. Without this script every year is listed, newest first. */}}
+<script>
+(() => {
+  const root = document.querySelector('[data-vid-years]');
+  if (!root) return;
+  const panels = [...root.querySelectorAll('[data-year]')];
+  const bars = [...document.querySelectorAll('.vid-chart [data-year-link]')];
+  const show = (year) => {
+    const panel = panels.find((p) => p.dataset.year === year);
+    if (!panel) return null;
+    panels.forEach((p) => { p.hidden = p !== panel; });
+    bars.forEach((a) => {
+      const on = a.dataset.yearLink === year;
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+    return panel;
+  };
+  root.classList.add('is-tabbed');
+  const m = location.hash.match(/^#year-(\d{4})$/);
+  show((m && m[1]) || root.dataset.current);
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-year-link]');
+    if (!link || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const panel = show(link.dataset.yearLink);
+    if (!panel) return;
+    e.preventDefault();
+    history.replaceState(null, '', '#year-' + link.dataset.yearLink);
+    const step = link.dataset.step;
+    const same = step && panel.querySelector(`[data-step="${step}"]`);
+    (same || panel.querySelector('h2')).focus({ preventScroll: true });
+    const top = panel.getBoundingClientRect().top;
+    if (top < 0 || top > innerHeight * 0.7) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
+</script>
+{{ end }}

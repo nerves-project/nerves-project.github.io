@@ -1,0 +1,30 @@
+{{- /*
+  The foot of an article list: page numbers (when there are several) and the "add yours" line.
+  Usage: partial "articles/foot" (dict "pager" .Paginator)
+*/ -}}
+{{- $pag := .pager -}}
+{{- $section := site.GetPage "/articles" -}}
+<div class="wrap art-foot">
+  {{- if and $pag (gt $pag.TotalPages 1) }}
+  <nav class="art-pager" aria-label="Pages">
+    {{- if $pag.HasPrev }}
+    <a class="arrow-link arrow-link--sm art-pager__step" href="{{ $pag.Prev.URL }}" rel="prev">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 14) }} Newer</a>
+    {{- end }}
+    <ol class="art-pager__pages">
+      {{- range $pag.Pagers }}
+      <li>
+        {{- if eq .PageNumber $pag.PageNumber -}}
+        <span class="art-pager__page is-current" aria-current="page"><span class="sr-only">Page </span>{{ .PageNumber }}</span>
+        {{- else -}}
+        <a class="art-pager__page" href="{{ .URL }}"><span class="sr-only">Page </span>{{ .PageNumber }}</a>
+        {{- end -}}
+      </li>
+      {{- end }}
+    </ol>
+    {{- if $pag.HasNext }}
+    <a class="arrow-link arrow-link--sm art-pager__step" href="{{ $pag.Next.URL }}" rel="next">Older articles {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>
+    {{- end }}
+  </nav>
+  {{- end }}
+  {{ with $section.Params.submit_url }}<p class="art-foot__submit">Wrote something about Nerves? <a href="{{ . }}">Add it with a pull request</a></p>{{ end }}
+</div>

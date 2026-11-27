@@ -1,0 +1,29 @@
+{{ define "main" }}
+{{- /* Articles live on their authors' sites. The list links straight out; this page only catches
+   visitors who land on /articles/<slug>/ and sends them on. */ -}}
+{{ $ext := .Params.external }}
+{{ $host := "" }}
+{{ with $ext }}{{ $host = strings.TrimPrefix "www." (urls.Parse .).Host }}{{ end }}
+<header class="art-head art-head--single">
+  <div class="wrap art-head__inner">
+    <div class="art-head__copy">
+      <span class="eyebrow">Article</span>
+      <h1 class="display art-single__title">{{ .Title }}</h1>
+      {{ with .Params.subtitle }}<p class="lede">{{ . }}</p>{{ end }}
+      <p class="art-single__meta">
+        {{ with .Params.author }}{{ . }} · {{ end }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
+      </p>
+      {{ with .GetTerms "tags" }}
+      <ul class="art-row__tags art-single__tags" aria-label="Tags">
+        {{ range . }}<li><a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>{{ end }}
+      </ul>
+      {{ end }}
+      <div class="art-single__actions">
+        {{ with $ext }}<a class="btn" href="{{ . }}">Read it on {{ $host }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>{{ end }}
+        {{ with .CurrentSection }}<a class="arrow-link" href="{{ .RelPermalink }}">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 16) }} All articles</a>{{ end }}
+      </div>
+    </div>
+  </div>
+</header>
+{{ with .Content }}<div class="wrap"><div class="prose prose--page art-single__body">{{ . }}</div></div>{{ end }}
+{{ end }}

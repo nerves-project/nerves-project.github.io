@@ -1,3 +1,479 @@
 @use '../mixins' as *;
 
-// videos page styles
+// videos page styles: a talks-per-year chart, a folder panel per year and the crowd favourites reel
+
+// ---------------------------------------------------------------- header
+
+.vid-head {
+  padding-block: 72px 48px;
+  &__inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 48px;
+  }
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  &__lede { max-width: 620px; padding-top: 4px; }
+  &__submit {
+    padding-top: 12px;
+    font-size: 15px;
+    line-height: 18px;
+    color: var(--pencil-2);
+    a {
+      font-weight: 800;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+  }
+  @include below($tablet) {
+    &__inner { flex-direction: column; align-items: stretch; gap: 40px; }
+  }
+  @include below($mobile) {
+    padding-block: 40px 32px;
+  }
+}
+
+// ---------------------------------------------------------------- talks per year chart
+
+.vid-chart {
+  position: relative;
+  flex: 0 1 560px;
+  min-width: 420px;
+  padding-top: 36px;
+  &__note {
+    position: absolute;
+    left: 4px;
+    top: 0;
+    font: 600 26px/32px var(--hand);
+    color: var(--blue);
+    transform: rotate(-3deg);
+    transform-origin: 0 0;
+    white-space: nowrap;
+  }
+  &__arrow {
+    position: absolute;
+    left: 45%;
+    top: 22px;
+    color: var(--blue);
+  }
+  &__bars {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 216px;
+    padding-inline: 6px;
+    // the baseline the bars stand on
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 24px;
+      height: 2.5px;
+      background: var(--ink);
+    }
+  }
+  &__col {
+    position: relative;
+    flex: 1 1 0;
+    max-width: 32px;
+    display: flex;
+    justify-content: center;
+  }
+  &__bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    color: inherit;
+    border-radius: 6px;
+    &:hover { text-decoration: none; }
+    &:hover .vid-chart__fill { background: #dcd3c0; }
+  }
+  &__n {
+    font: 400 11px/14px var(--mono);
+    color: var(--faint);
+  }
+  &__fill {
+    display: block;
+    width: min(30px, 100%);
+    border: 2px solid var(--ink);
+    border-bottom: 0;
+    border-radius: 5px 5px 0 0;
+    background: var(--paper-deep);
+    transition: background-color 140ms ease;
+  }
+  &__year {
+    margin-top: 12.5px;
+    font: 500 11px/14px var(--mono);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  &__bar.is-active {
+    .vid-chart__n { color: var(--ink); font-weight: 700; }
+    .vid-chart__fill { background: var(--sky); box-shadow: 4px 0 0 var(--ink); }
+    .vid-chart__year { color: var(--ink); font-weight: 800; }
+  }
+  &__bumper {
+    position: absolute;
+    right: -2px;
+    bottom: calc(100% + 4px);
+    font: 600 22px/28px var(--hand);
+    color: var(--pencil-2);
+    white-space: nowrap;
+    transform: rotate(3deg);
+    pointer-events: none;
+  }
+  @include below($tablet) {
+    flex-basis: auto;
+    width: 100%;
+    max-width: 560px;
+    min-width: 0;
+  }
+  @include below($mobile) {
+    padding-top: 60px;
+    &__note { font-size: 23px; line-height: 28px; }
+    &__arrow { display: none; }
+    &__bars { height: 200px; padding-inline: 2px; }
+    &__bumper { font-size: 20px; }
+  }
+}
+
+// ---------------------------------------------------------------- the year folders
+
+.vid-years {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 88px;
+  @include below($mobile) { padding-bottom: 64px; }
+}
+
+.vid-year {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(38, 34, 31, 0.06);
+  &[hidden] { display: none; }
+  // the panel's own scroll target sits clear of the sticky header
+  scroll-margin-top: 96px;
+
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    padding: 28px 48px 0;
+  }
+  &__title {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    h2 {
+      font: 900 44px/48px var(--sans);
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      &:focus { outline: none; }
+      &:focus-visible { outline: 2px solid var(--sky); outline-offset: 4px; border-radius: 4px; }
+    }
+  }
+  &__count {
+    font: 500 13px/16px var(--mono);
+    color: var(--muted);
+  }
+  &__nav { display: flex; align-items: center; gap: 10px; }
+  &__step {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 10px;
+    font: 800 15px/18px var(--sans);
+    color: var(--ink);
+    &:hover { text-decoration: none; background: rgba(38, 34, 31, 0.05); }
+    &.is-disabled { border-color: var(--rule-2); color: #b5ac9c; }
+  }
+  // without the script every year shows, so the step buttons have nothing to do
+  .vid-years:not(.is-tabbed) &__nav { display: none; }
+
+  @include below($mobile) {
+    border-radius: 16px;
+    &__head { padding: 22px 20px 0; }
+    &__title h2 { font-size: 36px; line-height: 40px; }
+    &__step { padding: 7px 11px; font-size: 14px; }
+  }
+}
+
+// the year's hand-picked talk
+.vid-feature {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  padding: 28px 48px 40px;
+
+  &__thumb {
+    position: relative;
+    flex: 0 1 720px;
+    min-width: 0;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+    box-shadow: 8px 8px 0 var(--ink);
+    background: var(--paper-deep);
+    transform: rotate(-1deg);
+    transition: transform 160ms ease;
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    &:hover { transform: rotate(-1deg) translate(-1px, -2px); }
+    &:hover .vid-feature__play { transform: translate(-50%, -50%) scale(1.06); }
+  }
+  &__play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    color: var(--ink);
+    transform: translate(-50%, -50%);
+    transition: transform 160ms ease;
+    svg { margin-left: 5px; }
+  }
+  &__body {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  &__note {
+    font: 600 26px/32px var(--hand);
+    color: var(--blue);
+    transform: rotate(-2deg);
+    transform-origin: 0 50%;
+  }
+  &__title {
+    font: 900 36px/40px var(--sans);
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  &__meta { font-size: 16px; line-height: 20px; color: var(--pencil-2); }
+  &__cta { display: flex; padding-top: 8px; }
+  &__btn {
+    padding: 13px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 0 var(--blue-dark);
+    font-size: 16px;
+    line-height: 20px;
+    &:hover { box-shadow: 0 3px 0 var(--blue-dark); }
+  }
+
+  @include below($wide) {
+    gap: 40px;
+    &__thumb { flex-basis: 58%; }
+    &__title { font-size: 30px; line-height: 34px; }
+  }
+  @include below($tablet) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+    &__thumb { flex-basis: auto; }
+  }
+  @include below($mobile) {
+    padding: 22px 20px 32px;
+    gap: 28px;
+    &__thumb { border-width: 2px; border-radius: 12px; box-shadow: 5px 5px 0 var(--ink); }
+    &__play { width: 64px; height: 64px; svg { width: 30px; height: 30px; margin-left: 3px; } }
+    &__note { font-size: 24px; }
+    &__title { font-size: 26px; line-height: 30px; }
+  }
+}
+
+// duration badge over a thumbnail
+.vid-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(20, 18, 16, 0.82);
+  color: var(--white);
+  font: 600 12px/16px var(--mono);
+  &--lg {
+    right: 14px;
+    bottom: 14px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+}
+
+// the rest of the year
+.vid-more {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 48px 48px;
+  &__title { font: 900 22px/28px var(--sans); color: var(--ink); }
+  @include below($mobile) { padding: 0 20px 28px; gap: 20px; }
+}
+
+.vid-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px 24px;
+  @include below($tablet) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @include below($mobile) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 14px; }
+}
+
+.vid-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--ink);
+  &__thumb {
+    position: relative;
+    display: block;
+    aspect-ratio: 270 / 166;
+    overflow: hidden;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    box-shadow: 4px 4px 0 var(--ink);
+    background: var(--paper-deep);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  }
+  &__title { font: 800 17px/23px var(--sans); }
+  &:hover { text-decoration: none; }
+  &:hover &__thumb { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+  &:hover &__title { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  @include below($mobile) {
+    gap: 10px;
+    &__thumb { border-radius: 10px; box-shadow: 3px 3px 0 var(--ink); }
+    &__title { font-size: 15px; line-height: 20px; }
+  }
+}
+
+// ---------------------------------------------------------------- crowd favourites
+
+// One film frame: 16px of strip, a 10px row of sprocket holes, 14px, the frames, and back down.
+$reel-frame: 170px;
+$reel-top: 40px;
+$reel-height: $reel-top * 2 + $reel-frame;
+$sprockets: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='10'%3E%3Crect x='14' width='18' height='10' rx='3' fill='%233A3530'/%3E%3C/svg%3E");
+
+.vid-favs {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-block: 80px 88px;
+  background: var(--ink);
+  color: var(--paper);
+
+  &__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 32px;
+  }
+  &__titles { display: flex; flex-direction: column; gap: 10px; }
+  &__eyebrow { color: #7fc8dd; }
+  &__title {
+    font: 900 44px/48px var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--paper);
+  }
+  &__note {
+    font: 600 24px/30px var(--hand);
+    color: #bfe3ee;
+    transform: rotate(-2deg);
+  }
+
+  &__reel {
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: $reel-height;
+      padding-inline: max(var(--gutter), calc((100% - var(--content)) / 2));
+      background-image: $sprockets, $sprockets, linear-gradient(#161412, #161412);
+      background-origin: content-box, content-box, border-box;
+      background-clip: content-box, content-box, border-box;
+      background-repeat: space no-repeat, space no-repeat, no-repeat;
+      background-size: 46px 10px, 46px 10px, 100% 100%;
+      background-position: 0 16px, 0 ($reel-height - 26px), 0 0;
+    }
+  }
+  &__list {
+    position: relative;
+    display: flex;
+    gap: 20px;
+    padding-top: $reel-top;
+    > li { flex: 1 1 0; min-width: 0; }
+  }
+
+  @include below($tablet) {
+    &__head { flex-direction: column; align-items: flex-start; }
+  }
+  @include below($mobile) {
+    padding-block: 64px 56px;
+    gap: 24px;
+    &__title { font-size: 34px; line-height: 38px; }
+    &__note { font-size: 22px; line-height: 26px; }
+    &__list {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      padding-bottom: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: #4a443e transparent;
+      > li { flex: 0 0 264px; scroll-snap-align: start; }
+    }
+  }
+}
+
+.vid-fav {
+  display: flex;
+  flex-direction: column;
+  color: var(--paper);
+  &__frame {
+    position: relative;
+    display: block;
+    height: $reel-frame;
+    overflow: hidden;
+    border-radius: 6px;
+    background: #2e2a26;
+    img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 200ms ease; }
+  }
+  &__title {
+    margin-top: $reel-top + 28px;
+    font: 800 17px/23px var(--sans);
+  }
+  &__year {
+    margin-top: 4px;
+    font: 400 12px/16px var(--mono);
+    color: #a39b8f;
+  }
+  &:hover { text-decoration: none; }
+  &:hover &__frame img { transform: scale(1.03); }
+  &:hover &__title { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  &:focus-visible { outline-offset: 4px; }
+}

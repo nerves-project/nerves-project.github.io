@@ -1,0 +1,56 @@
+{{ define "main" }}
+{{ $p := .Params }}
+{{ $articles := .RegularPages.ByDate.Reverse }}
+
+{{/* Everyone who has written one. "A, B" and "A and B" count as two people. */}}
+{{ $s := newScratch }}
+{{ range $articles }}
+  {{ with .Params.author }}
+    {{ range split (replace (replace . " & " ", ") " and " ", ") "," }}
+      {{ $name := trim . " " }}
+      {{ if $name }}{{ $s.SetInMap "authors" $name (add (index ($s.Get "authors" | default dict) $name | default 0) 1) }}{{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $authors := slice }}
+{{ range $name, $n := $s.Get "authors" }}{{ $authors = $authors | append (dict "name" $name "n" $n) }}{{ end }}
+{{ $authors = sort $authors "n" "desc" }}
+
+<header class="art-head">
+  <div class="wrap art-head__inner">
+    <div class="art-head__copy">
+      <span class="eyebrow">{{ $p.eyebrow }}</span>
+      <h1 class="display art-head__title">{{ $p.heading | safeHTML }}</h1>
+      <p class="lede art-head__lede">{{ $p.lede }}</p>
+    </div>
+    {{ with $authors }}
+    <aside class="ruled art-writers" aria-labelledby="writers-title">
+      <h2 class="ruled__title" id="writers-title">Written by {{ len . }} people (so far)</h2>
+      <p class="ruled__hand art-writers__names">
+        {{- range $i, $a := . }}{{ if $i }} · {{ end }}<span>{{ $a.name }}</span>{{ end -}}
+      </p>
+      {{ with $p.submit_url }}<a class="art-writers__you" href="{{ . }}">your name here? <span aria-hidden="true">→</span></a>{{ end }}
+    </aside>
+    {{ end }}
+  </div>
+</header>
+
+{{ partial "articles/chips" (dict "active" "all") }}
+
+{{ $pag := .Paginate $articles 15 }}
+{{ $items := $pag.Pages }}
+<div class="wrap art-list">
+  {{ if and (eq $pag.PageNumber 1) $items }}
+    {{ partial "articles/row" (dict "page" (index $items 0) "h" 2 "featured" true "note" $p.featured_note) }}
+    {{ $items = after 1 $items }}
+  {{ end }}
+  {{ range $items.GroupByDate "2006" }}
+    <section class="art-year" aria-labelledby="year-{{ .Key }}">
+      <h2 class="year-rule" id="year-{{ .Key }}"><span class="year-rule__year">{{ .Key }}</span>{{ partial "ui/icon" (dict "name" "wave") }}</h2>
+      {{ range .Pages }}{{ partial "articles/row" (dict "page" . "h" 3) }}{{ end }}
+    </section>
+  {{ end }}
+</div>
+
+{{ partial "articles/foot" (dict "pager" $pag) }}
+{{ end }}

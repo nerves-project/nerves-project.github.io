@@ -1,3 +1,336 @@
 @use '../mixins' as *;
 
-// articles page styles
+// articles page styles, shared by the tag pages (/tags/ and /tags/<tag>/)
+
+$chip-line: #c9bfad;
+
+// ---------------------------------------------------------------- header
+
+.art-head {
+  padding-block: 72px;
+  &__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 640px) 450px;
+    justify-content: space-between;
+    align-items: start;
+    gap: 40px 48px;
+  }
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+    grid-column: 1;
+  }
+  &__lede { padding-top: 4px; }
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 800;
+    white-space: nowrap;
+    svg { position: relative; top: 1px; transition: transform 160ms ease; }
+    &:hover { text-decoration: none; svg { transform: translateX(-3px); } }
+  }
+  // the tag name, set in mono
+  &__tag {
+    font: 700 64px/68px var(--mono);
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+    .hl::before { height: 0.46em; bottom: 0.02em; }
+  }
+  &--tag,
+  &--tags { padding-bottom: 40px; }
+  &--tag { padding-bottom: 36px; }
+  &--tag &__inner,
+  &--tags &__inner { grid-template-columns: minmax(0, 1fr); }
+
+  @include below($tablet) {
+    &__inner { grid-template-columns: minmax(0, 1fr); }
+  }
+  @include below($mobile) {
+    padding-block: 40px 48px;
+    &--tag,
+    &--tags { padding-bottom: 28px; }
+    &__tag { font-size: clamp(28px, 8vw, 64px); line-height: 1.15; }
+  }
+}
+
+// "Written by N people (so far)": a ruled index card of everyone who has written one
+.art-writers {
+  margin-top: -14px;
+  transform: rotate(1.5deg);
+  transform-origin: 0 0;
+  &__names > span { white-space: nowrap; }
+  &__you {
+    display: inline-block;
+    font: 600 22px/32px var(--hand);
+    color: var(--pencil-2);
+    &:hover { color: var(--blue); }
+  }
+  @include below($tablet) {
+    max-width: 450px;
+    margin-top: 0;
+    margin-right: 8px;
+  }
+  @include below($mobile) {
+    padding-left: 46px;
+    padding-right: 18px;
+    transform: rotate(1deg);
+    &::before { left: 32px; }
+  }
+}
+
+// ---------------------------------------------------------------- tag chips
+
+.art-chips {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding-bottom: 40px;
+  &__list { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  &__all { flex-shrink: 0; }
+  @include below($tablet) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.art-chip {
+  padding: 7px 13px;
+  border-width: 1px;
+  border-color: $chip-line;
+  &.is-active { border-color: var(--ink); }
+}
+
+// ---------------------------------------------------------------- the list
+
+.art-list {
+  padding-bottom: 40px;
+}
+
+.art-year .year-rule { padding: 44px 0 6px; }
+.art-list > .art-year:first-child .year-rule { padding-top: 12px; }
+
+.art-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding-block: 24px;
+
+  &:not(.art-row--featured) + & { border-top: 1px solid var(--rule); }
+
+  &__date {
+    flex: 0 0 110px;
+    padding-top: 4px;
+    font: 400 13px/16px var(--mono);
+    color: var(--muted);
+  }
+  &__main {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  &__title {
+    font: 900 22px/28px var(--sans);
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    a {
+      color: inherit;
+      // the whole row is the link; the tags sit above it
+      &::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+      &:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+    }
+  }
+  &:hover &__title a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  &__sub {
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--pencil);
+  }
+  &__meta {
+    font-size: 15px;
+    line-height: 18px;
+    color: var(--pencil-2);
+    svg { position: relative; top: 1px; margin-left: 1px; }
+  }
+  &__side {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 300px;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+  }
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    .tag { padding: 4px 8px; }
+  }
+  &__note {
+    margin: auto -2px -12px 0;
+    font: 600 24px/30px var(--hand);
+    color: var(--blue);
+    transform: rotate(-3deg);
+    white-space: nowrap;
+  }
+
+  &--featured {
+    padding: 30px 32px;
+    margin-bottom: 8px;
+    background: var(--sheet);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: 6px 6px 0 var(--ink);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+    &:hover { transform: translate(-1px, -1px); box-shadow: 7px 7px 0 var(--ink); }
+  }
+  // tag pages: the last row closes the list
+  .art-list--flat > &:last-child:not(.art-row--featured),
+  .art-year:last-child > &:last-child { border-bottom: 1px solid var(--rule); }
+
+  @include below($tablet) {
+    gap: 24px;
+    &__side { flex-basis: 220px; }
+  }
+  @include below($mobile) {
+    flex-direction: column;
+    gap: 8px;
+    padding-block: 20px;
+    &__date { flex-basis: auto; padding-top: 0; }
+    &__title { font-size: 19px; line-height: 25px; }
+    &__side {
+      flex-basis: auto;
+      align-items: flex-start;
+      align-self: auto;
+      gap: 8px;
+      padding-top: 6px;
+    }
+    &__tags { justify-content: flex-start; }
+    &__note { margin: 4px 0 -4px; font-size: 23px; }
+    &--featured {
+      padding: 22px 20px;
+      border-radius: 14px;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+  }
+}
+
+// ---------------------------------------------------------------- pager and "add yours"
+
+.art-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 104px;
+  &__submit {
+    font-size: 15px;
+    line-height: 18px;
+    color: var(--pencil-2);
+    a {
+      font-weight: 800;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+  }
+  @include below($mobile) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 72px;
+  }
+}
+
+.art-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  &__pages { display: flex; gap: 6px; }
+  &__page {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid $chip-line;
+    border-radius: 10px;
+    font: 800 15px/18px var(--sans);
+    color: var(--ink);
+    &:hover { text-decoration: none; background: rgba(38, 34, 31, 0.05); }
+    &.is-current { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  }
+}
+
+// ---------------------------------------------------------------- all tags
+
+.tag-cloud {
+  padding-bottom: 112px;
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    li[hidden] { display: none; }
+  }
+  &__chip {
+    display: inline-block;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    &:hover { text-decoration: none; background: rgba(38, 34, 31, 0.05); }
+
+    &--top {
+      padding: 10px 18px;
+      border: 0;
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: 4px 4px 0 var(--blue);
+      font-size: 22px;
+      line-height: 28px;
+      &:hover { background: var(--ink-2); }
+    }
+    &--xl { padding: 9px 16px; border: 1.5px solid var(--ink); font-size: 19px; line-height: 24px; }
+    &--l { padding: 8px 14px; border: 1.5px solid var(--ink); font-size: 16px; line-height: 20px; }
+    &--m { padding: 7px 13px; border-color: $chip-line; font-size: 14px; line-height: 18px; }
+    &--s { padding: 6px 12px; font-size: 13px; line-height: 16px; }
+  }
+  @include below($mobile) {
+    padding-bottom: 72px;
+    &__list { gap: 8px; }
+    &__chip--top { font-size: 19px; line-height: 24px; padding: 9px 16px; }
+    &__chip--xl { font-size: 17px; line-height: 22px; }
+  }
+}
+
+// ---------------------------------------------------------------- one article (/articles/<slug>/)
+
+.art-head--single { padding-block: 72px 104px; }
+.art-single {
+  &__title { max-width: 900px; }
+  &__meta { font-size: 17px; line-height: 24px; color: var(--pencil-2); }
+  &__tags { justify-content: flex-start; }
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+    padding-top: 12px;
+  }
+  &__body { padding-bottom: 104px; }
+}

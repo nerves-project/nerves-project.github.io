@@ -1,0 +1,47 @@
+{{- /*
+  One entry in an article list: date, title, author · domain, tags.
+  Usage: partial "articles/row" (dict "page" . "h" 3 "featured" false "note" "")
+  Articles link out to the author's site (front matter `external`); anything else, like a case
+  study on a tag page, links to its own page.
+*/ -}}
+{{- $p := .page -}}
+{{- $h := .h | default 3 -}}
+{{- $ext := $p.Params.external -}}
+{{- $href := $p.RelPermalink -}}
+{{- $host := "" -}}
+{{- with $ext -}}
+  {{- $href = . -}}
+  {{- $host = strings.TrimPrefix "www." (urls.Parse .).Host -}}
+{{- end -}}
+{{- $tags := slice -}}
+{{- range $p.GetTerms "tags" -}}
+  {{- if ne (lower .LinkTitle) "nerves" }}{{ $tags = $tags | append . }}{{ end -}}
+{{- end -}}
+<article class="art-row{{ if .featured }} art-row--featured{{ end }}">
+  <time class="art-row__date" datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date.Format "2006-01-02" }}</time>
+  <div class="art-row__main">
+    <h{{ $h }} class="art-row__title"><a href="{{ $href }}">{{ $p.Title }}</a></h{{ $h }}>
+    {{- with $p.Params.subtitle }}<p class="art-row__sub">{{ . }}</p>{{ end }}
+    <p class="art-row__meta">
+      {{- if $ext -}}
+        {{ with $p.Params.author }}{{ . }} · {{ end }}{{ $host }} {{ partial "ui/icon" (dict "name" "external" "size" 11) }}
+      {{- else if eq $p.Section "cases" -}}
+        Case study
+      {{- else -}}
+        {{ with $p.Params.author }}{{ . }} · {{ end }}{{ $p.CurrentSection.LinkTitle }}
+      {{- end -}}
+    </p>
+  </div>
+  {{- if or $tags .note }}
+  <div class="art-row__side">
+    {{- with $tags }}
+    <ul class="art-row__tags" aria-label="Tags">
+      {{- range . }}
+      <li><a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
+      {{- end }}
+    </ul>
+    {{- end }}
+    {{- with .note }}<p class="art-row__note" aria-hidden="true">{{ . }}</p>{{ end }}
+  </div>
+  {{- end }}
+</article>
