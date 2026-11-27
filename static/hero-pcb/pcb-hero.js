@@ -124,6 +124,13 @@ const CFG = {
     { x: 0.86, y: 0.2, depth: 3.0, yaw: -22 },
     { x: 0.33, y: 0.09, depth: 3.7, yaw: 36 },
   ],
+  // on a narrow hero they stand further off, along the top right, and fainter
+  nodesNarrow: [
+    { x: 0.55, y: 0.06, depth: 4.2, yaw: 18 },
+    { x: 0.8, y: 0.11, depth: 3.8, yaw: -22 },
+    { x: 0.93, y: 0.23, depth: 4.6, yaw: 36 },
+  ],
+  shadowNarrow: { fade: 0.78, alpha: 0.55 },
   shadowFade: 0.62,   // how far the boards in the distance fade into the paper
   shadowAlpha: 0.78,  // and how much of the page behind them shows through
   ports: [[30, 36], [46, 33], [62, 22]], // where cluster links land on the runtime plate (board mm)
@@ -1612,15 +1619,23 @@ export async function mountPcbHero(root, opts = {}) {
   })));
   const haze = hexLinear(cfg.paper);
   function placeNodes(dist) {
-    const stackMid = 1.5 * (cfg.slab + cfg.gapIdle);
-    for (const n of nodes) {
-      if (!n.spec) continue;
-      const nx = n.spec.x * 2 - 1, ny = 1 - n.spec.y * 2;
-      const dir = v3.norm(v3.sub(xform(state.invViewProj, [nx, ny, 1]), xform(state.invViewProj, [nx, ny, 0])));
-      const p = add(state.eye, dir, n.spec.depth * dist);
-      n.x = p[0]; n.y = p[1] - stackMid; n.z = p[2];
-    }
+    const narrow = state.cssW < 720;
+    nodes.forEach((n, i) => {
+      if (!n.spec) return;
+      const spec = (narrow && cfg.nodesNarrow?.[i - 1]) || n.spec;
+      n.yaw = ((spec.yaw || 0) * Math.PI) / 180;
+      n.look = [1, narrow ? cfg.shadowNarrow.alpha : cfg.shadowAlpha, 0, narrow ? cfg.shadowNarrow.fade : cfg.shadowFade];
+      place(n, spec);
+    });
     writeNodes();
+  }
+  function place(n, spec) {
+    {
+      const nx = spec.x * 2 - 1, ny = 1 - spec.y * 2;
+      const dir = v3.norm(v3.sub(xform(state.invViewProj, [nx, ny, 1]), xform(state.invViewProj, [nx, ny, 0])));
+      const p = add(state.eye, dir, spec.depth * state.dist);
+      n.x = p[0]; n.y = p[1] - 1.5 * (cfg.slab + cfg.gapIdle); n.z = p[2];
+    }
   }
   // the boards in the distance fade away with the rest of the drawing when the demo starts
   function writeNodes() {
