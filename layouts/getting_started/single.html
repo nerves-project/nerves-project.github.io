@@ -1,0 +1,111 @@
+{{ define "main" }}
+{{ $p := .Params }}
+{{ $check := `<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5l2.5 2.5L10 3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>` }}
+
+{{/* ------------------------------------------------------------ header and the "what you'll need" card */}}
+<header class="gs-head">
+  <div class="wrap gs-head__inner">
+    {{ with $p.head }}
+    <div class="gs-head__copy">
+      <span class="eyebrow">{{ .eyebrow }}</span>
+      <h1 class="display">{{ .title | safeHTML }}</h1>
+      <p class="lede gs-head__lede">{{ .lede }}</p>
+    </div>
+    {{ end }}
+    {{ with $p.needs }}
+    <div class="ruled gs-needs">
+      <h2 class="gs-needs__title">{{ .title }}</h2>
+      <ul class="gs-needs__list">
+        {{ range .items }}
+        <li>
+          <span class="gs-needs__box{{ if .checked }} is-checked{{ end }}" aria-hidden="true">{{ if .checked }}{{ $check | safeHTML }}{{ end }}</span>
+          <span class="gs-needs__text">{{ .text }}</span>
+        </li>
+        {{ end }}
+      </ul>
+    </div>
+    {{ end }}
+  </div>
+</header>
+
+{{/* ------------------------------------------------------------ the three paths */}}
+<div class="wrap gs-paths">
+  {{ range $i, $path := $p.paths }}
+  {{ $n := add $i 1 }}
+  <section class="gs-path gs-path--{{ .id }}" id="{{ .id }}" aria-labelledby="{{ .id }}-title">
+    <div class="gs-path__art">
+      {{ if eq .id "livebook" }}
+        <img class="gs-path__shot" src="{{ relURL "img/getting-started/nerves-livebook.jpg" }}" alt="Nerves Livebook running in a browser, showing its Learn page of tutorial notebooks" width="460" height="347" loading="lazy">
+      {{ end }}
+      {{ with .examples }}
+        <div class="gs-tree">
+          <a class="gs-tree__root" href="{{ .repo }}">nerves_examples/</a>
+          <ul>
+            {{ range .items }}
+            <li><a href="{{ $path.examples.repo }}/tree/main/{{ .name }}"><span class="gs-tree__name">{{ .name }}/</span><span class="gs-tree__text">{{ .text }}</span></a></li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
+      {{ with .terminal }}
+        <div class="gs-term">
+          <div class="gs-term__dots" aria-hidden="true"><i></i><i></i><i></i></div>
+          <pre class="gs-term__code"><code>
+            {{- range . -}}
+              {{- if hasPrefix . "#" -}}<span class="gs-term__line gs-term__c">{{ . }}</span>
+              {{- else if hasPrefix . "$ " -}}<span class="gs-term__line"><span class="gs-term__d">$</span> {{ strings.TrimPrefix "$ " . }}</span>
+              {{- else -}}<span class="gs-term__line gs-term__blank"> </span>
+              {{- end -}}
+            {{- end -}}
+          </code></pre>
+        </div>
+      {{ end }}
+    </div>
+
+    <div class="gs-path__body">
+      <span class="gs-path__num gs-path__num--{{ $n }}" aria-hidden="true">{{ $n }}</span>
+      <div class="gs-path__label">
+        <span class="eyebrow eyebrow--muted"><span class="sr-only">Way {{ $n }}: </span>{{ .label }}</span>
+        {{ with .badge }}<span class="pill">{{ . }}</span>{{ end }}
+      </div>
+      <h2 class="gs-path__title" id="{{ .id }}-title">{{ .title }}</h2>
+      <div class="gs-meter">
+        <span class="gs-meter__label" aria-hidden="true">Setup</span>
+        <span class="gs-meter__bar" role="img" aria-label="Setup effort: {{ .setup }} of 3">
+          {{ range seq 3 }}<i{{ if le . $path.setup }} class="is-on"{{ end }}></i>{{ end }}
+        </span>
+        <span class="gs-meter__note">{{ .setup_note }}</span>
+      </div>
+      <p class="gs-path__text">{{ .text }}</p>
+      {{ with .steps }}
+      <ol class="gs-steps">
+        {{ range $j, $s := . }}
+        <li><span class="gs-steps__n" aria-hidden="true">{{ printf "%02d" (add $j 1) }}</span><span>{{ $s | markdownify }}</span></li>
+        {{ end }}
+      </ol>
+      {{ end }}
+      <div class="gs-path__actions">
+        {{ range .actions }}
+          {{ if eq .style "primary" }}
+            <a class="btn gs-btn" href="{{ .url }}">{{ .text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+          {{ else if eq .style "ghost" }}
+            <a class="btn btn--ghost gs-btn" href="{{ .url }}">{{ .text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+          {{ else }}
+            <a class="arrow-link" href="{{ .url }}">{{ .text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+          {{ end }}
+        {{ end }}
+        {{ with .aside }}<p class="gs-path__aside">{{ . }}</p>{{ end }}
+      </div>
+    </div>
+  </section>
+  {{ end }}
+
+  {{ with $p.stuck }}
+  <aside class="gs-stuck" aria-label="Help">
+    <p>{{ .text | markdownify }}</p>
+    <a class="arrow-link" href="{{ site.Params.discord }}">{{ .link_text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+  </aside>
+  {{ end }}
+</div>
+
+{{ end }}

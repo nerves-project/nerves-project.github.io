@@ -168,6 +168,11 @@
     font: 600 22px/20px var(--hand);
     color: var(--blue);
   }
+  @include below($wide) {
+    &__brand { width: 260px; }
+    &__cols { gap: 40px; }
+    &__col { width: 120px; }
+  }
   @include below($tablet) {
     &__top { flex-direction: column; }
     &__cols { flex-wrap: wrap; gap: 40px 48px; }

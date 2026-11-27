@@ -1,52 +1,120 @@
 {{ define "main" }}
+{{ $p := .Params }}
 
-<section class="hero is-primary hero-gradient">
-  <div class="hero-body">
-    <p class="title">Learning Resources</p>
+{{/* ------------------------------------------------------------ header */}}
+{{ with $p.head }}
+<header class="page-head learn-head">
+  <div class="wrap">
+    <span class="eyebrow">{{ .eyebrow }}</span>
+    <h1 class="display">{{ .title }}</h1>
+    <p class="lede page-head__lede">{{ .lede }}</p>
   </div>
-</section>
+</header>
+{{ end }}
 
-<section class="section has-background-primary-light">
-  <div class="columns">
-    <div class="column">
-      <div class="title">Official Documentation</div>
-    </div>
-    <div id="documentation" class="column">
-      <div class="columns is-multiline">
-        {{ range .Params.docs }}
-          <div class="column">
-            <a class="button is-large is-link" href="{{ .url }}" target="_blank">
-              <span>{{ .name }}</span>
-              <span class="icon">
-                <img src="{{ relURL "img/external-white.svg" }}" alt="">
-              </span>
-            </a>
+{{/* ------------------------------------------------------------ official docs */}}
+<section class="learn-docs" aria-labelledby="docs-title">
+  <div class="wrap">
+    <h2 class="learn-sub" id="docs-title">{{ $p.docs_title }}</h2>
+    <ul class="learn-docs__list">
+      {{ range $i, $d := $p.docs }}
+      <li>
+        <a class="learn-doc{{ if eq $i 0 }} learn-doc--first{{ end }}" href="{{ .url }}">
+          <span class="learn-doc__label">{{ .label }}</span>
+          <div class="learn-doc__head">
+            <h3 class="learn-doc__name">{{ .name }}</h3>
+            {{ partial "ui/icon" (dict "name" "external" "size" 16) }}
           </div>
-        {{ end }}
-      </div>
-    </div>
+          <span class="learn-doc__text">{{ .text }}</span>
+          <span class="learn-doc__url">{{ replaceRE `^https?://(www\.)?` "" .url | strings.TrimSuffix ".html" }}</span>
+        </a>
+      </li>
+      {{ end }}
+    </ul>
   </div>
 </section>
 
-<section class="section has-background-primary-light">
-  <div class="columns">
-    <div class="column">
-      <div class="title">Book worm?</div>
-      <div class="subtitle">Try a guided project with one of these books</div>
+{{/* ------------------------------------------------------------ books */}}
+<section class="learn-books" id="books" aria-labelledby="books-title">
+  <div class="wrap">
+    <div class="learn-books__head">
+      <span class="eyebrow">{{ $p.books_eyebrow }}</span>
+      <h2 class="h2" id="books-title">{{ $p.books_title }}</h2>
     </div>
-    <div id="books" class="column">
-      <div class="columns">
-        {{ range .Params.books }}
-        <div class="column">
-          <a href="{{ .linkUrl }}" target="_blank">
-            <figure class="image">
-              <img style="max-width: 250px" src="{{ .image }}">
-            </figure>
-          </a>
-        </div>
-        {{ end }}
-      </div>
-    </div>
+    <ul class="books">
+      {{ range $p.books }}
+      <li>
+        <a class="book" href="{{ .linkUrl }}">
+          <span class="book__shelf">
+            <img class="book__cover" src="{{ relURL .image }}" alt="Cover of {{ .name }}" width="217" height="260" loading="lazy">
+          </span>
+          <h3 class="book__name">{{ .name }}</h3>
+          <span class="book__text">{{ .description }}</span>
+          <span class="arrow-link arrow-link--sm book__link">{{ .link_text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</span>
+        </a>
+      </li>
+      {{ end }}
+    </ul>
   </div>
 </section>
+
+{{/* ------------------------------------------------------------ keep going: videos, articles, newsletter */}}
+{{ with $p.more }}
+{{ $articles := where site.RegularPages "Section" "articles" }}
+{{ $issues := (where site.RegularPages "Section" "newsletter").ByDate }}
+<section class="learn-more" aria-labelledby="more-title">
+  <div class="wrap">
+    <h2 class="learn-sub" id="more-title">{{ .title }}</h2>
+    <ul class="papers">
+      {{ with .videos }}
+      <li class="papers__item">
+        <a class="paper paper--polaroid" href="{{ relURL .url }}">
+          <span class="paper__tape" aria-hidden="true"></span>
+          <span class="polaroid__photo">
+            <img src="{{ .thumbnail }}" alt="" width="308" height="200" loading="lazy">
+            <span class="polaroid__play" aria-hidden="true"><svg width="20" height="22" viewBox="0 0 30 34"><path d="M4 3.5v27l23-13.5z" fill="currentColor"/></svg></span>
+          </span>
+          <div class="polaroid__caption">
+            <h3 class="polaroid__title">Videos</h3>
+            <span class="paper__note">{{ .note }} {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</span>
+          </div>
+        </a>
+      </li>
+      {{ end }}
+      {{ with .articles }}
+      <li class="papers__item">
+        <a class="paper paper--index" href="{{ relURL .url }}">
+          <h3 class="index__title">Articles</h3>
+          <span class="index__hand">{{ .note }}</span>
+          <span class="index__count">{{ len $articles }} so far, and counting {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</span>
+        </a>
+      </li>
+      {{ end }}
+      {{ with .newsletter }}
+      <li class="papers__item">
+        <a class="paper paper--stack" href="{{ relURL .url }}">
+          <span class="stack__sheet stack__sheet--back" aria-hidden="true"></span>
+          <span class="stack__sheet stack__sheet--mid" aria-hidden="true"></span>
+          <div class="stack__top">
+            {{ with $issues }}
+            {{ $latest := index (last 1 .) 0 }}
+            <span class="stack__meta">
+              <span class="stack__issue">{{ with $latest.Params.aliases }}Issue #{{ index . 0 }}{{ else }}Latest issue{{ end }}</span>
+              <span class="stack__date">{{ $latest.Date.Format "Jan 2006" }}</span>
+            </span>
+            {{ end }}
+            <h3 class="stack__title">{{ .title }}</h3>
+            <span class="stack__text">
+              {{ with $issues }}Every issue since {{ (index . 0).Date.Format "January 2006" }}, from the first hello to the latest news.{{ else }}Every issue, from the first hello to the latest news.{{ end }}
+            </span>
+            <span class="paper__note paper__note--blue">{{ .note }} {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</span>
+          </div>
+        </a>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+</section>
+{{ end }}
+
 {{ end }}

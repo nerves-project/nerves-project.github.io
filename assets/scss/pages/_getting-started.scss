@@ -1,3 +1,310 @@
 @use '../mixins' as *;
 
-// getting-started page styles
+// Getting started: three inked path cards, with numbered badges, setup meters and a ruled
+// "what you'll need" card in the header.
+
+// ---------------------------------------------------------------- header
+
+.gs-head {
+  padding-block: 72px 64px;
+  &__inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 64px;
+  }
+  &__copy {
+    display: flex;
+    flex: 0 1 760px;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  &__lede { max-width: 600px; padding-top: 4px; }
+  // sit the highlighter on the x-height, as drawn, rather than under the descenders
+  .hl::before { bottom: 0.3em; height: 0.44em; }
+
+  @include below($tablet) {
+    &__inner { flex-direction: column; align-items: flex-start; gap: 44px; }
+    &__copy { flex-basis: auto; }
+  }
+  @include below($mobile) { padding-block: 40px 48px; }
+}
+
+// the ruled index card: what you'll need
+.gs-needs {
+  flex-shrink: 0;
+  width: 420px;
+  max-width: calc(100% - 8px);
+  padding: 16px 26px 20px 56px;
+  box-shadow: 0 1px 0 rgba(38, 34, 31, 0.08), 6px 8px 0 var(--ink);
+  transform: rotate(1.5deg);
+  &::before { left: 40px; }
+
+  &__title { font: 900 20px/32px var(--sans); color: var(--ink); }
+  // each line sits on a rule, wrapped lines included
+  &__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  &__box {
+    margin-top: 8px;
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    color: var(--blue);
+    svg { overflow: visible; }
+  }
+  &__text { font: 600 23px/32px var(--hand); color: var(--ink); }
+
+  @include below($mobile) {
+    padding: 14px 18px 18px 50px;
+    transform: rotate(1deg);
+    &::before { left: 36px; }
+    &__text { font-size: 21px; }
+  }
+}
+
+// ---------------------------------------------------------------- the paths
+
+.gs-paths {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-bottom: 104px;
+  @include below($mobile) { gap: 24px; padding-bottom: 72px; }
+}
+
+.gs-path {
+  display: flex;
+  overflow: hidden;
+  background: var(--sheet);
+  border: 2px solid var(--ink);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--ink);
+  scroll-margin-top: 24px;
+
+  &__art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 560px;
+    flex-shrink: 0;
+    padding: 40px;
+    background: var(--paper-deep);
+  }
+  &--livebook &__art { align-items: flex-end; padding-bottom: 0; }
+  &__shot {
+    display: block;
+    width: 460px;
+    max-width: 100%;
+    height: 340px;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 8px 24px rgba(38, 34, 31, 0.18);
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    min-width: 0;
+    padding: 44px 48px;
+  }
+
+  // the hand-stamped number badge
+  &__num {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 50%;
+    box-shadow: 4px 4px 0 var(--ink);
+    font: 900 26px/32px var(--sans);
+    color: var(--ink);
+    transform: rotate(-8deg);
+    &--2 { transform: rotate(6deg); }
+    &--3 { transform: rotate(-4deg); }
+  }
+  &__label { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+  &__title {
+    font: 900 34px/38px var(--sans);
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  &__text { font-size: 17px; line-height: 27px; color: var(--pencil); }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    padding-top: 8px;
+  }
+  &__aside { font-size: 15px; line-height: 18px; color: var(--pencil-2); }
+
+  @include below($wide) {
+    &__art { width: 44%; padding: 32px; }
+    &--livebook &__art { padding-bottom: 0; }
+    &__shot { height: auto; aspect-ratio: 460 / 340; }
+    &__body { padding: 40px 36px; }
+  }
+  @include below($tablet) {
+    flex-direction: column;
+    &__art { width: auto; }
+    .gs-tree,
+    .gs-term { max-width: 520px; }
+  }
+  @include below($mobile) {
+    border-radius: 16px;
+    box-shadow: 5px 5px 0 var(--ink);
+    &__art { padding: 24px 18px; }
+    &--livebook &__art { padding: 24px 24px 0; }
+    &__body { padding: 28px 22px 32px; }
+    &__title { font-size: 28px; line-height: 32px; }
+    &__text { font-size: 16px; line-height: 25px; }
+    &__actions { flex-direction: column; align-items: flex-start; }
+  }
+}
+
+.gs-btn {
+  padding: 13px 20px;
+  font-size: 16px;
+  line-height: 20px;
+  svg { flex-shrink: 0; }
+  &.btn--ghost { padding-inline: 20px; }
+}
+
+// setup effort: three little segments and a handwritten note
+.gs-meter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  &__label {
+    font: 600 11px/14px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  &__bar {
+    display: flex;
+    gap: 4px;
+    i {
+      width: 26px;
+      height: 10px;
+      border: 1.5px solid #c9bfad;
+      border-radius: 3px;
+    }
+    .is-on { background: var(--sky); border-color: var(--ink); }
+  }
+  &__note { font: 600 21px/26px var(--hand); color: var(--blue); }
+}
+
+// the Livebook steps
+.gs-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-block: 6px 8px;
+  li { display: flex; align-items: baseline; gap: 12px; font-size: 16px; line-height: 24px; color: var(--ink); }
+  &__n { width: 24px; flex-shrink: 0; font: 700 13px/24px var(--mono); color: var(--blue); }
+  code { font: 400 14px/24px var(--mono); }
+}
+
+// the nerves_examples folder listing
+.gs-tree {
+  width: 100%;
+  overflow: hidden;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(38, 34, 31, 0.1);
+  a { color: var(--ink); }
+  a:hover { text-decoration: none; background: var(--card); }
+  &__root {
+    display: block;
+    padding: 14px 20px;
+    border-bottom: 1px solid #e6dfd0;
+    font: 700 13px/16px var(--mono);
+  }
+  li + li { border-top: 1px solid #efe9dc; }
+  li a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 20px;
+  }
+  li a:hover .gs-tree__name { color: var(--blue); }
+  &__name { font: 500 13px/16px var(--mono); flex-shrink: 0; }
+  &__text { font-size: 14px; line-height: 18px; color: var(--muted); text-align: right; }
+
+  @include below($mobile) {
+    &__root { padding-inline: 16px; }
+    li a { flex-direction: column; gap: 4px; padding: 11px 16px; }
+    &__text { text-align: left; }
+  }
+}
+
+// the terminal for the DIY path
+.gs-term {
+  width: 100%;
+  overflow: hidden;
+  background: var(--ink);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(38, 34, 31, 0.2);
+  &__dots {
+    display: flex;
+    gap: 6px;
+    padding: 12px 14px;
+    i { width: 10px; height: 10px; border-radius: 50%; background: var(--pencil-2); }
+  }
+  &__code {
+    padding: 4px 20px 22px;
+    color: var(--paper);
+    font: 500 13px/24px var(--mono);
+    white-space: pre-wrap;
+    code { font: inherit; }
+  }
+  // long commands wrap with a hanging indent under the prompt
+  &__line { display: block; padding-left: 2ch; text-indent: -2ch; }
+  &__c,
+  &__d { color: var(--faint); }
+
+  @include below($mobile) {
+    &__code { padding: 2px 16px 18px; font-size: 12px; line-height: 22px; }
+  }
+}
+
+// ---------------------------------------------------------------- stuck?
+
+.gs-stuck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 22px 28px;
+  border: 1.5px dashed var(--rule-2);
+  border-radius: 16px;
+  p { font-size: 17px; line-height: 22px; color: var(--pencil); }
+  strong { font-weight: 900; color: var(--ink); }
+  .arrow-link { flex-shrink: 0; }
+  @include below($mobile) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 22px;
+    p { font-size: 16px; line-height: 24px; }
+  }
+}

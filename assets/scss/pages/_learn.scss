@@ -1,3 +1,352 @@
 @use '../mixins' as *;
 
-// learn page styles
+// Learn: docs, books, and the "keep going" papers (videos, articles, newsletter).
+
+.learn-head {
+  padding-bottom: 56px;
+  .page-head__lede { max-width: 620px; }
+}
+
+// small section titles ("Official documentation", "Keep going")
+.learn-sub {
+  margin-bottom: 24px;
+  font: 900 22px/28px var(--sans);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+// ---------------------------------------------------------------- official docs
+
+.learn-docs { padding-bottom: 88px; }
+
+.learn-docs__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  > li { display: flex; }
+  @include below($tablet) { grid-template-columns: 1fr; }
+}
+
+.learn-doc {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--ink);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+
+  &__label {
+    font: 500 12px/16px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pencil-2);
+  }
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    svg { flex-shrink: 0; transition: transform 160ms ease; }
+  }
+  &__name { font: 900 26px/32px var(--sans); letter-spacing: -0.02em; }
+  &__text { font-size: 16px; line-height: 24px; color: var(--pencil); }
+  &__url {
+    margin-top: auto;
+    padding-top: 8px;
+    font: 400 12px/16px var(--mono);
+    color: var(--faint);
+    overflow-wrap: anywhere;
+  }
+
+  &:hover {
+    text-decoration: none;
+    transform: translateY(-3px);
+    border-color: var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    .learn-doc__head svg { transform: translate(2px, -2px); }
+  }
+
+  // step 1 is the one to start with
+  &--first {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: var(--white);
+    .learn-doc__label,
+    .learn-doc__url { color: #bfe3ee; }
+    .learn-doc__text { color: #e3f1f5; }
+    &:hover { border-color: var(--ink); }
+  }
+}
+
+// ---------------------------------------------------------------- books
+
+.learn-books {
+  padding-block: 96px 104px;
+  background: var(--sheet);
+  border-block: 1px solid var(--line);
+  &__head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+  @include below($mobile) { padding-block: 64px; }
+}
+
+.books {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  > li { display: flex; }
+  @include below($tablet) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; }
+  @include below($mobile) { grid-template-columns: 1fr; }
+}
+
+.book {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 18px;
+  color: var(--ink);
+
+  // the cover peeks up out of a paper shelf
+  &__shelf {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 300px;
+    padding-top: 20px;
+    overflow: hidden;
+    background: var(--paper-deep);
+    border-radius: 16px;
+  }
+  &__cover {
+    display: block;
+    width: auto;
+    height: 260px;
+    max-width: none;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -6px 24px rgba(38, 34, 31, 0.18);
+    transition: transform 200ms ease;
+  }
+  &__name { font: 900 20px/26px var(--sans); }
+  &__text { font-size: 15px; line-height: 23px; color: var(--pencil); }
+  &__link { margin-top: auto; }
+
+  &:hover {
+    text-decoration: none;
+    .book__cover { transform: translateY(-6px); }
+    .book__name { color: var(--blue); }
+    .book__link svg { transform: translate(2px, -2px); }
+  }
+
+  @include below($mobile) {
+    &__shelf { height: 280px; }
+    &__cover { height: 240px; }
+  }
+}
+
+// ---------------------------------------------------------------- keep going
+
+.learn-more {
+  padding-block: 88px 96px;
+  .learn-sub { margin-bottom: 0; }
+  @include below($mobile) { padding-block: 64px 72px; }
+}
+
+// a polaroid, an index card and a little stack of newsletters, scattered on the desk
+.papers {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 52px 24px 40px;
+
+  @include below($wide) { padding-inline: 0; gap: 32px; }
+  @include below($tablet) {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 56px 48px;
+  }
+  @include below($mobile) {
+    flex-direction: column;
+    align-items: center;
+    gap: 56px;
+    padding-block: 44px 16px;
+  }
+}
+
+.papers__item { display: flex; flex: 0 1 auto; min-width: 0; max-width: 100%; }
+
+.paper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  color: var(--ink);
+  transition: transform 200ms ease;
+  &:hover { text-decoration: none; }
+
+  // masking tape
+  &__tape,
+  &--index::after {
+    content: '';
+    position: absolute;
+    width: 84px;
+    height: 26px;
+    background: rgba(214, 198, 152, 0.55);
+    pointer-events: none;
+  }
+
+  // the handwritten "go" line at the bottom of each
+  &__note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 20px/24px var(--hand);
+    color: var(--pencil-2);
+    svg { flex-shrink: 0; transition: transform 160ms ease; }
+  }
+  &__note--blue { font-size: 22px; line-height: 28px; color: var(--blue); }
+  &:hover &__note svg { transform: translateX(3px); }
+}
+
+// the videos polaroid
+.paper--polaroid {
+  width: 340px;
+  gap: 14px;
+  padding: 16px 16px 20px;
+  background: var(--white);
+  box-shadow: 0 1px 0 rgba(38, 34, 31, 0.08), 6px 10px 22px rgba(38, 34, 31, 0.14);
+  transform: rotate(-3deg);
+  .paper__tape { left: 130px; top: -14px; transform: rotate(4deg); }
+  &:hover { transform: rotate(-1.5deg) translateY(-4px); }
+}
+.polaroid {
+  &__photo {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 200px;
+    overflow: hidden;
+    background: var(--ink);
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  &__play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    padding-left: 3px;
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    transition: transform 160ms ease;
+  }
+  &__caption {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-inline: 4px;
+  }
+  &__title { font: 700 30px/30px var(--hand); }
+}
+.paper--polaroid:hover .polaroid__play { transform: scale(1.08); }
+
+// the articles index card
+.paper--index {
+  --rule-h: 32px;
+  width: 360px;
+  min-height: 250px;
+  margin-top: 20px;
+  padding: 35px 26px 24px 52px;
+  background: repeating-linear-gradient(var(--card) 0, var(--card) calc(var(--rule-h) - 1px), #cfe3ea calc(var(--rule-h) - 1px), #cfe3ea var(--rule-h));
+  background-position: 0 0;
+  box-shadow: 0 1px 0 rgba(38, 34, 31, 0.08), 5px 9px 20px rgba(38, 34, 31, 0.12);
+  transform: rotate(2deg);
+  // red margin line
+  &::before {
+    content: '';
+    position: absolute;
+    left: 38px;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    background: #e7a598;
+  }
+  &::after { right: 28px; top: -12px; width: 76px; height: 24px; transform: rotate(-6deg); }
+  &:hover { transform: rotate(1deg) translateY(-4px); }
+}
+.index {
+  &__title { font: 900 26px/32px var(--sans); }
+  &__hand { font: 600 23px/32px var(--hand); color: var(--blue); }
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 23px/32px var(--hand);
+    color: var(--pencil-2);
+    svg { flex-shrink: 0; transition: transform 160ms ease; }
+  }
+}
+.paper--index:hover .index__count svg { transform: translateX(3px); }
+
+// the newsletter stack: a top sheet with two older issues peeking out underneath
+.paper--stack {
+  width: 340px;
+  margin-top: 6px;
+  padding: 0 20px 30px 0;
+  &:hover { transform: translateY(-4px); }
+}
+.stack {
+  &__sheet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 20px);
+    height: calc(100% - 30px);
+    box-shadow: 2px 4px 10px rgba(38, 34, 31, 0.1);
+    transform-origin: 0 0;
+  }
+  &__sheet--back { background: #efe8da; transform: translate(14px, 14px) rotate(5deg); }
+  &__sheet--mid { background: #f7f2e8; transform: translate(8px, 8px) rotate(2deg); }
+  &__top {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 220px;
+    padding: 24px 26px;
+    background: var(--white);
+    box-shadow: 0 1px 0 rgba(38, 34, 31, 0.08), 5px 9px 20px rgba(38, 34, 31, 0.12);
+    transform: rotate(-1.5deg);
+    transform-origin: 0 0;
+  }
+  &__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--ink);
+    font: 400 12px/16px var(--mono);
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  &__issue { font-weight: 600; letter-spacing: 0.08em; color: var(--blue); }
+  &__title { font: 900 24px/28px var(--sans); }
+  &__text { font-size: 14px; line-height: 21px; color: var(--pencil-2); }
+}
+
+@include below($mobile) {
+  .paper--polaroid,
+  .paper--stack { width: 320px; }
+  .paper--index { width: 330px; margin-top: 0; }
+}
