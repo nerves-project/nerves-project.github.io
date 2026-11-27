@@ -1,71 +1,154 @@
 {{ define "main" }}
+{{ $p := .Params }}
+{{ $cats := hugo.Data.code.categories }}
 
-<header class="hero is-primary is-medium hero-gradient">
-  <div class="hero-body">
-    <p class="title is-2 mb-4">Explore the project</p>
-    <p class="is-size-5 mb-6 hero-blurb">
-      Nerves is spread over many repositories for focus on limited scopes.
-    </p>
-    {{ range .Params.project_map }}
-    <a href="https://github.com/nerves-project/nerves#{{ .anchor }}" target="_blank" class="button is-primary is-light is-medium mb-2 mr-2">
-      {{ .name }}
-    </a>
-  {{ end }}
+{{/* ------------------------------------------------------------ header */}}
+<header class="code-head">
+  <div class="wrap code-head__inner">
+    <div class="code-head__copy">
+      <span class="eyebrow">{{ $p.eyebrow }}</span>
+      <h1 class="display code-head__title">{{ $p.heading | safeHTML }}</h1>
+      <div class="lede code-head__lede">{{ $p.lede | markdownify }}</div>
+    </div>
+
+    {{/* the four layers of a Nerves device, as a stack of hand-drawn plates */}}
+    <div class="plates">
+      <div class="plates__stack" aria-hidden="true">
+        {{ range $p.layers }}
+        <div class="plate plate--{{ .key }}">{{ if eq .key "app" }}<span>{{ $p.plate_label }}</span>{{ end }}</div>
+        {{ end }}
+      </div>
+      <ul class="plates__labels">
+        {{ range $p.layers }}
+        <li class="plate-label plate-label--{{ .key }}">
+          <svg width="34" height="12" viewBox="0 0 34 12" aria-hidden="true"><path d="M1 6h22l9-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="plate-label__text"><span class="plate-label__code">{{ .code }}</span><span class="plate-label__note">{{ .note }}</span></span>
+        </li>
+        {{ end }}
+      </ul>
+    </div>
   </div>
 </header>
 
-<section class="section">
-  <div class="columns">
-    <div class="column is-4">
-      <figure class="image" style="max-width: 300px;">
-        <img src="{{ relURL "img/questions.svg" }}" alt="">
-      </figure>
-    </div>
-    <div class="column">
-      <p class="title">Need help?</p>
-      <p class="subtitle">
-        Look through the <a href="{{ .Params.issue_tracker }}" target="_blank">issue tracker</a> or <a href="{{ .Params.submit_issue }}" target="_blank">submit an issue</a>
-      </p>
-      <p>You can also reach out for help on the
-        <span class="icon-text">
-          <span class="icon">
-            <img src="{{ relURL "img/elixir-forum.svg" }}"></img>
-          </span>
-          <span><a href="https://elixirforum.com/nerves">Nerves Forum</a></span>
-        </span> and explore previously answered questions.
-      </p>
-    </div>
+{{/* ------------------------------------------------------------ jump bar, in README order */}}
+<nav class="code-jump" aria-label="Project categories">
+  <div class="wrap">
+    <ul class="code-jump__list" data-code-jump>
+      {{ range sort $cats "order" }}
+      <li><a class="code-jump__link" href="#{{ .id }}">{{ .name }}</a></li>
+      {{ end }}
+    </ul>
   </div>
-</section>
+</nav>
+<script>
+  // mark the category you jumped to (the first one until you do)
+  (() => {
+    const links = [...document.querySelectorAll('[data-code-jump] a')];
+    const mark = () => {
+      const hit = links.find((a) => a.hash === location.hash) || links[0];
+      links.forEach((a) => a.classList.toggle('is-active', a === hit));
+    };
+    window.addEventListener('hashchange', mark);
+    mark();
+  })();
+</script>
 
-<section id="related-projects" class="hero is-light py-6">
-  <div class="hero-body" style="max-width:68rem;margin:auto">
-    <div class="level">
-      <div class="level-item">
-        <p class="title is-2 pb-6">Related Projects</p>
-      </div>
-    </div>
-    <div class="columns is-gapless is-multiline">
-      {{ range .Params.related_projects }}
-        <div class="column is-half mb-2">
-          <a href="{{ .link }}" target="_blank">
-            <div class="card mx-1">
-              <div class="card-content">
-                <div class="media">
-                  <div class="media-left">
-                    <img src="{{ relURL .image }}" class="feature-img mr-4" style="width:4.5rem">
-                  </div>
-                  <div class="media-content">
-                    <p class="title is-5">{{ .name }}</p>
-                    <p class="content">{{ .description | markdownify }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
+{{/* ------------------------------------------------------------ the project map */}}
+<div class="code-map">
+  <div class="wrap code-map__cols">
+    {{ range slice "left" "right" }}
+    {{ $col := . }}
+    <div class="code-map__col">
+      {{ range where $cats "column" $col }}
+      {{ $cat := . }}
+      {{ $n := add (len (.repos | default slice)) (len (.extras | default slice)) }}
+      <section class="code-cat code-cat--{{ .layer | default "none" }}{{ with .style }} code-cat--{{ . }}{{ end }}" id="{{ .id }}" style="--order: {{ .order }}" aria-labelledby="{{ .id }}-title">
+        {{ if eq .layer "all" }}<span class="code-cat__strip" aria-hidden="true"></span>{{ end }}
+        <div class="code-cat__head">
+          <h2 class="code-cat__title" id="{{ .id }}-title">{{ .name }}</h2>
+          {{ with .note }}<span class="code-cat__note">{{ . }}</span>{{ end }}
+          {{ with .meta }}<span class="code-cat__meta">{{ . }}{{ if $cat.count }} · {{ $n }} repos{{ end }}</span>{{ end }}
         </div>
+        {{ with .text }}<p class="code-cat__text">{{ . }}</p>{{ end }}
+        {{ with .repos }}
+        <ul class="code-cat__rows">
+          {{ range . }}
+          <li class="code-cat__row">
+            <a class="code-cat__repo" href="{{ .url }}">{{ .name }}</a>
+            <span class="code-cat__desc">{{ .text }}</span>
+          </li>
+          {{ end }}
+        </ul>
+        {{ end }}
+        {{ with .extras }}
+        <div class="code-cat__extras">
+          <span class="code-cat__extras-label">{{ $cat.extras_label }}</span>
+          <ul class="code-cat__chips">
+            {{ range . }}<li><a class="code-chip" href="{{ .url }}" title="{{ .title }}">{{ .name }}</a></li>{{ end }}
+          </ul>
+        </div>
+        {{ end }}
+        {{ with .chips }}
+        <ul class="code-cat__chips">
+          {{ range . }}<li><a class="code-chip" href="{{ .url }}" title="{{ .title }}">{{ .name }}</a></li>{{ end }}
+        </ul>
+        {{ end }}
+      </section>
       {{ end }}
     </div>
+    {{ end }}
+  </div>
+</div>
+
+{{/* ------------------------------------------------------------ need help? */}}
+{{ with $p.help }}
+<div class="code-help">
+  <div class="wrap">
+    <div class="code-help__box">
+      <p class="code-help__text"><strong>{{ .title }}</strong> {{ .text }}</p>
+      <ul class="code-help__links">
+        {{ range .links }}
+        <li><a class="arrow-link" href="{{ .url }}">{{ .text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a></li>
+        {{ end }}
+      </ul>
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{/* ------------------------------------------------------------ plays well with */}}
+{{ with $p.plays_well }}
+{{ $related := relURL "related_projects/" }}
+<section class="code-plays" aria-labelledby="plays-title">
+  <div class="wrap">
+    <div class="code-plays__head">
+      <div class="code-plays__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 id="plays-title">{{ .title }}</h2>
+      </div>
+      <a class="arrow-link" href="{{ $related }}">{{ .link_text }} {{ partial "ui/icon" (dict "name" "arrow") }}</a>
+    </div>
+    <ul class="code-plays__tiles">
+      {{ range .tiles }}
+      <li>
+        <a class="code-tile code-tile--{{ .key }}" href="{{ $related }}#{{ .key }}">
+          <span class="code-tile__mark" aria-hidden="true">
+            {{ if eq .key "nerveshub" }}<i></i>Fleet
+            {{ else if eq .key "beam-bots" }}<img src="{{ relURL "img/related/beam-bots.svg" }}" alt="" width="40" height="40">
+            {{ else if eq .key "phoenix" }}<img src="{{ relURL "img/related/phoenix-white.svg" }}" alt="" width="56" height="38">
+            {{ else if eq .key "membrane" }}<img src="{{ relURL "img/related/membrane.svg" }}" alt="" width="36" height="40">
+            {{ else if eq .key "nx" }}<img src="{{ relURL "img/related/nx-numbat.png" }}" alt="" width="30" height="46">
+            {{ end }}
+          </span>
+          <span class="code-tile__body">
+            <h3 class="code-tile__name">{{ .name }}</h3>
+            <span class="code-tile__text">{{ .text }}</span>
+          </span>
+        </a>
+      </li>
+      {{ end }}
+    </ul>
   </div>
 </section>
+{{ end }}
 {{ end }}

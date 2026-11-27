@@ -1,0 +1,217 @@
+{{ define "main" }}
+{{ $p := .Params }}
+
+{{/* ------------------------------------------------------------ header */}}
+<header class="rp-head">
+  <div class="wrap rp-head__inner">
+    <div class="rp-head__copy">
+      <span class="eyebrow">{{ $p.eyebrow }}</span>
+      <h1 class="rp-head__title">{{ $p.heading }}</h1>
+      <div class="lede rp-head__lede">{{ $p.lede | markdownify }}</div>
+    </div>
+    <nav class="rp-jump" aria-label="Jump to a project">
+      <p class="rp-jump__label" aria-hidden="true">{{ $p.jump_label }}</p>
+      <ul class="rp-jump__list">
+        {{ range $p.featured }}<li><a class="rp-jump__link" href="#{{ .key }}">{{ .name }}</a></li>{{ end }}
+        {{ with $p.upcoming }}<li><a class="rp-jump__link" href="#{{ .id }}">{{ .eyebrow }}</a></li>{{ end }}
+        {{ with $p.more }}<li><a class="rp-jump__link" href="#{{ .id }}">{{ .jump }}</a></li>{{ end }}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+{{/* ------------------------------------------------------------ featured projects, each in its own colours */}}
+{{ range $i, $f := $p.featured }}
+<section class="rp-feature rp-feature--{{ .key }}{{ if not (modBool $i 2) }} rp-feature--flip{{ end }}" id="{{ .key }}" aria-labelledby="{{ .key }}-title">
+  <div class="wrap rp-feature__inner">
+    <div class="rp-feature__copy">
+      {{ if eq .key "nx" }}
+      <div class="rp-feature__wordmark"><img src="{{ relURL "img/related/nx-wordmark.png" }}" alt="Nx" width="86" height="58"></div>
+      {{ end }}
+      {{ if eq .key "phoenix" }}
+      <p class="rp-feature__eyebrow rp-feature__eyebrow--logo"><img src="{{ relURL "img/related/phoenix-white.svg" }}" alt="" width="53" height="36"><span>{{ .eyebrow }}</span></p>
+      {{ else }}
+      <p class="rp-feature__eyebrow">{{ .eyebrow }}</p>
+      {{ end }}
+      <h2 class="rp-feature__title" id="{{ .key }}-title">{{ .title }}</h2>
+      <p class="rp-feature__text">{{ .text }}</p>
+      {{ with .with_nerves }}<p class="rp-feature__nerves"><strong>With Nerves:</strong> {{ . | markdownify }}</p>{{ end }}
+      <div class="rp-feature__actions">
+        {{ range $j, $l := .links }}
+        <a class="{{ if eq $j 0 }}rp-btn{{ else }}rp-link{{ end }}" href="{{ .url }}">{{ .text }}
+          {{- if eq .icon "arrow" }} {{ partial "ui/icon" (dict "name" "arrow" "size" 16) }}{{ else }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}{{ end -}}
+        </a>
+        {{ end }}
+      </div>
+    </div>
+
+    {{/* the visual: an illustration in each project's colours */}}
+    <div class="rp-feature__visual" aria-hidden="true">
+      {{ if eq .key "nerveshub" }}
+      <div class="hub-panel">
+        <div class="hub-panel__head">
+          <div class="hub-panel__top">
+            <span class="hub-panel__title">Rollout: production</span>
+            <span class="hub-panel__ver">v1.4.2 → v1.5.0</span>
+            <span class="hub-panel__pct">74%</span>
+          </div>
+          <div class="hub-panel__bar"><i style="width: 74%"></i></div>
+        </div>
+        <ul class="hub-panel__rows">
+          <li class="is-updated"><i></i><span>nerves-4f2a</span><span>rpi5</span><span>v1.5.0</span><span>updated</span></li>
+          <li class="is-updated"><i></i><span>nerves-91c3</span><span>rpi4</span><span>v1.5.0</span><span>updated</span></li>
+          <li class="is-updating"><i></i><span>nerves-0b7e</span><span>bbb</span><span>v1.4.2 → v1.5.0</span><span>62%</span></li>
+          <li class="is-rolled-back"><i></i><span>nerves-c58e</span><span>osd32mp1</span><span>v1.4.2</span><span>rolled back</span></li>
+          <li class="is-queued"><i></i><span>nerves-7d10</span><span>rpi0_2</span><span>v1.4.2</span><span>queued</span></li>
+        </ul>
+      </div>
+      {{ with .note }}
+      <p class="rp-note hub-note">{{ . }}
+        <svg width="34" height="40" viewBox="0 0 34 40"><path d="M4 36c12-2 20-12 22-30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 11l7-7 5 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </p>
+      {{ end }}
+
+      {{ else if eq .key "beam-bots" }}
+      <div class="bb-orbit">
+        <span class="bb-orbit__ring"></span>
+        <span class="bb-orbit__disc"></span>
+        <img class="bb-orbit__logo" src="{{ relURL "img/related/beam-bots.svg" }}" alt="" width="220" height="220">
+        {{ with .note }}<p class="rp-note bb-orbit__note">{{ . }}</p>{{ end }}
+      </div>
+
+      {{ else if eq .key "phoenix" }}
+      <div class="px-visual">
+        <img class="px-visual__bird" src="{{ relURL "img/related/phoenix-white.svg" }}" alt="" width="560" height="379">
+        <div class="px-browser">
+          <div class="px-browser__bar">
+            <span class="px-browser__dots"><i></i><i></i><i></i></span>
+            <span class="px-browser__url">http://greenhouse.local</span>
+          </div>
+          <div class="px-browser__body">
+            <div class="px-browser__top"><strong>Greenhouse</strong><span class="px-live"><i></i>live</span></div>
+            <div class="px-browser__stats">
+              <div><span>Temperature</span><strong>21.4°C</strong></div>
+              <div><span>Humidity</span><strong>58%</strong></div>
+            </div>
+            <div class="px-browser__toggle"><strong>Grow lights</strong><span class="px-switch"><i></i></span></div>
+          </div>
+        </div>
+      </div>
+
+      {{ else if eq .key "membrane" }}
+      <div class="mb-visual">
+        <img class="mb-visual__logo" src="{{ relURL "img/related/membrane.svg" }}" alt="" width="150" height="166">
+        <div class="mb-pipe">
+          {{ range $k, $el := .pipeline }}
+          {{ if $k }}<svg class="mb-pipe__arrow" width="28" height="12" viewBox="0 0 28 12"><path d="M1 6h24M20 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ end }}
+          <span class="mb-pipe__el{{ if eq (add $k 1) (len $f.pipeline) }} is-sink{{ end }}">{{ $el }}</span>
+          {{ end }}
+        </div>
+      </div>
+
+      {{ else if eq .key "nx" }}
+      <div class="nx-visual">
+        <img class="nx-visual__numbat" src="{{ relURL "img/related/nx-numbat.png" }}" alt="" width="200" height="309">
+        <div class="nx-card">
+          <div class="nx-card__input">
+            <img src="{{ relURL "img/related/nx-tensor.svg" }}" alt="" width="72" height="72">
+            <div><span>Input</span><code>f32[10][10]</code></div>
+          </div>
+          <div class="nx-card__result is-top">
+            <div><strong>tomato</strong><strong>0.94</strong></div>
+            <span class="nx-card__bar"><i style="width: 94%"></i></span>
+          </div>
+          <div class="nx-card__result">
+            <div><span>bell pepper</span><span>0.05</span></div>
+            <span class="nx-card__bar"><i style="width: 5%"></i></span>
+          </div>
+          {{ with .note }}<p class="nx-card__note">{{ . }}</p>{{ end }}
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* ------------------------------------------------------------ up-and-comers */}}
+{{ with $p.upcoming }}
+<section class="section rp-watch" id="{{ .id }}" aria-labelledby="{{ .id }}-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="h2" id="{{ .id }}-title">{{ .title }}</h2>
+      </div>
+      <p class="section-head__aside">{{ .aside }}</p>
+    </div>
+    <div class="rp-watch__list">
+      {{ range .projects }}
+      <article class="card rp-watch-card rp-watch-card--{{ .key }}">
+        <div class="rp-watch-card__art">
+          {{ if eq .key "atomvm" }}
+          <img src="{{ relURL "img/related/atomvm-logo.svg" }}" alt="AtomVM" width="225" height="56">
+          {{ else if eq .key "emerge" }}
+<pre class="em-code"><code><span class="v">counter</span> = solve(<span class="m">MyApp.State</span>, <span class="a">:counter</span>)
+
+row([spacing(<span class="a">12</span>), padding(<span class="a">12</span>)], [
+  my_button([Event.on_press(event(counter, <span class="a">:increment</span>))], text(<span class="s">"+"</span>)),
+  el([padding(<span class="a">10</span>)], text(<span class="s">"Count: #{counter.count}"</span>)),
+  my_button([Event.on_press(event(counter, <span class="a">:decrement</span>))], text(<span class="s">"-"</span>))
+])</code></pre>
+          <div class="em-render" aria-hidden="true">
+            <span class="em-render__label">renders as</span>
+            <span class="em-render__ui"><i>+</i><b>Count: 3</b><i>−</i></span>
+          </div>
+          {{ end }}
+        </div>
+        <div class="rp-watch-card__body">
+          <p class="eyebrow eyebrow--muted">{{ .kicker }}</p>
+          <h3 class="rp-watch-card__title">{{ .title }}</h3>
+          <p class="rp-watch-card__text">{{ .text }}</p>
+          {{ with .more }}<p class="rp-watch-card__text">{{ . | markdownify }}</p>{{ end }}
+          <div class="rp-watch-card__links">
+            {{ range .links }}<a class="arrow-link" href="{{ .url }}">{{ .text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>{{ end }}
+          </div>
+        </div>
+      </article>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* ------------------------------------------------------------ more embedded BEAM */}}
+{{ with $p.more }}
+<section class="rp-more" id="{{ .id }}" aria-labelledby="{{ .id }}-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head__title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="h2" id="{{ .id }}-title">{{ .title }}</h2>
+      </div>
+      <p class="section-head__aside">{{ .aside }}</p>
+    </div>
+    <ul class="rp-more__grid">
+      {{ range .projects }}
+      <li class="rp-os">
+        <div class="rp-os__logo"><img src="{{ relURL .image }}" alt="" loading="lazy"></div>
+        <div class="rp-os__body">
+          <p class="eyebrow eyebrow--muted">{{ .kicker }}</p>
+          <h3 class="rp-os__name">{{ .name }}</h3>
+          <p class="rp-os__text">{{ .text }}</p>
+          <a class="arrow-link arrow-link--sm rp-os__link" href="{{ .link }}">{{ .link_text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+        </div>
+      </li>
+      {{ end }}
+    </ul>
+    {{ with .suggest }}
+    <div class="rp-suggest">
+      <p><strong>{{ .title }}</strong> {{ .text }}</p>
+      <a class="arrow-link" href="{{ .link }}">{{ .link_text }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+    </div>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
+{{ end }}

@@ -1,3 +1,431 @@
 @use '../mixins' as *;
 
-// code page styles
+// The Code page: the repo map, grouped like the main README and coloured by the hero's four layers.
+
+.page-code {
+  --code-row-rule: #efe9dc;
+  --code-dash: #c9bfad;
+}
+
+// ---------------------------------------------------------------- header
+
+.code-head {
+  padding-block: 40px 24px;
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 600px;
+    max-width: 100%;
+    flex-shrink: 0;
+  }
+  &__lede {
+    max-width: 560px;
+    padding-top: 4px;
+    a { color: inherit; text-decoration: underline 1px; text-underline-offset: 3px; text-decoration-color: var(--rule-2); }
+    a:hover { color: var(--blue); text-decoration-color: currentColor; }
+  }
+  @include below($wide) {
+    &__inner { flex-direction: column; align-items: flex-start; gap: 40px; }
+  }
+}
+
+// The four layers as a stack of hand-drawn plates, with labels to the right.
+.plates {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  width: 590px;
+  height: 470px;
+
+  &__stack {
+    position: relative;
+    flex-shrink: 0;
+    width: 250px;
+    height: 420px;
+  }
+  &__labels {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 340px;
+    flex-shrink: 0;
+    padding-top: 84px;
+  }
+
+  @include below($mobile) {
+    width: 100%;
+    height: auto;
+    &__stack { display: none; }
+    &__labels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 16px;
+      width: 100%;
+      padding-top: 0;
+    }
+  }
+}
+
+.plate {
+  position: absolute;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 124px;
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 5px 5px 0 var(--ink);
+  transform: rotate(30deg);
+  transform-origin: 0 0;
+  span { font: 700 28px/34px var(--hand); color: #256e82; }
+  &--app { top: 10px; z-index: 4; background: #d8f1f8; }
+  &--beam { top: 94px; z-index: 3; background: #e9ddf7; }
+  &--system { top: 178px; z-index: 2; background: #fbe3c2; }
+  &--tooling { top: 262px; z-index: 1; background: #d7f0e1; }
+}
+
+.plate-label {
+  --tone: var(--app);
+  --tone-ink: var(--app-ink);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 54px;
+  > svg { flex-shrink: 0; color: var(--tone-ink); }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 10px;
+    border-left: 2.5px solid var(--tone);
+  }
+  &__code {
+    font: 400 11px/14px var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tone-ink);
+  }
+  &__note { font: 600 22px/24px var(--hand); color: var(--ink); }
+  &--beam { --tone: var(--beam); --tone-ink: var(--beam-ink); }
+  &--system { --tone: var(--system); --tone-ink: var(--system-ink); }
+  &--tooling { --tone: var(--tooling); --tone-ink: var(--tooling-ink); }
+
+  @include below($mobile) {
+    height: auto;
+    align-items: flex-start;
+    > svg { display: none; }
+    &__note { font-size: 20px; line-height: 22px; }
+  }
+}
+
+// ---------------------------------------------------------------- jump bar
+
+.code-jump {
+  padding-bottom: 48px;
+  &__list { display: flex; flex-wrap: wrap; gap: 8px; }
+  &__link {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    color: var(--ink);
+    font: 800 15px/18px var(--sans);
+    white-space: nowrap;
+    &:hover { text-decoration: none; background: rgba(38, 34, 31, 0.06); }
+    &.is-active { background: var(--ink); color: var(--paper); }
+  }
+  @include below($mobile) {
+    padding-bottom: 36px;
+    &__link { padding: 7px 12px; font-size: 14px; }
+  }
+}
+
+// ---------------------------------------------------------------- the project map
+
+.code-map {
+  padding-bottom: 40px;
+  &__cols { display: flex; align-items: flex-start; gap: 24px; }
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  // one column in README order: the column wrappers step aside and each card's order takes over
+  @include below($tablet) {
+    &__cols { flex-direction: column; align-items: stretch; }
+    &__col { display: contents; }
+    .code-cat { order: var(--order); }
+  }
+}
+
+.code-cat {
+  --layer: transparent;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--sheet);
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 5px 5px 0 var(--ink);
+  scroll-margin-top: 24px;
+
+  &--app { --layer: var(--app); }
+  &--beam { --layer: var(--beam); }
+  &--system { --layer: var(--system); }
+  &--tooling { --layer: var(--tooling); }
+  &--app, &--beam, &--system, &--tooling { border-top: 7px solid var(--layer); }
+
+  // all four layers: the four-colour strip
+  &__strip {
+    display: block;
+    flex-shrink: 0;
+    height: 7px;
+    background: linear-gradient(90deg, var(--app) 0 25%, var(--beam) 25% 50%, var(--system) 50% 75%, var(--tooling) 75%);
+  }
+
+  &__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px 14px;
+  }
+  &__title { font: 900 22px/28px var(--sans); color: var(--ink); }
+  &__meta {
+    font: 400 12px/16px var(--mono);
+    color: var(--faint);
+    text-align: right;
+  }
+  &__note { font: 600 20px/24px var(--hand); color: var(--blue); flex-shrink: 0; }
+  &__text {
+    padding: 0 24px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    line-height: 22px;
+    color: var(--pencil);
+  }
+
+  &__row {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 11px 24px;
+    border-top: 1px solid var(--code-row-rule);
+    &:last-child { padding-bottom: 16px; }
+    &:hover { background: rgba(38, 34, 31, 0.035); }
+  }
+  &__repo {
+    flex-shrink: 0;
+    width: 170px;
+    color: var(--ink);
+    font: 600 13px/16px var(--mono);
+    overflow-wrap: anywhere;
+    // the whole row is the link
+    &::after { content: ''; position: absolute; inset: 0; }
+    &:hover { color: var(--blue); text-decoration: none; }
+    &:focus-visible { outline: none; }
+    &:focus-visible::after { outline: 2px solid var(--sky); outline-offset: -3px; border-radius: 4px; }
+  }
+  &__desc { font-size: 15px; line-height: 21px; color: var(--pencil); }
+
+  &__extras {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 24px 18px;
+    border-top: 1px solid var(--code-row-rule);
+  }
+  &__extras-label {
+    flex-shrink: 0;
+    width: 170px;
+    font: 700 14px/18px var(--sans);
+    color: var(--muted);
+    padding-top: 3px;
+  }
+  &__extras &__chips { flex: 1 1 0; min-width: 160px; padding: 0; }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 24px 22px;
+  }
+
+  // Hardware: the dark card
+  &--dark {
+    background: var(--ink);
+    border: 0;
+    border-top: 7px solid var(--layer);
+    box-shadow: 5px 5px 0 #a39b8f;
+    .code-cat__title { color: var(--paper); }
+    .code-cat__meta { color: #a39b8f; }
+    .code-cat__text { color: #d6cfc2; }
+    .code-chip { background: #3a3530; color: var(--paper); &:hover { background: #4a443d; } }
+  }
+
+  // Upcoming: dashed, still being drawn
+  &--dashed {
+    background: transparent;
+    border: 1.5px dashed var(--code-dash);
+    box-shadow: none;
+    .code-cat__row { padding-block: 10px; border-top: 1px dashed var(--rule); &:last-child { padding-bottom: 16px; } }
+  }
+
+  @include below($mobile) {
+    &__head { flex-wrap: wrap; padding: 18px 20px 12px; }
+    &__text { padding-inline: 20px; }
+    &__row { flex-direction: column; gap: 3px; padding-inline: 20px; }
+    &__repo { width: auto; }
+    &__extras { flex-direction: column; gap: 10px; padding-inline: 20px; }
+    &__extras-label { width: auto; padding-top: 0; }
+    &__chips { padding-inline: 20px; }
+  }
+}
+
+.code-chip {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: var(--code-row-rule);
+  color: var(--ink);
+  font: 500 12px/16px var(--mono);
+  white-space: nowrap;
+  &:hover { text-decoration: none; background: #e2dacb; }
+}
+.code-cat__extras .code-chip { padding: 4px 8px; }
+
+// ---------------------------------------------------------------- need help?
+
+.code-help {
+  padding-bottom: 88px;
+  &__box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 22px 28px;
+    border: 1.5px dashed var(--code-dash);
+    border-radius: 16px;
+  }
+  &__text {
+    font-size: 17px;
+    line-height: 22px;
+    color: var(--pencil);
+    strong { font-weight: 900; color: var(--ink); }
+  }
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    .arrow-link { gap: 6px; }
+  }
+  @include below($tablet) {
+    &__box { flex-direction: column; align-items: flex-start; gap: 16px; }
+  }
+  @include below($mobile) {
+    padding-bottom: 64px;
+    &__box { padding: 20px; }
+    &__links { flex-direction: column; }
+  }
+}
+
+// ---------------------------------------------------------------- plays well with
+
+.code-plays {
+  padding-bottom: 104px;
+  &__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+    > .arrow-link { padding-bottom: 6px; }
+  }
+  &__title {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    h2 { font: 900 40px/46px var(--sans); letter-spacing: -0.03em; color: var(--ink); }
+  }
+  &__tiles {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @include below($wide) {
+    &__tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @include below($mobile) {
+    padding-bottom: 72px;
+    &__head { flex-direction: column; align-items: flex-start; gap: 12px; }
+    &__title h2 { font-size: 34px; line-height: 38px; }
+    &__tiles { grid-template-columns: 1fr 1fr; gap: 14px; }
+    &__tiles > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  }
+}
+
+.code-tile {
+  --bg: var(--ink);
+  --name: var(--white);
+  --text: var(--paper);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  height: 170px;
+  padding: 20px 22px;
+  background: var(--bg);
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+  &:hover { text-decoration: none; transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); }
+  &:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+
+  &__mark {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    img { display: block; }
+  }
+  &__body { display: flex; flex-direction: column; gap: 4px; }
+  &__name { font: 900 22px/28px var(--sans); color: var(--name); }
+  &__text { font-size: 14px; line-height: 20px; color: var(--text); }
+
+  &--nerveshub {
+    --bg: #141417; --name: #fafafa; --text: #d4d4d8;
+    .code-tile__mark {
+      align-items: flex-start;
+      font: 400 11px/14px var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7c86ff;
+      i { width: 12px; height: 12px; margin-top: 1px; border-radius: 3px; background: #615fff; }
+    }
+  }
+  &--beam-bots { --bg: #2c113e; --name: #fff; --text: #e3d3f0; }
+  &--phoenix { --bg: #f05423; --name: #1c1410; --text: #2a140a; }
+  &--membrane { --bg: #87cce8; --name: #0b2236; --text: #13324a; }
+  &--nx { --bg: #f3e4e9; --name: #262b2f; --text: #3b3036; }
+
+  @include below($mobile) {
+    height: auto;
+    min-height: 150px;
+    padding: 16px 18px;
+    &__name { font-size: 20px; line-height: 26px; }
+  }
+}

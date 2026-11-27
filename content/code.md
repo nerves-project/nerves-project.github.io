@@ -1,56 +1,60 @@
 ---
 type: code
 title: Code
+description: Nerves is spread over many small repositories, each with a focused scope. Here is the map, grouped the same way as the main README.
 tags: []
 
-project_map:
-  - name: Framework/Core
-    anchor: framework-core
-  - name: Example Projects
-    anchor: example-projects
-  - name: Hardware
-    anchor: hardware
-  - name: Networking
-    anchor: networking
-  - name: Hardware access
-    anchor: hardware-access
-  - name: SSH & Shell
-    anchor: ssh-and-shell
-  - name: Toolchain
-    anchor: toolchain
-  - name: Miscellaneous
-    anchor: miscellaneous
-  - name: Upcoming
-    anchor: upcoming
+# The repo map itself lives in data/code.yaml.
+eyebrow: Code
+heading: Explore the <span class="hl">project</span>
+lede: Nerves is spread over many small repositories, each with a focused scope. Here’s the map, grouped the same way as the [main README](https://github.com/nerves-project/nerves#nerves-projects).
 
-issue_tracker: "https://github.com/issues?q=is%3Aopen+is%3Aissue+org%3Anerves-project+org%3Anerves-time+org%3Anerves-networking+archived%3Afalse+"
+# The hand-drawn layer plates in the header
+plate_label: your_app
+layers:
+  - key: app
+    code: L1 · Application
+    note: your code, plus examples
+  - key: beam
+    code: L2 · BEAM
+    note: erlinit, nerves_runtime, vintage_net
+  - key: system
+    code: L3 · System
+    note: nerves_system_*, Buildroot
+  - key: tooling
+    code: L4 · Tooling
+    note: nerves_bootstrap, toolchains
 
-submit_issue: https://github.com/nerves-project/nerves/issues/new
+help:
+  title: Need help?
+  text: Most answers are an issue search away.
+  links:
+    - text: Search the issue tracker
+      url: "https://github.com/issues?q=is%3Aopen+is%3Aissue+org%3Anerves-project+org%3Anerves-time+org%3Anerves-networking+archived%3Afalse+"
+    - text: Submit an issue
+      url: https://github.com/nerves-project/nerves/issues/new
+    - text: Ask in the Discord
+      url: https://discord.gg/7TqSpepHw7
 
-related_projects:
-  - name: AtomVM
-    image: 'img/AtomVM-logo.png'
-    link: https://atomvm.org/
-    link_text: AtomVM Homepage
-    description: |
-      A minimum Erlang VM that runs on microcontrollers like ESP32 and STM32 devices
-  - name: GRiSP
-    image: 'img/grisp-logo.png'
-    link: https://grisp.org
-    link_text: GRiSP Homepage
-    description: |
-      Erlang and Elixir on the RTEMS real-time OS
-  - name: KRY10 OS
-    image: 'img/kry10-logo.png'
-    link: https://www.kry10.com/
-    link_text: KRY10 Website
-    description: |
-      Elixir on the seL4 Microkernel
-  - name: meta-erlang
-    image: 'img/yocto-logo.png'
-    link: https://meta-erlang.github.io/
-    link_text: meta-erlang project page
-    description: |
-      A Yocto Project layer for Erlang and Elixir applications and libraries
-
+plays_well:
+  eyebrow: Related projects
+  title: Plays well with
+  link_text: All related projects
+  # each tile links to its section on /related_projects/
+  tiles:
+    - key: nerveshub
+      name: NervesHub
+      text: Over-the-air updates and fleet management
+    - key: beam-bots
+      name: BEAM Bots
+      text: Robots, declared in Elixir
+    - key: phoenix
+      name: Phoenix
+      text: A web UI on the device itself
+    - key: membrane
+      name: Membrane
+      text: Cameras, audio and streams
+    - key: nx
+      name: Nx
+      text: Inference at the edge
 ---

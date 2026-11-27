@@ -1,0 +1,267 @@
+# The Nerves repo map on /code/, grouped the same way as the main README:
+# https://github.com/nerves-project/nerves#nerves-projects
+#
+# layer: all, app, beam, system or tooling (the hero's four layers; "all" draws the four-colour strip)
+# column: left or right on desktop; order: the README order, used when the map is a single column
+# style: dark (the Hardware card) or dashed (Upcoming)
+# count: true appends "· N repos" to the meta line
+# The toolchain chips link to hex.pm: the toolchains repo builds them from configs, so it has no per-toolchain folders.
+categories:
+  - name: Framework / Core
+    id: framework-core
+    column: left
+    order: 1
+    layer: all
+    meta: all layers
+    count: true
+    repos:
+      - name: erlinit
+        url: https://github.com/nerves-project/erlinit
+        text: Replacement for /sbin/init that launches an Erlang/OTP release
+      - name: nerves_bootstrap
+        url: https://github.com/nerves-project/nerves_bootstrap
+        text: The new project generator and low-level hooks into Mix
+      - name: nerves_runtime
+        url: https://github.com/nerves-project/nerves_runtime
+        text: Small, general runtime utilities for Nerves devices
+      - name: nerves_pack
+        url: https://github.com/nerves-project/nerves_pack
+        text: Initialization setup for Nerves devices
+      - name: nerves_system_br
+        url: https://github.com/nerves-project/nerves_system_br
+        text: Buildroot-based build platform for Nerves systems
+      - name: ring_logger
+        url: https://github.com/nerves-project/ring_logger
+        text: A ring buffer backend for Elixir Logger with IO streaming
+
+  - name: Networking
+    id: networking
+    column: left
+    order: 4
+    layer: beam
+    meta: L2 · BEAM
+    count: true
+    repos:
+      - name: vintage_net
+        url: https://github.com/nerves-networking/vintage_net
+        text: Network configuration and management for Nerves
+    extras_label: Plus technologies
+    extras:
+      - name: wifi
+        url: https://github.com/nerves-networking/vintage_net_wifi
+        title: "vintage_net_wifi: WiFi networking for VintageNet"
+      - name: ethernet
+        url: https://github.com/nerves-networking/vintage_net_ethernet
+        title: "vintage_net_ethernet: Ethernet support for VintageNet"
+      - name: direct
+        url: https://github.com/nerves-networking/vintage_net_direct
+        title: "vintage_net_direct: Direct network connection support for VintageNet"
+      - name: mobile
+        url: https://github.com/nerves-networking/vintage_net_mobile
+        title: "vintage_net_mobile: Mobile connection support for VintageNet"
+      - name: qmi
+        url: https://github.com/nerves-networking/vintage_net_qmi
+        title: "vintage_net_qmi: QMI mobile connections for VintageNet"
+      - name: wireguard
+        url: https://github.com/nerves-networking/vintage_net_wireguard
+        title: "vintage_net_wireguard: WireGuard VPN support"
+
+  - name: SSH and shell
+    id: ssh-and-shell
+    column: left
+    order: 6
+    layer: beam
+    meta: L2 · BEAM
+    count: true
+    repos:
+      - name: nerves_motd
+        url: https://github.com/nerves-project/nerves_motd
+        text: Message of the day for Nerves devices
+      - name: nerves_ssh
+        url: https://github.com/nerves-project/nerves_ssh
+        text: Manage an SSH daemon and subsystems on Nerves devices
+      - name: ssh_subsystem_fwup
+        url: https://github.com/nerves-project/ssh_subsystem_fwup
+        text: Erlang SSH subsystem for Nerves firmware updates
+      - name: toolshed
+        url: https://github.com/elixir-toolshed/toolshed
+        text: A toolshed of shell-like IEx helpers
+
+  - name: Miscellaneous
+    id: miscellaneous
+    column: left
+    order: 8
+    layer: all
+    meta: all layers
+    count: true
+    repos:
+      - name: boardid
+        url: https://github.com/nerves-project/boardid
+        text: Print out a platform-specific board serial number
+      - name: nerves_fw_loaders
+        url: https://github.com/nerves-project/nerves_fw_loaders
+        text: Firmware loaders for boards with internal storage
+      - name: nerves_heart
+        url: https://github.com/nerves-project/nerves_heart
+        text: Erlang heartbeat support for Nerves
+      - name: shoehorn
+        url: https://github.com/nerves-project/shoehorn
+        text: Handle OTP application failures and start order
+      - name: uboot_env
+        url: https://github.com/nerves-project/uboot_env
+        text: Read and write U-Boot environment blocks
+
+  - name: Example projects
+    id: example-projects
+    column: right
+    order: 2
+    layer: app
+    meta: L1 · Application
+    count: true
+    repos:
+      - name: circuits_quickstart
+        url: https://github.com/elixir-circuits/circuits_quickstart
+        text: Try out Elixir Circuits with prebuilt Nerves firmware
+      - name: nerves_examples
+        url: https://github.com/nerves-project/nerves_examples
+        text: Small example programs using Nerves
+      - name: nerves_livebook
+        url: https://github.com/nerves-livebook/nerves_livebook
+        text: Develop on embedded devices with Livebook and Nerves
+
+  - name: Hardware access
+    id: hardware-access
+    column: right
+    order: 5
+    layer: app
+    meta: L1 · Elixir Circuits
+    repos:
+      - name: circuits_gpio
+        url: https://github.com/elixir-circuits/circuits_gpio
+        text: Use GPIOs in Elixir
+      - name: circuits_i2c
+        url: https://github.com/elixir-circuits/circuits_i2c
+        text: Use I2C in Elixir
+      - name: circuits_spi
+        url: https://github.com/elixir-circuits/circuits_spi
+        text: Communicate over SPI from Elixir
+      - name: circuits_uart
+        url: https://github.com/elixir-circuits/circuits_uart
+        text: Discover and use UARTs and serial ports
+
+  - name: Hardware
+    id: hardware
+    column: right
+    order: 3
+    layer: system
+    style: dark
+    meta: L3 · official systems
+    text: Officially supported ports. Many more exist in the community.
+    chips:
+      - name: rpi
+        url: https://github.com/nerves-project/nerves_system_rpi
+        title: Raspberry Pi A+ and B+
+      - name: rpi0
+        url: https://github.com/nerves-project/nerves_system_rpi0
+        title: Raspberry Pi Zero and Zero W
+      - name: rpi0_2
+        url: https://github.com/nerves-project/nerves_system_rpi0_2
+        title: Raspberry Pi Zero 2 W
+      - name: rpi2
+        url: https://github.com/nerves-project/nerves_system_rpi2
+        title: Raspberry Pi 2
+      - name: rpi3
+        url: https://github.com/nerves-project/nerves_system_rpi3
+        title: Raspberry Pi 3
+      - name: rpi3a
+        url: https://github.com/nerves-project/nerves_system_rpi3a
+        title: Raspberry Pi 3 Model A+ with gadget mode, and Raspberry Pi Zero 2 W
+      - name: rpi4
+        url: https://github.com/nerves-project/nerves_system_rpi4
+        title: Raspberry Pi 4
+      - name: rpi5
+        url: https://github.com/nerves-project/nerves_system_rpi5
+        title: Raspberry Pi 5
+      - name: bbb
+        url: https://github.com/nerves-project/nerves_system_bbb
+        title: BeagleBone-based boards
+      - name: osd32mp1
+        url: https://github.com/nerves-project/nerves_system_osd32mp1
+        title: Octavo OSD32MP1
+      - name: grisp2
+        url: https://github.com/nerves-project/nerves_system_grisp2
+        title: GRiSP 2
+      - name: mangopi_mq_pro
+        url: https://github.com/nerves-project/nerves_system_mangopi_mq_pro
+        title: MangoPi MQ-Pro
+      - name: x86_64
+        url: https://github.com/nerves-project/nerves_system_x86_64
+        title: Generic x86_64 hardware
+      - name: qemu_aarch64
+        url: https://github.com/nerves-project/nerves_system_qemu_aarch64
+        title: The QEMU ARM system emulator
+      - name: vultr
+        url: https://github.com/nerves-project/nerves_system_vultr
+        title: Experimental configuration for a Vultr cloud server
+
+  - name: Toolchain
+    id: toolchain
+    column: right
+    order: 7
+    layer: tooling
+    meta: L4 · C/C++
+    text: Cross-compilers that keep builds consistent on every supported host.
+    chips:
+      - name: aarch64
+        url: https://hex.pm/packages/nerves_toolchain_aarch64_nerves_linux_gnu
+        title: 64-bit ARM
+      - name: armv5
+        url: https://hex.pm/packages/nerves_toolchain_armv5_nerves_linux_musleabi
+        title: 32-bit ARM for older ARM processors
+      - name: armv6
+        url: https://hex.pm/packages/nerves_toolchain_armv6_nerves_linux_gnueabihf
+        title: 32-bit ARM for Raspberry Pi A, B and Zero
+      - name: armv7
+        url: https://hex.pm/packages/nerves_toolchain_armv7_nerves_linux_gnueabihf
+        title: 32-bit ARM for most 32-bit ARMs
+      - name: i586
+        url: https://hex.pm/packages/nerves_toolchain_i586_nerves_linux_gnu
+        title: 32-bit Intel x86
+      - name: mipsel
+        url: https://hex.pm/packages/nerves_toolchain_mipsel_nerves_linux_musl
+        title: 32-bit MIPS
+      - name: riscv64
+        url: https://hex.pm/packages/nerves_toolchain_riscv64_nerves_linux_gnu
+        title: 64-bit RISC-V
+      - name: x86_64 musl
+        url: https://hex.pm/packages/nerves_toolchain_x86_64_nerves_linux_musl
+        title: 64-bit x86 with musl libc
+      - name: x86_64 gnu
+        url: https://hex.pm/packages/nerves_toolchain_x86_64_nerves_linux_gnu
+        title: 64-bit x86 with GNU libc
+
+  - name: Upcoming
+    id: upcoming
+    column: right
+    order: 9
+    style: dashed
+    note: new and experimental
+    repos:
+      - name: nerves_logging
+        url: https://github.com/nerves-project/nerves_logging
+        text: Route system logs through the Elixir logger
+      - name: nerves_uevent
+        url: https://github.com/nerves-project/nerves_uevent
+        text: UEvent monitor that loads drivers for new hardware
+      - name: property_table
+        url: https://github.com/jjcarstens/property_table
+        text: In-memory key-value store with subscriptions
+      - name: nerves_initramfs
+        url: https://github.com/nerves-project/nerves_initramfs
+        text: Early boot handling for Nerves devices
+      - name: nerves_system_linter
+        url: https://github.com/nerves-project/nerves_system_linter
+        text: Mix task to check Nerves system configuration files
+      - name: nerves_systems
+        url: https://github.com/nerves-project/nerves_systems
+        text: Build scripts for maintaining multiple repositories
