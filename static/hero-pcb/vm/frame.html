@@ -53,7 +53,10 @@
   var rows = Math.max(8, Math.min(30, Math.floor(innerHeight / (font * 1.2))));
   var input = document.getElementById("input");
 
-  var vm = window.nervesVM = new NervesVM({ config: "nerves.cfg", cols: cols, rows: rows });
+  // "?fresh": start from the pristine disk image (and so from its snapshot), without what an
+  // earlier visit wrote to the disk
+  var fresh = location.search.indexOf("fresh") >= 0;
+  var vm = window.nervesVM = new NervesVM({ config: "nerves.cfg", cols: cols, rows: rows, resetDisk: fresh });
   window.nervesBoard = NervesBoard.attach(vm);
 
   var term = new Term(cols, rows, function(str) { vm.write(str); }, 5000);

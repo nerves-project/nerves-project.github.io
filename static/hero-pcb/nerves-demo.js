@@ -33,6 +33,7 @@ const POWER = 'POWER';   // the hero's name for the power switch (DEMO_BOARD)
 const TMP103_ADDRESS = 0x70;
 
 const HINTS = [
+  { label: 'Help', run: 'h Toolshed' },
   { label: 'Read the temperature', run: 'with {:ok, bus} <- Circuits.I2C.open("i2c-0"), {:ok, <<t::signed>>} <- Circuits.I2C.write_read(bus, 0x70, <<0>>, 1), do: t' },
   { label: 'Frame rate sensor', run: 'WebDemoNerves.Board.fps()' },
   { label: 'Firmware slots', run: 'Nerves.Runtime.KV.get_all()' },
@@ -268,7 +269,10 @@ export function mountNervesDemo({ hero, host, copy, vmUrl = VM_URL, autoAttachLo
     showFoot();
     const frame = state.frame = h('iframe', 'nerves-demo__frame');
     frame.title = 'Nerves terminal';
-    frame.src = new URL('frame.html', base).href;
+    // Every visit starts from the snapshot: the first power-on of a page drops what an earlier
+    // visit wrote to disk. After that the disk lasts as long as the page, so a power cycle or a
+    // firmware update is a real boot from what is on it.
+    frame.src = new URL(again ? 'frame.html' : 'frame.html?fresh', base).href;
     frame.addEventListener('load', () => { if (state.frame === frame) wire(frame); });
     frame.addEventListener('error', () => fail('could not load the machine'));
     screen.append(frame);
@@ -336,7 +340,7 @@ export function mountNervesDemo({ hero, host, copy, vmUrl = VM_URL, autoAttachLo
     });
     vm.addEventListener('disk', (e) => {
       if (!live()) return;
-      state.disk = e.detail.status === 'on' ? 'what it writes to disk stays in this browser' : '';
+      state.disk = e.detail.status === 'on' ? 'what it writes to disk lasts until you leave the page' : '';
       showFoot();
     });
     // the firmware powered the machine off (Nerves.Runtime.poweroff()): the switch is still on,
