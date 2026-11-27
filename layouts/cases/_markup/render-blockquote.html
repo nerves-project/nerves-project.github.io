@@ -1,0 +1,19 @@
+{{- /* A pull quote. A last paragraph that starts with an em dash is the attribution:
+
+  > “Quote.”
+  >
+  > — Name, Role
+*/ -}}
+{{- $text := .Text -}}
+{{- $cite := "" -}}
+{{- $re := `(?s)<p>\s*(?:—|&mdash;|&#8212;)\s*(.+?)</p>\s*$` -}}
+{{- with findRESubmatch $re $text 1 -}}
+  {{- $cite = index (index . 0) 1 -}}
+  {{- $text = replaceRE $re "" $text -}}
+{{- end -}}
+<figure class="case-quote">
+  <blockquote>{{ $text | safeHTML }}</blockquote>
+  {{- with $cite }}
+  <figcaption>{{ . | safeHTML }}</figcaption>
+  {{- end }}
+</figure>

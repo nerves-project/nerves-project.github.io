@@ -1,16 +1,33 @@
 ---
-title: Using Nerves to Build a Facial Recognition-Powered Beer Kiosk System at Hop
+title: Using Nerves to build a facial recognition-powered beer kiosk system at Hop
 date: 2022-01-02
+weight: 2
 tags:
   - case
+
+# The case study header and the card on /cases/.
+company: Hop
+industry: Hospitality
+heading: Using Nerves to build a facial recognition-powered beer kiosk system
+card_title: A self-serve beer kiosk powered by facial recognition
+summary: >-
+  Hop used Nerves to build the world's first self-serve beer kiosk powered by
+  facial recognition technology.
+description: >-
+  Hop used Nerves to build the world's first self-serve beer kiosk powered by
+  facial recognition technology.
+product: Self-serve beer kiosks
+built_by: Very
+uses: Nerves, NervesHub
+# The first image is the cover photo (and the picture for link previews).
+images:
+  - img/Hop-case-cover.jpg
+cover_alt: A tablet saying “You’re all set!” next to a freshly poured beer
+# The photos in the text are cut-outs on white: show them whole, not cropped.
+figures: contain
 ---
 
-Hop used Nerves to build the world's first self-serve beer kiosk powered by
-facial recognition technology.
-
-<!--more-->
-
-## The Concept
+## The concept
 
 Hop is the world’s first beer kiosk to use automated facial recognition to
 verify identification, allowing users to purchase beer by the ounce and pour it
@@ -29,10 +46,10 @@ A bartender onsite reviews the rating and approves or denies service. On future
 visits, customers will be automatically recognized — which means all they have
 to do is approach the kiosk, choose a tap, and pour their beer.
 
-![](/img/Hop-case-1.png)
-![](/img/Hop-case-2.jpg)
+![A Hop kiosk tablet asking for a phone number, next to a glass of beer](/img/Hop-case-1.png)
+![The kiosk electronics: a power supply, terminal blocks, a relay board and a single-board computer wired up on a wooden panel](/img/Hop-case-2.jpg)
 
-## How Nerves Helped — IoT Prototyping & Hardware
+## How Nerves helped — IoT prototyping & hardware
 
 The product that ABC envisioned required complex hardware-software interactions.
 While they had a working product that was up and running, it was difficult to
@@ -74,7 +91,7 @@ Very used Nerves to:
 - Implement rolling updates to all deployed hardware
 - Enable real-time interaction between the hardware and software
 
-## The Results
+## The results
 
 The new Hop system performs exactly the way ABC envisioned and has the potential
 to scale seamlessly.

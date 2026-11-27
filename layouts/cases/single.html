@@ -1,0 +1,47 @@
+{{ define "main" }}
+{{ $p := .Params }}
+<article class="case-page">
+  <header class="wrap case-head">
+    <a class="case-head__back" href="{{ with .Parent }}{{ .RelPermalink }}{{ else }}{{ relURL "cases/" }}{{ end }}">{{ partial "ui/icon" (dict "name" "arrow-left") }} All case studies</a>
+
+    <div class="case-head__row">
+      <div class="case-head__title">
+        <p class="eyebrow">Case study{{ with $p.company }} <span aria-hidden="true">·</span> {{ . }}{{ end }}</p>
+        <h1 class="case-head__h1">{{ $p.heading | default .Title }}</h1>
+      </div>
+      <dl class="case-glance">
+        {{ with $p.industry }}<div><dt>Industry</dt><dd>{{ . }}</dd></div>{{ end }}
+        {{ with $p.product }}<div><dt>Product</dt><dd>{{ . }}</dd></div>{{ end }}
+        {{ with $p.built_by }}<div><dt>Built by</dt><dd>{{ . }}</dd></div>{{ end }}
+        {{ with $p.uses }}<div><dt>Uses</dt><dd>{{ . }}</dd></div>{{ end }}
+      </dl>
+    </div>
+
+    {{ with $p.images }}{{ with index . 0 }}
+    {{ $file := path.Join "static" . }}
+    {{ $w := 0 }}
+    {{ $dims := "" }}
+    {{ if fileExists $file }}
+      {{ with images.Config $file }}{{ $w = .Width }}{{ $dims = printf ` width="%d" height="%d"` .Width .Height }}{{ end }}
+    {{ end }}
+    {{/* Small cover photos would turn to mush stretched across the page, so they sit beside the summary instead. */}}
+    <div class="case-hero{{ if lt $w 1000 }} case-hero--split{{ end }}">
+      <div class="case-hero__media">
+        <img src="{{ relURL . }}" alt="{{ $p.cover_alt }}"{{ $dims | safeHTMLAttr }} fetchpriority="high">
+      </div>
+      {{ if lt $w 1000 }}<p class="case-hero__summary">{{ $.Summary | plainify }}</p>{{ end }}
+    </div>
+    {{ end }}{{ end }}
+  </header>
+
+  <div class="wrap case-body">
+    <nav class="case-toc" aria-labelledby="case-toc-title" data-toc-rail hidden>
+      <p class="case-toc__title" id="case-toc-title">On this page</p>
+      <ol data-toc="#case-article"></ol>
+    </nav>
+    <div class="prose case-article{{ with $p.figures }} case-article--{{ . }}{{ end }}" id="case-article">
+      {{ .Content }}
+    </div>
+  </div>
+</article>
+{{ end }}

@@ -1,0 +1,10 @@
+{{- /* Case study images: lazy, with their real size so the page doesn't jump while they load. */ -}}
+{{- $dims := "" -}}
+{{- if not (strings.HasPrefix .Destination "http") -}}
+  {{- $file := path.Join "static" .Destination -}}
+  {{- if fileExists $file -}}
+    {{- with images.Config $file }}{{ $dims = printf ` width="%d" height="%d"` .Width .Height }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+<img src="{{ .Destination | safeURL }}" alt="{{ .PlainText }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ $dims | safeHTMLAttr }} loading="lazy" decoding="async">
+{{- /**/ -}}

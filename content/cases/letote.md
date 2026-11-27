@@ -1,16 +1,30 @@
 ---
-title: Increasing Warehouse Efficiency with Nerves at Le Tote
+title: Increasing warehouse efficiency with Nerves at Le Tote
 date: 2022-01-01
+weight: 3
 tags:
   - case
+
+# The case study header and the card on /cases/.
+company: Le Tote
+industry: Logistics
+heading: Increasing warehouse efficiency with Nerves
+card_title: A web-based kiosk system that drives warehouse productivity
+summary: >-
+  Le Tote used Nerves to build a web-based kiosk system to drive warehouse
+  productivity.
+description: >-
+  Le Tote used Nerves to build a web-based kiosk system to drive warehouse
+  productivity.
+product: Clothing rental
+uses: Nerves
+# The first image is the cover photo (and the picture for link previews).
+images:
+  - img/LeTote-case-cover.jpg
+cover_alt: Le Tote clothes and accessories laid out around a Le Tote box
 ---
 
-Learn how LeTote used Nerves to build a web-based kiosk system to drive
-warehouse productivity
-
-<!--more-->
-
-## The Concept
+## The concept
 
 Le Tote is a personalized clothing rental subscription service that needed a
 better way to track inventory and keep the company’s warehouse operating smoothly.
@@ -28,11 +42,11 @@ clothing were tiny, hidden on the back of the tag. Employees had to find and
 scan each individual tag at each touchpoint, adding a lot of unnecessary time
 to the production cycle.
 
-![](/img/LeTote-case-1.jpg)
-![](/img/LeTote-case-2.jpg)
-![](/img/LeTote-case-3.jpg)
+![Someone in a polka-dot top reaching for a cardboard box next to a potted succulent](/img/LeTote-case-1.jpg)
+![A Le Tote box surrounded by clothes and accessories laid out flat](/img/LeTote-case-2.jpg)
+![Hands holding a phone that shows a blouse in the Le Tote app](/img/LeTote-case-3.jpg)
 
-## How Nerves Helped
+## How Nerves helped
 
 Le Tote hired Justin Schneck, co-author of the Nerves Project, as a Principal
 Hardware Engineer to help them use Nerves to develop and implement an RFID
@@ -54,7 +68,7 @@ They were able to replace a third-party vendor for pack stations and receiving
 workstations within months by being able to rapidly develop and iterate on their
 own software and deploy it so quickly and easily.
 
-## The Results
+## The results
 
 With Nerves, Justin and the Le Tote team were able to build systems and
 processes that made the warehouse function more efficiently. Clothing items can

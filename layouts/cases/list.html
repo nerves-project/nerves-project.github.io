@@ -1,0 +1,32 @@
+{{ define "main" }}
+{{ partial "page-head" (dict "eyebrow" .Params.eyebrow "title" (.Params.heading | default .Title) "lede" .Params.lede) }}
+
+<div class="wrap case-list">
+  {{ range $i, $p := .Pages }}
+  {{ $featured := eq $i 0 }}
+  <article class="case-card{{ if $featured }} case-card--featured{{ end }}">
+    {{ with $p.Params.images }}{{ with index . 0 }}
+    {{ $file := path.Join "static" . }}
+    <div class="case-card__media">
+      <img src="{{ relURL . }}" alt=""
+        {{- if fileExists $file }}{{ with images.Config $file }} width="{{ .Width }}" height="{{ .Height }}"{{ end }}{{ end }}
+        {{- if not $featured }} loading="lazy"{{ end }} decoding="async">
+    </div>
+    {{ end }}{{ end }}
+    <div class="case-card__body">
+      <p class="eyebrow eyebrow--muted">{{ $p.Params.industry }} <span aria-hidden="true">·</span> {{ $p.Params.company }}</p>
+      <h2 class="case-card__title"><a href="{{ $p.RelPermalink }}">{{ $p.Params.card_title | default $p.Title }}</a></h2>
+      {{ if $featured }}<p class="case-card__text">{{ $p.Description | default ($p.Summary | plainify) }}</p>{{ end }}
+      <span class="arrow-link case-card__more" aria-hidden="true">Read the case study {{ partial "ui/icon" (dict "name" "arrow") }}</span>
+    </div>
+  </article>
+  {{ end }}
+
+  {{ with .Params.cta }}
+  <aside class="case-cta">
+    <p><strong>{{ .lead }}</strong> {{ .text }}</p>
+    <a class="arrow-link" href="{{ site.Params.discord }}" rel="noopener">{{ .link }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+  </aside>
+  {{ end }}
+</div>
+{{ end }}
