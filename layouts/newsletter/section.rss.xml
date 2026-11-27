@@ -1,0 +1,1 @@
+{{- partial "blog/rss.html" (dict "page" . "kind" "newsletter") -}}

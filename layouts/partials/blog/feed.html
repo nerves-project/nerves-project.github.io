@@ -1,0 +1,20 @@
+{{- /*
+  Everything on the blog, newest first: newsletter issues (content/newsletter/) and posts
+  (content/blog/). Returns a slice of dicts:
+    page  the page
+    kind  "newsletter" or "posts" (the values the chip filters use)
+    n     the issue number (the first alias of an issue), 0 for posts
+    year  the year it belongs to on /blog/
+  Issues that share a date are ordered by issue number. Call it with
+  partialCached "blog/feed.html" . "feed" so it is built once per site build.
+*/ -}}
+{{- $items := slice -}}
+{{- range where site.RegularPages "Section" "newsletter" -}}
+  {{- $n := 0 -}}
+  {{- with .Params.aliases }}{{ $n = int (index . 0) }}{{ end -}}
+  {{- $items = $items | append (dict "page" . "kind" "newsletter" "n" $n "year" .Date.Year "key" (add (mul .Date.Unix 1000) $n)) -}}
+{{- end -}}
+{{- range where site.RegularPages "Section" "blog" -}}
+  {{- $items = $items | append (dict "page" . "kind" "posts" "n" 0 "year" .Date.Year "key" (add (mul .Date.Unix 1000) 999)) -}}
+{{- end -}}
+{{- return sort $items "key" "desc" -}}

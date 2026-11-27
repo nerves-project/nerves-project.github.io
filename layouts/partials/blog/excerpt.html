@@ -1,0 +1,26 @@
+{{- /*
+  A short plain-text excerpt for cards and the RSS feed. Usage: partial "blog/excerpt.html" (dict "page" . "length" 200)
+  1. the description front matter, when there is one (used as written);
+  2. for an issue that is still the raw email HTML: the first real paragraph after the first
+     heading, cut to `length` (never .Summary, which for those files is the whole email);
+  3. otherwise the summary of the post, cut to `length`.
+*/ -}}
+{{- $p := .page -}}
+{{- $len := .length | default 200 -}}
+{{- $out := "" -}}
+{{- with $p.Params.description -}}
+  {{- $out = replaceRE `\s+` " " . | strings.TrimSpace -}}
+{{- else -}}
+  {{- if findRE `(?i)<html|<!doctype` $p.RawContent 1 -}}
+    {{- $body := replaceRE `(?is)^.*?<h1\b` "<h1" $p.RawContent -}}
+    {{- range findRESubmatch `(?is)<p\b[^>]*>(.*?)</p>` $body 3 -}}
+      {{- $t := index . 1 | plainify | htmlUnescape | strings.TrimSpace -}}
+      {{- if and (not $out) (gt (len $t) 40) }}{{ $out = $t }}{{ end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $out = $p.Summary | plainify | htmlUnescape -}}
+  {{- end -}}
+  {{- /* truncate escapes HTML characters, so unescape again: callers escape for their output */ -}}
+  {{- $out = replaceRE `\s+` " " $out | strings.TrimSpace | truncate $len | htmlUnescape -}}
+{{- end -}}
+{{- return $out -}}

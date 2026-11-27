@@ -1,0 +1,132 @@
+{{ define "main" }}
+{{- $items := partialCached "blog/feed.html" . "feed" -}}
+{{- $issues := where $items "kind" "newsletter" -}}
+{{- $posts := where $items "kind" "posts" -}}
+{{- $latest := "" -}}
+{{- with sort $issues "n" "desc" }}{{ $latest = index . 0 }}{{ end -}}
+{{- $nl := hugo.Data.blog.newsletter -}}
+{{- $pc := hugo.Data.blog.postcard -}}
+{{- $pitch := hugo.Data.blog.pitch -}}
+
+{{/* ------------------------------------------------------------ header + postcard signup */}}
+<header class="blog-head">
+  <div class="wrap blog-head__inner">
+    <div class="blog-head__copy">
+      <span class="eyebrow">{{ .Params.eyebrow }}</span>
+      <h1 class="display blog-head__title">{{ .Params.heading | safeHTML }}</h1>
+      <p class="lede blog-head__lede">{{ .Params.lede }}</p>
+    </div>
+
+    <section class="blog-postcard" id="subscribe" aria-labelledby="postcard-title">
+      <div class="blog-postcard__top">
+        <svg class="blog-postcard__postmark" width="120" height="44" viewBox="0 0 120 44" aria-hidden="true">
+          <path d="M2 8 Q 17 2 32 8 T 62 8 T 92 8 T 118 8" />
+          <path d="M2 22 Q 17 16 32 22 T 62 22 T 92 22 T 118 22" />
+          <path d="M2 36 Q 17 30 32 36 T 62 36 T 92 36 T 118 36" />
+        </svg>
+        <div class="blog-postcard__hello">
+          <span class="blog-postcard__eyebrow">{{ $pc.eyebrow }}</span>
+          <span class="blog-postcard__greeting">{{ $pc.greeting }}</span>
+        </div>
+        {{- with $latest }}
+        <div class="blog-stamp" role="img" aria-label="Next up: issue {{ add .n 1 }}">
+          <div class="blog-stamp__inner" aria-hidden="true">
+            <span class="blog-stamp__no">No.</span>
+            <span class="blog-stamp__num">{{ add .n 1 }}</span>
+            <span class="blog-stamp__note">{{ $pc.stamp_note }}</span>
+          </div>
+        </div>
+        {{- end }}
+      </div>
+      <div class="blog-postcard__message">
+        <h2 class="blog-postcard__title" id="postcard-title">{{ $pc.title }}</h2>
+        <p>{{ $pc.text }}</p>
+      </div>
+      {{ partial "newsletter-form" (dict "page" . "id" "blog-top") }}
+      <div class="blog-postcard__links">
+        <div>
+          <a href="{{ relURL "blog/index.xml" }}">RSS feed {{ partial "ui/icon" (dict "name" "external" "size" 11) }}</a>
+          <a href="{{ $nl.about_url }}">About the newsletter {{ partial "ui/icon" (dict "name" "external" "size" 11) }}</a>
+        </div>
+        <span class="blog-postcard__signoff" aria-hidden="true">{{ $pc.signoff }}</span>
+      </div>
+    </section>
+  </div>
+</header>
+
+{{/* ------------------------------------------------------------ featured: latest issue + latest post (or the pitch) */}}
+<section class="blog-featured" aria-label="Latest">
+  <div class="wrap blog-featured__inner">
+    {{- with $latest }}
+    {{- $p := .page }}
+    <article class="blog-latest">
+      <a class="blog-latest__num" href="{{ $p.RelPermalink }}" tabindex="-1" aria-hidden="true">
+        <span>Issue</span>
+        <strong>{{ .n }}</strong>
+      </a>
+      <div class="blog-latest__body">
+        <p class="eyebrow">Newsletter · <time datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date.Format "Jan 2, 2006" }}</time></p>
+        <h2 class="blog-latest__title"><a href="{{ $p.RelPermalink }}"><span class="sr-only">Issue {{ .n }}: </span>{{ $p.Title }}</a></h2>
+        {{- with partial "blog/excerpt.html" (dict "page" $p "length" 160) }}
+        <p class="blog-latest__text">{{ . }}</p>
+        {{- end }}
+        <div class="blog-card-foot">
+          <span class="blog-byline">{{ partial "blog/avatar.html" (dict "name" $nl.editor "initials" $nl.editor_initials) }}<span><strong>{{ $nl.editor }}</strong> · {{ $nl.editor_short_role }}</span></span>
+          <a class="arrow-link arrow-link--sm" href="{{ $p.RelPermalink }}" aria-hidden="true" tabindex="-1">Read the issue {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>
+        </div>
+      </div>
+    </article>
+    {{- end }}
+
+    {{- with $posts }}
+    {{- $p := (index . 0).page }}
+    {{- /* "new post" while it is newer than the latest issue */}}
+    {{- $fresh := true }}{{ with $latest }}{{ $fresh = gt $p.Date.Unix .page.Date.Unix }}{{ end }}
+    <article class="blog-pick">
+      <span class="sticker blog-pick__sticker" aria-hidden="true">{{ if $fresh }}new post{{ else }}latest post{{ end }}</span>
+      <p class="eyebrow blog-pick__eyebrow">Post · <time datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date.Format "Jan 2, 2006" }}</time></p>
+      <h2 class="blog-pick__title"><a href="{{ $p.RelPermalink }}">{{ $p.Title }}</a></h2>
+      {{- with partial "blog/excerpt.html" (dict "page" $p "length" 160) }}
+      <p class="blog-pick__text">{{ . }}</p>
+      {{- end }}
+      <div class="blog-card-foot">
+        {{- with $p.Params.author }}
+        <span class="blog-byline">{{ partial "blog/avatar.html" (dict "name" . "initials" $p.Params.author_initials "image" $p.Params.author_image "class" "avatar--green") }}<span><strong>{{ . }}</strong>{{ with $p.Params.role }} · {{ . }}{{ end }}</span></span>
+        {{- end }}
+        <a class="arrow-link arrow-link--sm blog-pick__read" href="{{ $p.RelPermalink }}" aria-hidden="true" tabindex="-1">Read {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>
+      </div>
+    </article>
+    {{- else }}
+    <article class="blog-pick blog-pick--pitch">
+      <span class="sticker blog-pick__sticker" aria-hidden="true">{{ $pitch.featured_sticker }}</span>
+      <p class="eyebrow blog-pick__eyebrow">Posts</p>
+      <h2 class="blog-pick__title">{{ $pitch.featured_title }}</h2>
+      <p class="blog-pick__text">{{ $pitch.featured_text }}</p>
+      <div class="blog-card-foot">
+        <a class="btn btn--ink" href="{{ $pitch.discord_url }}">{{ $pitch.discord_label }} {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>
+      </div>
+    </article>
+    {{- end }}
+  </div>
+</section>
+
+{{/* ------------------------------------------------------------ archive */}}
+<div class="wrap">
+  {{ partial "blog/archive.html" (dict "items" $items "filters" true) }}
+</div>
+
+{{/* ------------------------------------------------------------ write for the blog + second signup */}}
+<section class="blog-bottom" aria-label="Write for the blog or subscribe">
+  <div class="wrap blog-bottom__inner">
+    {{ partial "blog/pitch.html" (dict "size" "lg" "id" "write") }}
+    {{- with hugo.Data.blog.inbox }}
+    <div class="blog-inbox">
+      <span class="note blog-inbox__note" aria-hidden="true">{{ .note }}</span>
+      <h2 class="blog-inbox__title">{{ .title }}</h2>
+      {{ partial "newsletter-form" (dict "page" $ "id" "blog-bottom") }}
+      <p class="blog-inbox__small">{{ .small }} <a href="{{ relURL "blog/index.xml" }}">RSS feed {{ partial "ui/icon" (dict "name" "external" "size" 11) }}</a></p>
+    </div>
+    {{- end }}
+  </div>
+</section>
+{{ end }}

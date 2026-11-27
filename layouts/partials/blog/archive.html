@@ -1,0 +1,88 @@
+{{- /*
+  The year-by-year list of issues and posts, with a "jump to" rail and (optionally) chip filters.
+  Usage: partial "blog/archive.html" (dict "items" $items "filters" true "rss" "blog/index.xml")
+  items: from partial "blog/feed.html". The newest year is shown in full; older years show
+  their newest three entries and a "Show all" toggle.
+*/ -}}
+{{- $items := .items -}}
+{{- $years := slice -}}
+{{- range $items }}{{ if not (in $years .year) }}{{ $years = $years | append .year }}{{ end }}{{ end -}}
+{{- $issues := where $items "kind" "newsletter" -}}
+{{- $posts := where $items "kind" "posts" -}}
+{{- $peek := 3 -}}
+{{- $rss := .rss | default "blog/index.xml" -}}
+
+<section class="blog-archive" aria-labelledby="archive-title" data-blog-archive>
+  <h2 class="sr-only" id="archive-title">All issues{{ if .filters }} and posts{{ end }}</h2>
+
+  <nav class="blog-jump" aria-label="Jump to year">
+    <span class="blog-jump__label">Jump to</span>
+    <ul>
+      {{- range $i, $y := $years }}
+      <li><a href="#year-{{ $y }}"{{ if eq $i 0 }} class="is-current"{{ end }} data-jump="{{ $y }}">{{ $y }}</a></li>
+      {{- end }}
+    </ul>
+  </nav>
+
+  <div class="blog-feed">
+    <div class="blog-feed__bar">
+      {{- if .filters }}
+      <div class="blog-feed__chips" role="group" aria-label="Show" data-filter-group="blog">
+        <button class="chip" type="button" data-filter="all" aria-pressed="true">everything · {{ len $items }}</button>
+        <button class="chip" type="button" data-filter="newsletter" aria-pressed="false"><span class="chip__dot" aria-hidden="true"></span>newsletter · {{ len $issues }}</button>
+        <button class="chip" type="button" data-filter="posts" aria-pressed="false"><span class="chip__dot chip__dot--post" aria-hidden="true"></span>posts · {{ len $posts }}</button>
+      </div>
+      {{- else }}
+      <p class="blog-feed__count">{{ len $issues }} issues since {{ index $years (sub (len $years) 1) }}</p>
+      {{- end }}
+      <a class="arrow-link arrow-link--sm" href="{{ relURL $rss }}">RSS feed {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+    </div>
+
+    {{- if and .filters (not $posts) }}
+    <p class="blog-feed__empty">No posts yet. <a href="#write">Want to write the first one?</a></p>
+    {{- end }}
+
+    {{- range $yi, $y := $years }}
+    {{- $yitems := where $items "year" $y }}
+    <section class="blog-year" id="year-{{ $y }}" data-filter-section="blog" aria-labelledby="year-{{ $y }}-title">
+      <h3 class="year-rule" id="year-{{ $y }}-title"><span class="year-rule__year">{{ $y }}</span>{{ partial "ui/icon" (dict "name" "wave") }}</h3>
+      {{- if or (eq $yi 0) (le (len $yitems) (add $peek 1)) }}
+      <ol class="blog-list">{{ range $yitems }}{{ partial "blog/archive-row.html" . }}{{ end }}</ol>
+      {{- else }}
+      {{- $ni := len (where $yitems "kind" "newsletter") }}
+      {{- $np := len (where $yitems "kind" "posts") }}
+      {{- $count := slice }}
+      {{- with $ni }}{{ $count = $count | append (printf "%d %s" . (cond (eq . 1) "issue" "issues")) }}{{ end }}
+      {{- with $np }}{{ $count = $count | append (printf "%d %s" . (cond (eq . 1) "post" "posts")) }}{{ end }}
+      <ol class="blog-list">{{ range first $peek $yitems }}{{ partial "blog/archive-row.html" . }}{{ end }}</ol>
+      <details class="blog-year__more" data-year-more>
+        <summary>Show all of {{ $y }} ({{ delimit $count ", " }}) {{ partial "ui/icon" (dict "name" "arrow-down" "size" 14) }}</summary>
+        <ol class="blog-list">{{ range after $peek $yitems }}{{ partial "blog/archive-row.html" . }}{{ end }}</ol>
+      </details>
+      {{- end }}
+    </section>
+    {{- end }}
+  </div>
+</section>
+
+{{- /* Small enhancements: jumping to a year (or filtering) opens the collapsed years, and the
+       rail marks the year in view. Everything works without it. */}}
+<script>
+  (() => {
+    const root = document.querySelector('[data-blog-archive]')
+    if (!root) return
+    const open = (el) => el?.querySelectorAll('[data-year-more]').forEach((d) => { d.open = true })
+    const fromHash = () => { if (/^#year-\d{4}$/.test(location.hash)) open(document.querySelector(location.hash)) }
+    window.addEventListener('hashchange', fromHash)
+    fromHash()
+    root.querySelectorAll('[data-filter]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.filter !== 'all') open(root) }))
+    const links = [...root.querySelectorAll('[data-jump]')]
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return
+        links.forEach((a) => a.classList.toggle('is-current', a.hash === `#${e.target.id}`))
+      })
+    }, { rootMargin: '0px 0px -75% 0px' })
+    root.querySelectorAll('.blog-year').forEach((s) => io.observe(s))
+  })()
+</script>

@@ -1,0 +1,11 @@
+{{- /*
+  The plain signup box at the end of an issue or a post.
+  Usage: partial "blog/signup-box.html" (dict "page" . "copy" hugo.Data.blog.issue_signup "id" "issue")
+*/ -}}
+<section class="blog-signup" id="signup" aria-labelledby="signup-title">
+  <div class="blog-signup__text">
+    <h2 class="blog-signup__title" id="signup-title">{{ .copy.title }}</h2>
+    <p>{{ .copy.text }}</p>
+  </div>
+  {{ partial "newsletter-form" (dict "page" .page "id" .id) }}
+</section>

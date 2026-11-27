@@ -1,15 +1,53 @@
-
 {{ define "main" }}
+{{- $items := partialCached "blog/feed.html" . "feed" -}}
+{{- $issues := where $items "kind" "newsletter" -}}
+{{- $n := 0 -}}
+{{- with .Params.aliases }}{{ $n = int (index . 0) }}{{ end -}}
+{{- $prev := "" -}}{{- with sort (where $issues "n" "lt" $n) "n" "desc" }}{{ $prev = index . 0 }}{{ end -}}
+{{- $next := "" -}}{{- with sort (where $issues "n" "gt" $n) "n" "asc" }}{{ $next = index . 0 }}{{ end -}}
+{{- $body := partial "blog/issue-body.html" . -}}
+{{- $nl := hugo.Data.blog.newsletter -}}
 
-<section class="hero is-primary hero-gradient">
-  <div class="hero-body">
-    <p class="title">{{.Title}}</p>
-    <p class="subtitle">
-      {{ .Date.Format "January 2, 2006" }} &bull; <em>Issue {{ index .Params.aliases 0 }}</em>
-    </p>
+<article class="post post--issue">
+  <header class="post__head">
+    <nav class="post__crumbs" aria-label="Breadcrumb">
+      <a href="{{ relURL "blog/" }}">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 14) }}Blog</a>
+      <span aria-hidden="true">/</span>
+      <a href="{{ relURL "newsletter/" }}">Newsletter</a>
+    </nav>
+    <div class="post__titles">
+      <p class="post__meta">
+        <span>Newsletter</span>
+        {{- with $n }}<span>Issue #{{ . }}</span>{{ end }}
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <span>{{ $body.minutes }} min read</span>
+      </p>
+      <h1 class="post__title">{{ .Title }}</h1>
+      <div class="post__byline">
+        {{ partial "blog/avatar.html" (dict "name" $nl.editor "initials" $nl.editor_initials) }}
+        <span><strong>{{ $nl.editor }}</strong><span>{{ $nl.editor_role }}</span></span>
+      </div>
+    </div>
+  </header>
+
+  <aside class="post__rail">
+    <nav class="post-toc" aria-labelledby="toc-title" data-toc-rail hidden>
+      <h2 class="post-toc__title" id="toc-title">In this issue</h2>
+      <ol data-toc="#post-body"></ol>
+    </nav>
+  </aside>
+
+  <div class="post__body" id="post-body">
+    {{- if $body.raw }}
+    <div class="prose issue-email">{{ $body.html | safeHTML }}</div>
+    {{- else }}
+    <div class="prose">{{ $body.html | safeHTML }}</div>
+    {{- end }}
   </div>
-</section>
 
-{{ .Content }}
-
+  <footer class="post__foot">
+    {{ partial "blog/prevnext.html" (dict "prev" $prev "next" $next "issue" true) }}
+    {{ partial "blog/signup-box.html" (dict "page" . "copy" hugo.Data.blog.issue_signup "id" "issue") }}
+  </footer>
+</article>
 {{ end }}

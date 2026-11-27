@@ -1,0 +1,21 @@
+{{- /*
+  "Write for the blog" on a ruled index card. Usage: partial "blog/pitch.html" (dict "size" "lg"|"sm" "id" "")
+  lg: the card at the bottom of /blog/. sm: the small card in the post rail.
+*/ -}}
+{{- $c := hugo.Data.blog.pitch -}}
+{{- if eq .size "sm" }}
+<aside class="ruled blog-pitch blog-pitch--sm" aria-label="{{ $c.title }}">
+  <p class="ruled__title">{{ $c.short_title }}</p>
+  <p class="ruled__hand">{{ $c.short_text }}</p>
+  <a class="blog-pitch__link" href="{{ $c.discord_url }}">{{ $c.short_link }} {{ partial "ui/icon" (dict "name" "arrow" "size" 13) }}</a>
+</aside>
+{{- else }}
+<div class="ruled blog-pitch blog-pitch--lg"{{ with .id }} id="{{ . }}"{{ end }}>
+  <h2 class="ruled__title">{{ $c.title }}</h2>
+  <p class="ruled__hand">{{ $c.text }}</p>
+  <div class="blog-pitch__actions">
+    <a class="btn btn--ink" href="{{ $c.discord_url }}">{{ $c.discord_label }} {{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}</a>
+    <a class="arrow-link arrow-link--sm" href="{{ $c.github_url }}">{{ $c.github_label }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+  </div>
+</div>
+{{- end }}

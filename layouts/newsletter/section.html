@@ -1,0 +1,23 @@
+{{ define "main" }}
+{{- /* /newsletter/: the newsletter-only view of the blog archive. Issue URLs stay under /newsletter/. */ -}}
+{{- $items := where (partialCached "blog/feed.html" . "feed") "kind" "newsletter" -}}
+{{- $nl := hugo.Data.blog.newsletter -}}
+<header class="blog-head blog-head--plain">
+  <div class="wrap blog-head__inner">
+    <div class="blog-head__copy">
+      <nav class="post__crumbs" aria-label="Breadcrumb">
+        <a href="{{ relURL "blog/" }}">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 14) }}Blog</a>
+        <span aria-hidden="true">/</span>
+        <span>Newsletter</span>
+      </nav>
+      <h1 class="display blog-head__title">{{ $nl.name }}</h1>
+      <p class="lede blog-head__lede">Every issue since the first one in {{ (index (last 1 $items) 0).year }}, edited by {{ $nl.editor }}. For posts by the Nerves team and guest writers as well, see <a href="{{ relURL "blog/" }}">the blog</a>.</p>
+    </div>
+    {{ partial "blog/signup-box.html" (dict "page" . "copy" hugo.Data.blog.issue_signup "id" "newsletter") }}
+  </div>
+</header>
+<div class="wrap">
+  {{ partial "blog/archive.html" (dict "items" $items "filters" false "rss" "newsletter/index.xml") }}
+</div>
+<div class="section--tight"></div>
+{{ end }}

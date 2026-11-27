@@ -1,0 +1,32 @@
+{{- /*
+  Previous / next cards under an issue or a post.
+  Usage: partial "blog/prevnext.html" (dict "prev" $item "next" $item "issue" bool)
+  prev = the older entry, next = the newer one (items from partial "blog/feed.html", or nil).
+  issue: true on an issue page, where both neighbours are issues ("#114" instead of "Newsletter #114").
+  When there is nothing newer, the next card points at the signup box below.
+*/ -}}
+{{- $issue := .issue -}}
+<nav class="blog-prevnext" aria-label="{{ if $issue }}More issues{{ else }}More from the blog{{ end }}">
+  {{- with .prev }}
+  <a class="blog-prevnext__card" href="{{ .page.RelPermalink }}" rel="prev">
+    <span class="blog-prevnext__label">← Previous · {{ if eq .kind "newsletter" }}{{ if not $issue }}Newsletter {{ end }}#{{ .n }}{{ else }}Post{{ end }}</span>
+    <span class="blog-prevnext__title">{{ .page.Title }}</span>
+  </a>
+  {{- else }}
+  <a class="blog-prevnext__card blog-prevnext__card--empty" href="{{ relURL "blog/" }}">
+    <span class="blog-prevnext__label">← Back to the blog</span>
+    <span class="blog-prevnext__title">This is where it all started</span>
+  </a>
+  {{- end }}
+  {{- with .next }}
+  <a class="blog-prevnext__card blog-prevnext__card--next" href="{{ .page.RelPermalink }}" rel="next">
+    <span class="blog-prevnext__label">Next · {{ if eq .kind "newsletter" }}{{ if not $issue }}Newsletter {{ end }}#{{ .n }}{{ else }}Post{{ end }} →</span>
+    <span class="blog-prevnext__title">{{ .page.Title }}</span>
+  </a>
+  {{- else }}
+  <a class="blog-prevnext__card blog-prevnext__card--next blog-prevnext__card--empty" href="#signup">
+    <span class="blog-prevnext__label">Next{{ if $issue }} issue{{ end }} →</span>
+    <span class="blog-prevnext__title">Not out yet, get it by email {{ partial "ui/icon" (dict "name" "arrow-down" "size" 14) }}</span>
+  </a>
+  {{- end }}
+</nav>

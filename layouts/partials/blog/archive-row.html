@@ -1,0 +1,14 @@
+{{- /* One row of the archive. Context: an item from partial "blog/feed.html". */ -}}
+{{- $p := .page -}}
+<li data-filter-item="blog" data-kind="{{ .kind }}">
+  <a class="blog-row blog-row--{{ .kind }}" href="{{ $p.RelPermalink }}">
+    {{- if eq .kind "newsletter" }}
+    <span class="blog-row__lead"><span class="sr-only">Issue </span>#{{ .n }}</span>
+    <span class="blog-row__title">{{ $p.Title }}</span>
+    {{- else }}
+    <span class="blog-row__lead">{{ partial "blog/avatar.html" (dict "name" $p.Params.author "initials" $p.Params.author_initials "image" $p.Params.author_image "class" "avatar--green blog-avatar--sm") }}</span>
+    <span class="blog-row__title">{{ $p.Title }}{{ with $p.Params.author }} <span class="blog-row__by">by {{ . }}</span>{{ end }}</span>
+    {{- end }}
+    <time class="blog-row__date" datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date.Format "Jan 2" }}</time>
+  </a>
+</li>

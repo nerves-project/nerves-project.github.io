@@ -1,0 +1,53 @@
+# Shared copy for the blog: the index (/blog/), the newsletter issue pages and the post pages.
+# The page header copy for /blog/ lives in content/blog/_index.md.
+
+newsletter:
+  name: The Nerves Newsletter
+  # Byline on every issue. The newsletter is written and edited by Lars.
+  editor: Lars Wikman
+  editor_initials: LW
+  editor_role: Editor of the Nerves Newsletter
+  editor_short_role: editor
+  about_url: https://underjord.io/nerves-newsletter.html
+
+# The postcard signup at the top of /blog/
+postcard:
+  eyebrow: The Nerves Newsletter
+  greeting: Dear inbox,
+  stamp_note: soon-ish
+  title: Get the next issue in your inbox
+  text: One email every couple of weeks. Written by people, unsubscribe in one click.
+  signoff: — Lars
+
+# The signup box at the end of a newsletter issue
+issue_signup:
+  title: Get the next issue in your inbox
+  text: One email every couple of weeks. Unsubscribe in one click.
+
+# The signup box at the end of a post
+post_signup:
+  title: Get the Nerves Newsletter
+  text: New issues every couple of weeks, with posts like this one linked inside.
+
+# The second signup at the bottom of /blog/
+inbox:
+  note: or just read along…
+  title: Every issue, straight to your inbox
+  small: Newsletter issues only. Posts show up in the
+
+# "Write for the blog": the ruled card at the bottom of /blog/, the small card in the post
+# rail and, while there are no posts yet, the card next to the latest issue.
+pitch:
+  title: Write for the blog
+  text: Built something with Nerves? Shipped it, broke it, fixed it again? We would love to publish the story. Lars helps with editing and you keep the byline.
+  short_title: Write for the blog?
+  short_text: Built something with Nerves? We'd love to share it. You keep the byline.
+  short_link: Pitch a post
+  discord_label: Pitch a post on Discord
+  discord_url: https://discord.gg/7TqSpepHw7
+  github_label: or open an issue on GitHub
+  github_url: https://github.com/nerves-project/nerves-project.github.io/issues
+  # Shown in the featured row while the blog has no posts
+  featured_sticker: open call
+  featured_title: Your post could go here
+  featured_text: Posts by the Nerves team and guest writers show up here, next to the newsletter. Built something with Nerves? Tell us the story and you keep the byline.

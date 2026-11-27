@@ -1,0 +1,30 @@
+{{- /*
+  The body of a newsletter issue. Usage: partial "blog/issue-body.html" .
+  Returns a dict: html (the body), raw (true when the file is still the email as sent) and minutes.
+
+  Most issues were archived as the full email document (doctype, <head>, <style>, nested tables,
+  inline styles). Placed inside the page, its <html>/<body> attributes and global <style> rules
+  would leak into the site, so for those we drop the document wrapper, the style blocks and the
+  Outlook-only conditional comments, and shift the headings down one level (the email uses h1 for
+  its sections; the page has its own h1). The rest is tamed by .issue-email in _blog.scss.
+  Cleaned-up issues (plain HTML) pass through untouched and get the .prose styles.
+*/ -}}
+{{- $html := string .Content -}}
+{{- $raw := gt (len (findRE `(?i)<html|<!doctype` .RawContent 1)) 0 -}}
+{{- if $raw -}}
+  {{- $html = replaceRE `(?is)<head\b.*?</head>` "" $html -}}
+  {{- $html = replaceRE `(?is)<style\b.*?</style>` "" $html -}}
+  {{- $html = replaceRE `(?is)<!--.*?-->` "" $html -}}
+  {{- $html = replaceRE `(?is)<!doctype[^>]*>` "" $html -}}
+  {{- $html = replaceRE `(?is)</?(html|body)\b[^>]*>` "" $html -}}
+  {{- /* the email's spacer rows (an &nbsp; with a fixed line height); the page does its own spacing */ -}}
+  {{- $html = replaceRE `<div style="[^"]*line-height: ?\d+px; ?font-size: ?\d+px;?"[^>]*>&nbsp;</div>` "" $html -}}
+  {{- /* some archived emails point their logo at a literal {{ relURL "img/…" }} */ -}}
+  {{- $html = replaceRE `\{\{ relURL "([^"]+)" \}\}` (printf "%s${1}" (relURL "/")) $html -}}
+  {{- $html = replaceRE `(?i)<(/?)h3\b` "<${1}h4" $html -}}
+  {{- $html = replaceRE `(?i)<(/?)h2\b` "<${1}h3" $html -}}
+  {{- $html = replaceRE `(?i)<(/?)h1\b` "<${1}h2" $html -}}
+{{- end -}}
+{{- $words := countwords (plainify $html) -}}
+{{- $minutes := math.Max 1 (div (add $words 212) 213) -}}
+{{- return dict "html" $html "raw" $raw "minutes" (int $minutes) -}}

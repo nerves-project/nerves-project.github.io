@@ -1,0 +1,48 @@
+{{- /*
+  The blog feeds: /blog/index.xml (issues and posts) and /newsletter/index.xml (issues only).
+  Usage: partial "blog/rss.html" (dict "page" . "kind" "" | "newsletter")
+  Based on layouts/_default/rss.xml (Hugo's embedded template). The items come from the blog feed
+  (newest first) and each description is a short plain-text excerpt: the description front
+  matter when there is one, never the whole archived email. In the mixed feed, issue titles get
+  their number ("#115: …") so they stand apart from posts; the newsletter feed keeps plain titles.
+*/ -}}
+{{- $page := .page -}}
+{{- $items := partialCached "blog/feed.html" $page "feed" -}}
+{{- $mixed := not .kind -}}
+{{- with .kind }}{{ $items = where $items "kind" . }}{{ end -}}
+{{- $limit := site.Config.Services.RSS.Limit -}}
+{{- if ge $limit 1 }}{{ $items = first $limit $items }}{{ end -}}
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>{{ if eq .kind "newsletter" }}{{ hugo.Data.blog.newsletter.name }}{{ else }}The Nerves blog{{ end }}</title>
+    <link>{{ $page.Permalink }}</link>
+    <description>{{ if eq .kind "newsletter" }}Every issue of the Nerves Newsletter.{{ else }}The Nerves Newsletter, plus posts from the Nerves team and guest writers.{{ end }}</description>
+    <generator>Hugo</generator>
+    <language>{{ site.Language.Locale }}</language>
+    {{- with site.Copyright }}
+    <copyright>{{ . }}</copyright>
+    {{- end }}
+    {{- with $items }}
+    <lastBuildDate>{{ (index . 0).page.Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
+    {{- end }}
+    {{- with $page.OutputFormats.Get "RSS" }}
+    {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
+    {{- end }}
+    {{- range $items }}
+    {{- $p := .page }}
+    <item>
+      <title>{{ if and $mixed (eq .kind "newsletter") }}#{{ .n }}: {{ end }}{{ $p.Title }}</title>
+      <link>{{ $p.Permalink }}</link>
+      <pubDate>{{ $p.PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+      {{- if eq .kind "newsletter" }}
+      <dc:creator>{{ hugo.Data.blog.newsletter.editor }}</dc:creator>
+      {{- else }}{{ with $p.Params.author }}
+      <dc:creator>{{ . }}</dc:creator>
+      {{- end }}{{ end }}
+      <guid>{{ $p.Permalink }}</guid>
+      <description>{{ partial "blog/excerpt.html" (dict "page" $p "length" 300) | transform.XMLEscape | safeHTML }}</description>
+    </item>
+    {{- end }}
+  </channel>
+</rss>

@@ -1,0 +1,71 @@
+{{ define "main" }}
+{{- $items := partialCached "blog/feed.html" . "feed" -}}
+{{- /* previous = the next older entry on the blog (issue or post), next = the next newer one */ -}}
+{{- $prev := "" -}}{{- $next := "" -}}
+{{- range $i, $it := $items -}}
+  {{- if eq $it.page.RelPermalink $.RelPermalink -}}
+    {{- if gt $i 0 }}{{ $next = index $items (sub $i 1) }}{{ end -}}
+    {{- if lt (add $i 1) (len $items) }}{{ $prev = index $items (add $i 1) }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- $p := .Params -}}
+
+<article class="post post--post">
+  <header class="post__head">
+    <nav class="post__crumbs" aria-label="Breadcrumb">
+      <a href="{{ relURL "blog/" }}">{{ partial "ui/icon" (dict "name" "arrow-left" "size" 14) }}Blog</a>
+      <span aria-hidden="true">/</span>
+      <span>Posts</span>
+    </nav>
+    <div class="post__titles">
+      <p class="post__meta">
+        <span>Post</span>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <span>{{ .ReadingTime }} min read</span>
+      </p>
+      <h1 class="post__title">{{ .Title }}</h1>
+      {{- with $p.author }}
+      <div class="post__byline">
+        {{ partial "blog/avatar.html" (dict "name" . "initials" $p.author_initials "image" $p.author_image "class" "avatar--green") }}
+        <span><strong>{{ . }}</strong>{{ with $p.role }}<span>{{ . }}</span>{{ end }}</span>
+      </div>
+      {{- end }}
+    </div>
+  </header>
+
+  <aside class="post__rail">
+    <nav class="post-toc" aria-labelledby="toc-title" data-toc-rail hidden>
+      <h2 class="post-toc__title" id="toc-title">On this page</h2>
+      <ol data-toc="#post-body"></ol>
+    </nav>
+    <div class="post__pitch">{{ partial "blog/pitch.html" (dict "size" "sm") }}</div>
+  </aside>
+
+  <div class="post__body" id="post-body">
+    <div class="prose">{{ .Content }}</div>
+
+    {{- if and $p.author $p.author_bio }}
+    <section class="post-author" aria-labelledby="author-title">
+      {{ partial "blog/avatar.html" (dict "name" $p.author "initials" $p.author_initials "image" $p.author_image "class" "avatar--green avatar--lg") }}
+      <div class="post-author__text">
+        <h2 class="post-author__label" id="author-title">About the author</h2>
+        <p class="post-author__name">{{ $p.author }}</p>
+        <p class="post-author__bio">{{ $p.author_bio | markdownify }}</p>
+        {{- with $p.author_links }}
+        <ul class="post-author__links">
+          {{- range . }}
+          <li><a href="{{ .url }}">{{ .name }} {{ partial "ui/icon" (dict "name" "external" "size" 11) }}</a></li>
+          {{- end }}
+        </ul>
+        {{- end }}
+      </div>
+    </section>
+    {{- end }}
+  </div>
+
+  <footer class="post__foot">
+    {{ partial "blog/prevnext.html" (dict "prev" $prev "next" $next) }}
+    {{ partial "blog/signup-box.html" (dict "page" . "copy" hugo.Data.blog.post_signup "id" "post") }}
+  </footer>
+</article>
+{{ end }}

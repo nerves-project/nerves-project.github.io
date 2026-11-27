@@ -1,0 +1,13 @@
+{{- /*
+  An author avatar: a photo when there is one, otherwise initials.
+  Usage: partial "blog/avatar.html" (dict "name" "Jane Doe" "initials" "" "image" "" "class" "avatar--green")
+*/ -}}
+{{- $initials := .initials -}}
+{{- if not $initials -}}
+  {{- range first 2 (split (.name | default "") " ") }}{{ $initials = printf "%s%s" $initials (substr . 0 1) }}{{ end -}}
+{{- end -}}
+{{- if .image -}}
+<img class="avatar blog-avatar {{ .class }}" src="{{ .image | relURL }}" alt="" width="40" height="40">
+{{- else -}}
+<span class="avatar blog-avatar {{ .class }}" aria-hidden="true">{{ upper $initials }}</span>
+{{- end -}}

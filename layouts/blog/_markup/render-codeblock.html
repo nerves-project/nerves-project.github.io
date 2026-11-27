@@ -1,0 +1,12 @@
+{{- /*
+  Code blocks in blog posts: a bar with the file name (or the language) and a copy button.
+  ```elixir {filename="lib/my_app/application.ex"}
+*/ -}}
+{{- $label := .Attributes.filename | default .Type | default "code" -}}
+<figure class="post-code">
+  <figcaption class="post-code__bar">
+    <span>{{ $label }}</span>
+    <button class="post-code__copy" type="button" aria-label="Copy" data-copy="{{ .Inner }}">copy</button>
+  </figcaption>
+  {{ transform.Highlight .Inner .Type (merge .Options (dict "noClasses" false)) }}
+</figure>
