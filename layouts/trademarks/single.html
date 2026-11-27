@@ -1,0 +1,91 @@
+{{ define "main" }}
+{{ $p := .Params }}
+
+{{/* ------------------------------------------------------------ header */}}
+<header class="page-head tm-head">
+  <div class="wrap tm-head__inner">
+    <div class="tm-head__copy">
+      <span class="eyebrow">{{ $p.eyebrow }}</span>
+      <h1 class="display">{{ $p.heading | default .Title }}</h1>
+      <p class="lede page-head__lede">{{ $p.lede }}</p>
+    </div>
+    {{ with $p.downloads }}
+    <div class="tm-logo">
+      <div class="tm-logo__art"><img src="{{ relURL "img/nerves.svg" }}" alt="The Nerves logo" width="220" height="47"></div>
+      <div class="tm-logo__actions">
+        {{ range . }}<a class="tm-logo__btn" href="{{ relURL .file }}" download="{{ .name }}">{{ .label }}</a>{{ end }}
+      </div>
+    </div>
+    {{ end }}
+  </div>
+</header>
+
+{{/* ------------------------------------------------------------ the policy */}}
+<div class="wrap tm-policy">
+  <nav class="tm-toc" data-toc-rail hidden aria-labelledby="tm-toc-title">
+    <p class="tm-toc__title" id="tm-toc-title">On this page</p>
+    <ol data-toc="#tm-body"></ol>
+  </nav>
+
+  <div class="tm-body" id="tm-body">
+    {{ with $p.short_version }}
+    <section class="tm-short" aria-labelledby="the-short-version">
+      <h2 class="tm-short__title" id="the-short-version">{{ .title }}</h2>
+      <p>{{ .text }}</p>
+    </section>
+    {{ end }}
+
+    <div class="prose tm-prose">{{ .Content }}</div>
+
+    {{ with $p.permitted }}
+    <section class="tm-card" aria-labelledby="permitted-use">
+      <h2 class="tm-card__title" id="permitted-use">{{ .title }}</h2>
+      {{ with .intro }}<p class="tm-card__intro">{{ . | markdownify }}</p>{{ end }}
+      <ul class="tm-list">
+        {{ range .items }}<li>{{ template "tm-icon" "yes" }}<span>{{ . | markdownify }}</span></li>{{ end }}
+      </ul>
+    </section>
+    {{ end }}
+
+    <div class="tm-pair">
+      {{ with $p.not_permitted }}
+      <section class="tm-card" aria-labelledby="not-permitted">
+        <h2 class="tm-card__title" id="not-permitted">{{ .title }}</h2>
+        {{ with .intro }}<p class="tm-card__intro">{{ . | markdownify }}</p>{{ end }}
+        <ul class="tm-list">
+          {{ range .items }}<li>{{ template "tm-icon" "no" }}<span>{{ . | markdownify }}</span></li>{{ end }}
+        </ul>
+      </section>
+      {{ end }}
+      {{ with $p.needs_permission }}
+      <section class="tm-card" aria-labelledby="needs-permission">
+        <h2 class="tm-card__title" id="needs-permission">{{ .title }}</h2>
+        {{ with .intro }}<p class="tm-card__intro">{{ . | markdownify }}</p>{{ end }}
+        <ul class="tm-list">
+          {{ range .items }}<li>{{ template "tm-icon" "ask" }}<span>{{ . | markdownify }}</span></li>{{ end }}
+        </ul>
+        {{ with .contact }}<p class="tm-card__foot">{{ . | markdownify }}</p>{{ end }}
+      </section>
+      {{ end }}
+    </div>
+
+    {{ with $p.note }}
+    <section class="tm-note" aria-labelledby="important-note">
+      <h2 class="tm-note__title" id="important-note">{{ .title }}</h2>
+      <p>{{ .text | markdownify }}</p>
+    </section>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{/* The check, cross and arrow beside each item in the policy cards */}}
+{{ define "tm-icon" }}
+  {{- if eq . "yes" -}}
+  <svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><path d="M5 11.5l4 4 8-9" fill="none" stroke="#2E7D57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {{- else if eq . "no" -}}
+  <svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><path d="M6 6l10 10M16 6L6 16" fill="none" stroke="#C4462F" stroke-width="2.6" stroke-linecap="round"/></svg>
+  {{- else -}}
+  <svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><path d="M4 11h13M12 6l5 5-5 5" fill="none" stroke="#9F6E30" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {{- end -}}
+{{ end }}

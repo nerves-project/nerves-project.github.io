@@ -1,14 +1,31 @@
 {{ define "main" }}
-
-<!-- https://gohugo.io/templates/404/ -->
-<section class="hero is-primary hero-gradient">
-  <div class="hero-body">
-    <p class="title">{{ .Title }}</p>
+{{/* https://gohugo.io/templates/404/ */}}
+<section class="nf" aria-labelledby="nf-title">
+  <div class="wrap nf__inner">
+    <div class="nf__copy">
+      <p class="nf__code">ERR · 404 · Not.Found</p>
+      <h1 class="nf__title" id="nf-title">Nothing on this layer</h1>
+      <p class="lede nf__text">The page you’re after doesn’t exist, or it has moved. Let’s get you somewhere useful.</p>
+      <div class="nf__actions">
+        <a class="btn" href="{{ relURL "/" }}">Go home</a>
+        <a class="btn btn--ghost" href="{{ site.Params.docs }}">Read the docs</a>
+      </div>
+      <form class="nf__search" action="{{ site.Params.docs }}/search.html" method="get" role="search">
+        <label class="sr-only" for="nf-search">Search the Nerves docs</label>
+        <input class="input" id="nf-search" name="q" type="search" placeholder="Search the Nerves docs" autocomplete="off">
+        <button class="btn btn--ghost btn--sm" type="submit">Search</button>
+      </form>
+      <nav class="nf__links" aria-label="Popular pages">
+        <a href="{{ relURL "getting_started/" }}">Getting started</a>
+        <a href="{{ relURL "learn/" }}">Learn</a>
+        <a href="{{ relURL "community/" }}">Community</a>
+        <a href="{{ relURL "articles/" }}">Articles</a>
+      </nav>
+    </div>
+    <div class="nf__art" aria-hidden="true">
+      <div class="nf__board"><div class="nf__slot">404</div></div>
+      <p class="nf__note">we checked every layer</p>
+    </div>
   </div>
 </section>
-
-<main class="content container my-6 px-4">
-  <p>Nothing here... Let's <a href="{{ "/" | relURL }}">go home</a>.</p>
-</main>
-
 {{ end }}

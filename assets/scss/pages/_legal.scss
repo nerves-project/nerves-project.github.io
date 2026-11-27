@@ -1,3 +1,276 @@
 @use '../mixins' as *;
 
-// legal page styles
+// legal page styles: the trademarks policy, and the 404 page
+
+// ================================================================ trademarks
+
+.tm-head {
+  padding-bottom: 56px;
+  // .page-head stacks its .wrap; this one puts the logo card beside the copy
+  & &__inner {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 64px;
+  }
+  &__copy { display: flex; flex-direction: column; gap: 16px; max-width: 720px; }
+  @include below($tablet) {
+    & &__inner { flex-direction: column; align-items: stretch; gap: 32px; }
+  }
+  @include below($mobile) { padding-bottom: 32px; }
+}
+
+.tm-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 400px;
+  flex-shrink: 0;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--white);
+  &__art {
+    display: grid;
+    place-items: center;
+    height: 110px;
+    border-radius: 12px;
+    background: var(--paper);
+    img { width: 220px; height: 47px; }
+  }
+  &__actions { display: flex; gap: 10px; }
+  &__btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding-inline: 12px;
+    border: 1.5px solid var(--ink);
+    border-radius: 10px;
+    color: var(--ink);
+    font: 800 15px/18px var(--sans);
+    white-space: nowrap;
+    transition: background-color 140ms ease;
+    &:hover { text-decoration: none; background: rgba(38, 34, 31, 0.05); }
+    &:focus-visible { border-radius: 10px; }
+  }
+  @include below($tablet) { width: auto; max-width: 400px; }
+  @include below($mobile) { padding: 18px; &__art img { width: 180px; height: auto; } }
+}
+
+.tm-policy {
+  display: flex;
+  align-items: flex-start;
+  gap: 96px;
+  padding-top: 24px;
+  padding-bottom: 104px;
+  @include below($wide) { gap: 56px; }
+  @include below($mobile) { padding-top: 8px; padding-bottom: 64px; }
+}
+
+// "On this page": filled in by toc.js from the h2s of the policy
+.tm-toc {
+  position: sticky;
+  top: 24px;
+  width: 240px;
+  flex-shrink: 0;
+  &__title {
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+    font: 500 12px/16px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  ol { display: flex; flex-direction: column; gap: 12px; }
+  a {
+    display: block;
+    padding-left: 12px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    font: 700 15px/18px var(--sans);
+    &:hover { color: var(--ink); text-decoration: none; }
+    &.is-current { border-left-color: var(--blue); color: var(--ink); }
+  }
+  // before the reader scrolls into a section, the first one is current
+  ol:not(:has(.is-current)) li:first-child a { border-left-color: var(--blue); color: var(--ink); }
+  @include below($tablet) { display: none; }
+}
+
+.tm-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  h2 { scroll-margin-top: 24px; }
+}
+
+.tm-short {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px 30px;
+  border-left: 4px solid var(--blue);
+  border-radius: 16px;
+  background: var(--sheet);
+  &__title { font: 900 20px/28px var(--sans); color: var(--ink); }
+  p { font-size: 17px; line-height: 28px; color: var(--ink-2); }
+  @include below($mobile) { padding: 22px 22px 22px 20px; }
+}
+
+.tm-prose {
+  padding-top: 10px;
+  font-size: 17px;
+  line-height: 28px;
+  > * + * { margin-top: 18px; }
+  h2:first-child { margin-top: 0; }
+  h2 { margin-top: 40px; }
+  h2 + * { margin-top: 22px; }
+  li + li { margin-top: 8px; }
+}
+
+.tm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 26px;
+  border: 1.5px solid var(--ink);
+  border-radius: 16px;
+  &__title { font: 900 19px/28px var(--sans); color: var(--ink); }
+  &__intro { margin-top: -6px; font-size: 15px; line-height: 23px; color: var(--muted); }
+  &__foot {
+    padding-top: 10px;
+    border-top: 1px dashed var(--rule-2);
+    font-size: 16px;
+    line-height: 25px;
+    color: var(--ink-2);
+    a { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  }
+  @include below($mobile) { padding: 20px; }
+}
+.tm-body > .tm-card:first-of-type { margin-top: 12px; }
+
+.tm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  li { display: flex; gap: 10px; font-size: 16px; line-height: 25px; color: var(--ink-2); }
+  svg { flex-shrink: 0; margin-top: 4px; }
+}
+
+.tm-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  @include below($mobile) { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+}
+
+.tm-note {
+  margin-top: 18px;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule);
+  &__title { margin-bottom: 6px; font: 900 17px/24px var(--sans); color: var(--ink); }
+  p { font-size: 15px; line-height: 24px; color: var(--pencil-2); }
+}
+
+// ================================================================ 404
+
+.nf {
+  padding-block: 120px 144px;
+  &__inner { display: flex; align-items: center; gap: 96px; }
+  &__copy { width: 620px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
+  &__code {
+    font: 500 14px/18px var(--mono);
+    letter-spacing: 0.06em;
+    color: var(--blue);
+  }
+  &__title {
+    font: 900 72px/74px var(--sans);
+    letter-spacing: -0.035em;
+    color: var(--ink);
+  }
+  &__text { max-width: 520px; }
+  &__actions { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 12px; }
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    padding-top: 16px;
+    a { font: 800 16px/20px var(--sans); }
+  }
+  &__search {
+    display: flex;
+    gap: 8px;
+    max-width: 460px;
+    padding-top: 8px;
+    .input { flex: 1; height: 48px; }
+    .btn { flex-shrink: 0; height: 48px; }
+  }
+
+  // the empty board: a blank, tilted card where the layer should be
+  &__art {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &__board {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 420px;
+    height: 300px;
+    flex-shrink: 0;
+    border: 3px solid var(--ink);
+    border-radius: 22px;
+    background: #e9dfc9;
+    box-shadow: 10px 10px 0 #d8cdb6;
+    transform: rotate(-6deg);
+  }
+  &__slot {
+    display: grid;
+    place-items: center;
+    width: 360px;
+    height: 240px;
+    border: 2px dashed #b5a88f;
+    border-radius: 14px;
+    font: 700 64px/78px var(--mono);
+    color: #b5a88f;
+  }
+  &__note {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font: 600 28px/34px var(--hand);
+    color: var(--blue);
+    transform: rotate(4deg);
+    transform-origin: 0 0;
+  }
+
+  @include below($wide) {
+    &__inner { gap: 48px; }
+    &__copy { width: 540px; }
+    &__board { width: 360px; height: 260px; }
+    &__slot { width: 304px; height: 204px; }
+  }
+  @include below($tablet) {
+    padding-block: 72px 96px;
+    &__inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+    &__copy { width: auto; max-width: 620px; }
+    &__art { width: 100%; height: 380px; padding-top: 48px; }
+  }
+  @include below($mobile) {
+    padding-block: 48px 72px;
+    &__title { font-size: 48px; line-height: 52px; letter-spacing: -0.03em; }
+    &__art { height: 300px; padding-top: 44px; }
+    &__board { width: 270px; height: 190px; border-radius: 18px; box-shadow: 8px 8px 0 #d8cdb6; }
+    &__slot { width: 228px; height: 150px; font-size: 48px; }
+    &__note { top: 0; right: 4px; font-size: 24px; }
+  }
+}

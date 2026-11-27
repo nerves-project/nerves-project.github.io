@@ -1,3 +1,243 @@
 @use '../mixins' as *;
 
 // sponsors page styles
+
+// ---------------------------------------------------------------- header
+
+.sp-head {
+  padding-bottom: 56px;
+  // .page-head stacks its .wrap; this one puts the button beside the copy
+  & &__inner {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 64px;
+  }
+  &__copy { display: flex; flex-direction: column; gap: 16px; max-width: 760px; }
+  &__cta { flex-shrink: 0; margin-bottom: 6px; }
+  @include below($tablet) {
+    & &__inner { flex-direction: column; align-items: flex-start; gap: 28px; }
+    &__cta { margin-bottom: 0; }
+  }
+  @include below($mobile) { padding-bottom: 32px; }
+}
+
+// ---------------------------------------------------------------- tiers
+
+.sp-tiers {
+  padding-bottom: 96px;
+  &__inner { display: flex; flex-direction: column; gap: 20px; }
+  @include below($mobile) { padding-bottom: 64px; &__inner { gap: 16px; } }
+}
+
+.sp-tier {
+  // a plain paper medal for any tier added later; the named tiers set their own
+  --medal-a: #f4efe4; --medal-b: #d3cab8; --medal-edge: #b5a88f;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 32px 40px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--sheet);
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 180px;
+    flex-shrink: 0;
+    font: 600 13px/16px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  &__medal {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border: 1px solid var(--medal-edge);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--medal-a), var(--medal-b));
+  }
+  &__logos {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    li { display: flex; flex: 1 1 0; min-width: 0; }
+  }
+
+  &--platinum {
+    --medal-a: #e8ecef; --medal-b: #a9b4bc; --medal-edge: #8e99a1;
+    padding-block: 36px;
+    .sp-logo { height: 180px; }
+  }
+  &--gold {
+    --medal-a: #f6d77a; --medal-b: #c99a2e; --medal-edge: #b38726;
+    .sp-logo { height: 120px; }
+    .sp-tier__logos li { min-width: 160px; }
+  }
+  &--silver {
+    --medal-a: #f1f1f1; --medal-b: #b9b9b9; --medal-edge: #a0a0a0;
+    padding-block: 28px;
+    .sp-tier__logos li { flex: 0 1 280px; }
+    .sp-logo { height: 96px; }
+  }
+  @include below($tablet) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    padding: 28px;
+    &--platinum .sp-logo { height: 160px; }
+  }
+  @include below($mobile) {
+    padding: 20px;
+    &--gold .sp-tier__logos li { min-width: 100%; }
+    &--silver .sp-tier__logos li { flex-basis: 100%; }
+    &--platinum .sp-logo { height: 140px; }
+    &--gold .sp-logo, &--silver .sp-logo { height: 88px; }
+  }
+}
+
+.sp-logo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--paper-deep);
+  border-radius: 14px;
+  background: var(--white);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 160ms ease;
+  }
+  img.is-dim { filter: brightness(0.55); }
+  &:hover { border-color: var(--rule-2); box-shadow: 0 2px 0 var(--line); }
+  &:focus-visible { border-radius: 14px; }
+  &:hover img { transform: scale(1.03); }
+}
+
+// Open Collective backers: a dashed row of faces
+.sp-backers {
+  padding-block: 28px;
+  border: 1.5px dashed var(--rule-2);
+  background: transparent;
+  &__label {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    span {
+      font: 400 13px/16px var(--sans);
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--muted);
+    }
+  }
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  &__faces {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    padding-left: 10px;
+    li { margin-left: -10px; flex-shrink: 0; }
+  }
+  &__text {
+    flex: 0 1 360px;
+    font-size: 15px;
+    line-height: 22px;
+    color: var(--pencil-2);
+  }
+  &__faces[hidden] + &__text { flex-basis: auto; }
+  &__link { display: inline-flex; align-items: center; gap: 5px; font-weight: 800; white-space: nowrap; }
+  @include below($tablet) {
+    &__body { flex-direction: column; align-items: flex-start; gap: 14px; }
+    &__faces { width: 100%; flex: none; }
+    &__text { flex: none; }
+  }
+}
+
+.sp-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border: 3px solid var(--paper);
+  border-radius: 50%;
+  background: var(--paper-deep);
+  color: var(--pencil);
+  font: 800 13px/1 var(--sans);
+  transition: transform 140ms ease;
+  img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  &:hover { z-index: 1; text-decoration: none; transform: translateY(-3px); }
+  &:focus-visible { z-index: 1; border-radius: 50%; }
+  &--more { background: var(--ink); color: var(--paper); font-size: 12px; }
+}
+
+// ---------------------------------------------------------------- sponsor this project
+
+.sp-join {
+  padding-block: 96px 104px;
+  background: var(--night);
+  scroll-margin-top: 0;
+  &__inner { display: flex; gap: 72px; }
+  &__copy { width: 480px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+  &__eyebrow { color: #7fc8dd; }
+  &__title {
+    font: 900 44px/48px var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--paper);
+  }
+  &__text { font-size: 17px; line-height: 27px; color: #c3cfd3; }
+  &__options { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+  @include below($wide) {
+    &__inner { gap: 48px; }
+    &__copy { width: 400px; }
+  }
+  @include below($tablet) {
+    &__inner { flex-direction: column; gap: 40px; }
+    &__copy { width: auto; max-width: 600px; }
+  }
+  @include below($mobile) {
+    padding-block: 64px;
+    &__title { font-size: 34px; line-height: 38px; }
+  }
+}
+
+.sp-option {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px 32px;
+  border: 1.5px solid #3a5d6c;
+  border-radius: 18px;
+  &__title { font: 900 24px/30px var(--sans); color: var(--paper); }
+  &__text { font-size: 16px; line-height: 25px; color: #c3cfd3; }
+  &__actions { display: flex; padding-top: 6px; }
+  .btn--sm { padding: 12px 18px; border-radius: 12px; }
+  &--paper {
+    border-color: var(--paper);
+    background: var(--paper);
+    .sp-option__title { color: var(--ink); }
+    .sp-option__text { color: var(--pencil); }
+  }
+  @include below($mobile) {
+    padding: 24px;
+    &__title { font-size: 21px; line-height: 26px; }
+  }
+}

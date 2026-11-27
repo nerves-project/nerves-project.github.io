@@ -1,0 +1,131 @@
+{{ define "main" }}
+{{ $p := .Params }}
+
+{{/* ------------------------------------------------------------ header */}}
+<header class="page-head sp-head">
+  <div class="wrap sp-head__inner">
+    <div class="sp-head__copy">
+      <span class="eyebrow">{{ $p.eyebrow }}</span>
+      <h1 class="display">{{ $p.heading | default .Title }}</h1>
+      <p class="lede page-head__lede">{{ $p.lede }}</p>
+    </div>
+    <a class="btn sp-head__cta" href="#sponsor">{{ $p.cta }} {{ partial "ui/icon" (dict "name" "arrow") }}</a>
+  </div>
+</header>
+
+{{/* ------------------------------------------------------------ tiers */}}
+<section class="sp-tiers" aria-label="Our sponsors">
+  <div class="wrap sp-tiers__inner">
+    {{ range site.Data.sponsors.tiers }}
+    {{ $tier := lower .name }}
+    <div class="sp-tier sp-tier--{{ $tier }}">
+      <h2 class="sp-tier__label"><span class="sp-tier__medal" aria-hidden="true"></span>{{ .name }}</h2>
+      <ul class="sp-tier__logos">
+        {{ range .sponsors }}
+        <li>
+          <a class="sp-logo" href="{{ .url }}" title="{{ .name }}">
+            <img src="{{ relURL .logo }}" alt="{{ .name }}"{{ if .dim }} class="is-dim"{{ end }}
+              style="width: {{ .logo_w | default 180 }}px; height: {{ .logo_h | default 60 }}px" loading="lazy">
+          </a>
+        </li>
+        {{ end }}
+      </ul>
+    </div>
+    {{ end }}
+
+    {{ with $p.backers }}
+    <div class="sp-tier sp-backers" data-oc-backers data-api="{{ .api }}" data-url="{{ .url }}">
+      <h2 class="sp-tier__label sp-backers__label">{{ .label }} <span>{{ .via }}</span></h2>
+      <div class="sp-backers__body">
+        <ul class="sp-backers__faces" data-oc-faces hidden></ul>
+        <p class="sp-backers__text">{{ .text }} <a class="sp-backers__link" href="{{ .url }}">{{ .link_text }} {{ partial "ui/icon" (dict "name" "external" "size" 11) }}</a></p>
+      </div>
+    </div>
+    {{ end }}
+  </div>
+</section>
+
+{{/* ------------------------------------------------------------ sponsor this project */}}
+{{ with $p.sponsor }}
+<section class="sp-join" id="sponsor" aria-labelledby="sponsor-title">
+  <div class="wrap sp-join__inner">
+    <div class="sp-join__copy">
+      <span class="eyebrow sp-join__eyebrow">{{ .eyebrow }}</span>
+      <h2 class="sp-join__title" id="sponsor-title">{{ .title }}</h2>
+      <p class="sp-join__text">{{ .text }}</p>
+    </div>
+    <div class="sp-join__options">
+      {{ range $i, $o := .options }}
+      <div class="sp-option{{ if eq $i 0 }} sp-option--paper{{ end }}">
+        <h3 class="sp-option__title">{{ .title }}</h3>
+        <p class="sp-option__text">{{ .text }}</p>
+        {{ with .url }}
+        <div class="sp-option__actions">
+          <a class="btn btn--sm" href="{{ . }}">{{ $o.button }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+        </div>
+        {{ end }}
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{/* Backers come live from Open Collective's public API. Without it the thank-you line and link stay. */}}
+<script>
+  (() => {
+    const root = document.querySelector('[data-oc-backers]');
+    if (!root || !window.fetch) return;
+    const faces = root.querySelector('[data-oc-faces]');
+    const tints = ['#D9CFBE', '#C8D9DF', '#E3D1C4', '#D5DCC8', '#DDD0E3', '#CFCFCF'];
+    const initials = (name) => (name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+    fetch(root.dataset.api)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((members) => {
+        const seen = new Set();
+        const backers = members
+          .filter((m) => m.role === 'BACKER' && m.profile && !seen.has(m.profile) && seen.add(m.profile))
+          .sort((a, b) => b.isActive - a.isActive || b.totalAmountDonated - a.totalAmountDonated);
+        if (!backers.length) return;
+        faces.hidden = false;
+        // as many 44px faces (34px apart) as fit, keeping a slot for the "+N" bubble
+        const slots = Math.max(4, Math.floor((faces.clientWidth - 44) / 34) + 1);
+        const shown = backers.length > slots ? backers.slice(0, slots - 1) : backers;
+        shown.forEach((m, i) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = m.profile;
+          a.title = m.name;
+          a.className = 'sp-face';
+          if (m.image) {
+            const img = document.createElement('img');
+            img.src = 'https://images.opencollective.com/' + m.profile.split('/').pop() + '/avatar/88.png';
+            img.alt = m.name;
+            img.width = img.height = 44;
+            img.loading = 'lazy';
+            img.addEventListener('error', () => { img.replaceWith(Object.assign(document.createElement('span'), { textContent: initials(m.name) })); }, { once: true });
+            a.append(img);
+          } else {
+            a.setAttribute('aria-label', m.name);
+            a.style.background = tints[i % tints.length];
+            a.append(Object.assign(document.createElement('span'), { textContent: initials(m.name) }));
+          }
+          li.append(a);
+          faces.append(li);
+        });
+        const rest = backers.length - shown.length;
+        if (rest > 0) {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = root.dataset.url;
+          a.className = 'sp-face sp-face--more';
+          a.textContent = '+' + rest;
+          a.setAttribute('aria-label', rest + ' more backers on Open Collective');
+          li.append(a);
+          faces.append(li);
+        }
+      })
+      .catch(() => {});
+  })();
+</script>
+{{ end }}

@@ -1,129 +1,133 @@
 {{ define "main" }}
+{{ $p := .Params }}
 
-<header class="hero is-primary is-medium hero-gradient">
-  <div class="hero-body">
-    <p class="title is-2 mb-4">Nerves ❤️ Community</p>
-    <p class="is-size-5">
-      Nerves strives to be an open and community-driven project.
-      <br>
-      We love to hear how others are building with Nerves and want to highlight others' contributions whenever we can.
-    </p>
+{{/* ------------------------------------------------------------ header */}}
+<header class="page-head cm-head">
+  <div class="wrap">
+    <span class="eyebrow">{{ $p.eyebrow }}</span>
+    <h1 class="display cm-head__title">
+      <span>Nerves</span>
+      <svg class="cm-head__heart" width="60" height="54" viewBox="0 0 30 27" aria-hidden="true"><path d="M15 25C9 20.5 2.5 15.5 2.2 9.3 2 5 5 2.2 8.4 2.3c2.9.1 5 2 6.4 4.8C16.3 4 18.7 1.9 21.8 2c3.6.1 6.4 3 6 7.3-.5 6.2-6.6 11-12.8 15.7z" fill="#E4573DE6" stroke="#26221F" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 7.2c-1.3.6-2 1.8-2 3.1" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8"/></svg>
+      <span>Community</span>
+    </h1>
+    <p class="lede page-head__lede">{{ $p.lede }}</p>
   </div>
 </header>
 
-<main class="container my-6 px-4">
-  <section class="section">
-    <div class="columns">
-      <div class="column is-4">
-        <a href="https://discord.gg/7TqSpepHw7" target="_blank" class="is-flex is-justify-content-center">
-          <figure class="image" style="max-width: 120px;">
-            <img src="{{ relURL "img/discord.svg" }}" alt="">
-          </figure>
+{{/* ------------------------------------------------------------ talk: Discord and issues */}}
+<section class="cm-talk" aria-labelledby="discord-title">
+  <div class="wrap cm-talk__inner">
+    {{ with $p.discord }}
+    <div class="cm-discord">
+      <div class="cm-discord__top">
+        <span class="cm-discord__icon"><img src="{{ relURL "img/discord.svg" }}" alt="" width="32" height="32"></span>
+        <span class="cm-discord__eyebrow">{{ .eyebrow }}</span>
+      </div>
+      <h2 class="cm-discord__title" id="discord-title">{{ .title }}</h2>
+      <p class="cm-discord__text">{{ .text }}</p>
+      <div class="cm-discord__actions">
+        <a class="cm-discord__btn" href="{{ site.Params.discord }}">{{ .button }} {{ partial "ui/icon" (dict "name" "external" "size" 12) }}</a>
+      </div>
+      <p class="cm-discord__note" aria-hidden="true">{{ .note }}</p>
+    </div>
+    {{ end }}
+
+    {{ with $p.issues }}
+    <div class="cm-bug">
+      <div class="cm-bug__head">
+        <img src="{{ relURL "img/github.svg" }}" alt="" width="28" height="28">
+        <h2 class="cm-bug__title">{{ .title }}</h2>
+      </div>
+      <p class="cm-bug__text">{{ .text }}</p>
+      <a class="cm-link" href="{{ .url }}">{{ .link_text }} {{ partial "ui/icon" (dict "name" "external" "size" 11) }}</a>
+    </div>
+    {{ end }}
+  </div>
+</section>
+
+{{/* ------------------------------------------------------------ meet up and follow along */}}
+<section class="cm-meet" aria-label="Meetups and updates">
+  <div class="wrap cm-meet__inner">
+    {{ with $p.meet }}
+    <div class="cm-meet__main">
+      <div class="cm-title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="cm-title__text">{{ .title }}</h2>
+      </div>
+      <ul class="cm-channels">
+        {{ range .channels }}
+        <li class="cm-channel">
+          <img class="cm-channel__icon" src="{{ relURL .icon }}" alt="" width="32" height="32">
+          <div class="cm-channel__body">
+            <h3 class="cm-channel__name">{{ .name }}</h3>
+            <p class="cm-channel__text">{{ .text }}</p>
+          </div>
+          <a class="cm-link" href="{{ .url }}"{{ if .external }} aria-label="{{ .name }}: {{ .link_text }}"{{ end }}>
+            {{- .link_text }} {{ if .external }}{{ partial "ui/icon" (dict "name" "external" "size" 11) }}{{ else }}{{ partial "ui/icon" (dict "name" "arrow" "size" 14) }}{{ end -}}
+          </a>
+        </li>
+        {{ end }}
+      </ul>
+      {{ with .recording }}
+      <a class="cm-recording" href="{{ .url }}">
+        <span class="cm-recording__thumb">
+          <img src="{{ .thumbnail }}" alt="" width="200" height="113" loading="lazy">
+          <span class="cm-recording__play" aria-hidden="true">{{ partial "ui/icon" (dict "name" "play" "size" 18) }}</span>
+        </span>
+        <span class="cm-recording__body">
+          <span class="cm-recording__label">{{ .label }}</span>
+          <span class="cm-recording__title">{{ .title }}</span>
+          <span class="cm-link">{{ .link_text }} {{ partial "ui/icon" (dict "name" "external" "size" 11) }}</span>
+        </span>
+      </a>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    {{ with $p.follow }}
+    <div class="cm-meet__side">
+      <div class="cm-title">
+        <span class="eyebrow">{{ .eyebrow }}</span>
+        <h2 class="cm-title__text">{{ .title }}</h2>
+      </div>
+      {{ with .newsletter }}
+      <div class="cm-newsletter" id="subscribe">
+        <h3 class="cm-newsletter__title">{{ .title }}</h3>
+        <p class="cm-newsletter__text">{{ .text }}</p>
+        {{ partial "newsletter-form" (dict "page" $ "id" "community") }}
+      </div>
+      {{ end }}
+      <ul class="cm-social">
+        {{ range .social }}
+        <li><a href="{{ .url }}"><img src="{{ relURL .icon }}" alt="" width="22" height="22">{{ .name }}</a></li>
+        {{ end }}
+      </ul>
+    </div>
+    {{ end }}
+  </div>
+</section>
+
+{{/* ------------------------------------------------------------ ways to help */}}
+{{ with $p.help }}
+<section class="cm-help" aria-labelledby="help-title">
+  <div class="wrap">
+    <div class="cm-title">
+      <span class="eyebrow">{{ .eyebrow }}</span>
+      <h2 class="cm-title__text" id="help-title">{{ .title }}</h2>
+    </div>
+    <ol class="cm-help__grid">
+      {{ range $i, $item := .items }}
+      <li>
+        <a class="cm-help__card{{ if .dark }} cm-help__card--dark{{ end }}" href="{{ .url }}">
+          <span class="cm-help__num">{{ printf "%02d" (add $i 1) }}</span>
+          <h3 class="cm-help__title">{{ .title }}</h3>
+          <p class="cm-help__text">{{ .text }}</p>
         </a>
-      </div>
-      <div class="column">
-        <div class="content">
-          <p class="title">Join the conversation</p>
-          <p class="subtitle">
-            The <a href="https://discord.gg/7TqSpepHw7">Nerves Discord</a> is the place to ask questions, learn and hang out with other hardware-enthused Elixir-powered developers.
-          </p>
-          <a href="https://discord.gg/7TqSpepHw7" class="cta-link" target="_blank">
-            <span>Join the Discord</span>
-            <span class="cta-arrow">&rarr;</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="tile is-ancestor">
-      <div class="tile is-vertical is-parent is-2">
-        <div class="tile is-child is-10">
-          <a href="https://bsky.app/profile/nerves-project.org" target="_blank">
-            <figure class="image" style="max-width: 180px;">
-              <img src="{{ relURL "img/bsky.svg" }}" alt="">
-            </figure>
-          </a>
-        </div>
-        <div class="tile is-child"></div>
-        <div class="tile is-child"></div>
-        <div class="tile is-child"></div>
-        <div class="tile is-child"></div>
-      </div>
-      <div class="tile is-vertical is-parent is-2">
-        <div class="tile is-child"></div>
-        <div class="tile is-child"></div>
-        <div class="tile is-child"></div>
-        <div class="tile is-child is-8">
-          <a href="{{ relURL "newsletter" }}" target="_blank">
-            <figure class="image" style="max-width: 160px;">
-              <img src="{{ relURL "img/newsletter.svg" }}" alt="">
-            </figure>
-          </a>
-        </div>
-      </div>
-      <div class="tile">
-        <div class="content">
-          <p class="title">Want updates?</p>
-          <p class="subtitle">
-            Follow <a href="https://bsky.app/profile/nerves-project.org">@nerves-project.org</a> on Bluesky or
-            subscribe to the <a href="{{ relURL "newsletter" }}">Nerves Newsletter</a>.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="columns">
-      <div class="column is-4">
-        <a href="https://www.meetup.com/nerves" target="_blank">
-          <figure class="image" style="max-width: 300px;">
-            <img src="{{ relURL "img/meetup.svg" }}" alt="">
-          </figure>
-        </a>
-      </div>
-      <div class="column">
-        <div class="content">
-          <p class="title">Feeling social?</p>
-          <p class="subtitle">
-            Come nerd out at a meetup:
-            <br />
-            <a href="https://www.meetup.com/nerves">Nerves Online Meetup</a>
-            <br />
-            <a href="https://nervesmeetup.eu">Nerves Meetup EU</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="columns">
-      <div class="column is-4">
-        <figure class="image" style="max-width: 300px;">
-          <img src="{{ relURL "img/questions.svg" }}" alt="">
-        </figure>
-      </div>
-      <div class="column">
-        <div class="content">
-          <p class="title">Need help?</p>
-          <p class="subtitle">Use the
-            <span class="icon-text">
-              <span class="icon">
-                <img src="{{ relURL "img/elixir-forum.svg" }}"></img>
-              </span>
-              <span><a href="https://elixirforum.com/nerves">Nerves Forum</a></span>
-            </span>
-            to find previously answered questions or ask for help.
-          </p>
-          <p class="subtitle">You can also
-            <a href="https://github.com/nerves-project/nerves/issues/new" target="_blank">submit a new issue</a> on GitHub.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
+      </li>
+      {{ end }}
+    </ol>
+  </div>
+</section>
+{{ end }}
 
 {{ end }}

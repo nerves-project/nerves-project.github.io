@@ -1,3 +1,322 @@
 @use '../mixins' as *;
 
 // community page styles
+
+// ---------------------------------------------------------------- header
+
+.cm-head {
+  padding-bottom: 64px;
+  &__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 18px;
+  }
+  &__heart {
+    flex-shrink: 0;
+    width: 60px;
+    height: 54px;
+    @include below($mobile) { width: 40px; height: 36px; }
+  }
+  @include below($mobile) {
+    padding-bottom: 40px;
+    &__title { gap: 0 12px; }
+  }
+}
+
+// a small bold link with an arrow, used across the page
+.cm-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  color: var(--blue);
+  font: 800 15px/18px var(--sans);
+  white-space: nowrap;
+  svg { flex-shrink: 0; }
+}
+
+// section titles: eyebrow above a 40px heading
+.cm-title {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  &__text {
+    font: 900 40px/46px var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    @include below($mobile) { font-size: 32px; line-height: 38px; }
+  }
+}
+
+// ---------------------------------------------------------------- Discord and issues
+
+.cm-talk {
+  padding-bottom: 88px;
+  &__inner { display: flex; flex-direction: column; gap: 16px; }
+  @include below($mobile) { padding-bottom: 64px; }
+}
+
+.cm-discord {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 40px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--blue);
+  &__top { display: flex; align-items: center; gap: 14px; }
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: var(--paper);
+    img { width: 32px; height: 32px; }
+  }
+  &__eyebrow {
+    font: 500 12px/16px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #bfe3ee;
+  }
+  &__title {
+    font: 900 40px/44px var(--sans);
+    letter-spacing: -0.03em;
+    color: var(--white);
+  }
+  &__text {
+    max-width: 520px;
+    font-size: 18px;
+    line-height: 28px;
+    color: #e3f1f5;
+  }
+  &__actions { display: flex; padding-top: 8px; }
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 20px;
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--night);
+    font: 800 16px/20px var(--sans);
+    transition: transform 140ms ease, background-color 140ms ease;
+    &:hover { text-decoration: none; background: var(--white); transform: translateY(-1px); }
+    &:focus-visible { outline-color: var(--paper); border-radius: 12px; }
+  }
+  &__note {
+    position: absolute;
+    right: 36px;
+    bottom: 30px;
+    font: 600 24px/30px var(--hand);
+    color: #bfe3ee;
+    transform: rotate(-3deg);
+    transform-origin: 0 0;
+  }
+  @include below($tablet) {
+    &__note { position: static; align-self: flex-end; margin-top: -8px; transform: rotate(-3deg); }
+  }
+  @include below($mobile) {
+    padding: 28px 24px;
+    &__title { font-size: 32px; line-height: 36px; }
+    &__text { font-size: 17px; line-height: 26px; }
+    &__note { align-self: flex-start; margin-top: 0; font-size: 22px; }
+  }
+}
+
+.cm-bug {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 28px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--sheet);
+  &__head { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  &__head img { width: 28px; height: 28px; flex-shrink: 0; }
+  &__title { font: 900 22px/28px var(--sans); color: var(--ink); }
+  &__text { flex: 1; min-width: 0; font-size: 16px; line-height: 24px; color: var(--pencil); }
+  @include below($tablet) {
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    &__text { flex-basis: 100%; order: 2; }
+    .cm-link { order: 3; }
+  }
+  @include below($mobile) { padding: 20px; }
+}
+
+// ---------------------------------------------------------------- meet up and follow along
+
+.cm-meet {
+  padding-block: 96px 104px;
+  background: var(--sheet);
+  border-block: 1px solid var(--line);
+  &__inner { display: flex; gap: 72px; }
+  &__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+  &__side { width: 480px; flex-shrink: 0; display: flex; flex-direction: column; gap: 24px; }
+  @include below($wide) {
+    &__inner { gap: 48px; }
+    &__side { width: 400px; }
+  }
+  @include below($tablet) {
+    &__inner { flex-direction: column; gap: 64px; }
+    &__side { width: auto; max-width: 560px; }
+  }
+  @include below($mobile) { padding-block: 64px; }
+}
+
+.cm-channels { border-top: 1px solid #e6dfd0; }
+.cm-channel {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 4px;
+  border-bottom: 1px solid #e6dfd0;
+  &__icon { width: 32px; height: 32px; flex-shrink: 0; object-fit: contain; }
+  &__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  &__name { font: 900 19px/24px var(--sans); color: var(--ink); }
+  &__text { font-size: 15px; line-height: 20px; color: var(--pencil); }
+  @include below($mobile) {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px 14px;
+    &__icon { margin-top: 2px; }
+    &__body { flex-basis: calc(100% - 46px); }
+    .cm-link { margin-left: 46px; }
+  }
+}
+
+.cm-recording {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--white);
+  color: var(--ink);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+  &:hover { text-decoration: none; border-color: var(--rule-2); box-shadow: 0 2px 0 var(--line); }
+  &:focus-visible { border-radius: 16px; }
+  &__thumb {
+    position: relative;
+    flex-shrink: 0;
+    width: 200px;
+    aspect-ratio: 200 / 113;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--paper-deep);
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  }
+  &__play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    transition: transform 140ms ease;
+    svg { margin-left: 2px; }
+  }
+  &:hover &__play { transform: scale(1.08); }
+  &__body { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  &__label {
+    font: 500 12px/16px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pencil-2);
+  }
+  &__title { font: 900 18px/24px var(--sans); color: var(--ink); }
+  @include below($mobile) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    &__thumb { width: 100%; }
+    &__body { padding: 0 4px 4px; }
+  }
+}
+
+.cm-newsletter {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  border: 1.5px solid var(--ink);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: 5px 5px 0 var(--ink);
+  &__title { font: 900 19px/24px var(--sans); color: var(--ink); }
+  &__text { margin-top: -4px; font-size: 15px; line-height: 22px; color: var(--pencil); }
+  .input { height: 44px; border: 1px solid var(--rule-2); font-size: 15px; }
+  .nl-form__submit { height: 44px; }
+  @include below($mobile) { padding: 20px; }
+}
+
+.cm-social {
+  display: flex;
+  gap: 12px;
+  li { flex: 1; min-width: 0; }
+  a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--rule-2);
+    border-radius: 12px;
+    color: var(--ink);
+    font: 800 15px/18px var(--sans);
+    transition: background-color 140ms ease, border-color 140ms ease;
+    &:hover { text-decoration: none; background: var(--white); border-color: var(--pencil-2); }
+    &:focus-visible { border-radius: 12px; }
+  }
+  img { width: 22px; height: 22px; flex-shrink: 0; }
+}
+
+// ---------------------------------------------------------------- ways to help
+
+.cm-help {
+  padding-block: 96px 104px;
+  .cm-title { margin-bottom: 32px; }
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    @include below($tablet) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include below($mobile) { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  }
+  li { display: flex; }
+  &__card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 26px;
+    border: 1.5px solid var(--ink);
+    border-radius: 16px;
+    color: var(--ink);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+    &:hover { text-decoration: none; transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+    &:focus-visible { border-radius: 16px; }
+  }
+  &__card--dark {
+    border-color: var(--ink);
+    background: var(--ink);
+    &:hover { box-shadow: 4px 4px 0 var(--blue); }
+    .cm-help__num { color: #7fc8dd; }
+    .cm-help__title { color: var(--paper); }
+    .cm-help__text { color: #d6cfc2; }
+  }
+  &__num { font: 700 13px/16px var(--mono); color: var(--blue); }
+  &__title { font: 900 20px/24px var(--sans); color: var(--ink); }
+  &__text { font-size: 15px; line-height: 23px; color: var(--pencil); }
+  @include below($mobile) { padding-block: 64px; }
+}
