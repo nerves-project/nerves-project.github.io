@@ -70,14 +70,26 @@ downloaded (about 40 MB, fetched only on that click).
 
 `static/hero-pcb/vm/` is a copy of what jsnerves serves (emulator, `nerves-vm.js`, `board.js`,
 terminal, OpenSBI, U-Boot, the disk image in blocks, its snapshot and the firmware updates).
-Update it from a jsnerves checkout, after `extract_firmware.sh` and `tools/make_deltas.exs`
-there have made a new image and its updates:
+It is built from the sources pinned in `tools/pcb-hero/demo-sources.env`: the emulator, jsnerves
+and the firmware versions (the first is the one in the disk image, the page offers updates to
+the others). To change what the demo runs, change a pin:
+
+- On `main`, or with a manual run, the `hero demo` workflow (`.github/workflows/hero-demo.yml`)
+  rebuilds `vm/` and opens a pull request with it. A pull request that changes a pin gets a
+  build only, as a check; the result is an artifact of the run.
+- Locally, `tools/pcb-hero/build_demo.sh` does the same build (see its header for what it needs).
+  With `DEMO_OUT=<directory>` the result goes there instead of into the site.
+
+A disk image has a new id with every build, so a rebuild replaces all of `vm/disk/`.
+
+To copy from a jsnerves checkout you built yourself (after `extract_firmware.sh` and
+`tools/make_deltas.exs` there):
 
 ```sh
 tools/pcb-hero/sync_jsnerves.sh ../jsnerves
 ```
 
-`vm/VERSION` records the jsnerves commit. The firmware is
+`vm/VERSION` records what the copy was built from. The firmware is
 [web-demo-nerves](https://github.com/lawik/web-demo-nerves) on
 [nerves_system_jslinux](https://github.com/underjord/nerves_system_jslinux); the emulator is
 built from [TinyEMU](https://github.com/lawik/TinyEMU) (branch `emscripten-modern`, MIT).

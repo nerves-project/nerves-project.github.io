@@ -1,11 +1,12 @@
 #!/bin/sh
 # Copy the files the hero's live demo serves from a jsnerves checkout into static/hero-pcb/vm/.
-#   tools/pcb-hero/sync_jsnerves.sh ../jsnerves
+#   tools/pcb-hero/sync_jsnerves.sh ../jsnerves [destination]
+# (the destination is static/hero-pcb/vm/ unless another directory is given)
 # Only what the page loads is copied: the emulator, the NervesVM and board APIs, the terminal,
 # the firmware (OpenSBI, U-Boot, the disk image in blocks), its snapshot and its updates.
 set -eu
 src=${1:?usage: sync_jsnerves.sh <jsnerves checkout>}
-dst=$(cd "$(dirname "$0")/../.." && pwd)/static/hero-pcb/vm
+dst=${2:-$(cd "$(dirname "$0")/../.." && pwd)/static/hero-pcb/vm}
 [ -f "$src/nerves-vm.js" ] || { echo "$src is not a jsnerves checkout" >&2; exit 1; }
 # vm/frame.html is the site's own (the page the machine runs in) and stays
 mkdir -p "$dst"

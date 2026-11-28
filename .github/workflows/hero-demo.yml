@@ -1,0 +1,117 @@
+# Rebuilds the hero's live demo (static/hero-pcb/vm/) from its sources: the emulator, the
+# firmware, its disk image and snapshot, and the delta updates. What it is built from is
+# pinned in tools/pcb-hero/demo-sources.env; tools/pcb-hero/build_demo.sh does the build.
+#
+# - A change of the pins (or of the build) on main, or a manual run: build, then open a pull
+#   request with the new vm/.
+# - A pull request that changes them: build only, to show that it still builds. The result
+#   is attached to the run as an artifact.
+name: hero demo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - tools/pcb-hero/demo-sources.env
+      - tools/pcb-hero/build_demo.sh
+      - tools/pcb-hero/sync_jsnerves.sh
+      - .github/workflows/hero-demo.yml
+  pull_request:
+    paths:
+      - tools/pcb-hero/demo-sources.env
+      - tools/pcb-hero/build_demo.sh
+      - tools/pcb-hero/sync_jsnerves.sh
+      - .github/workflows/hero-demo.yml
+
+concurrency:
+  group: hero-demo-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  OTP_VERSION: "29"
+  ELIXIR_VERSION: "1.20"
+  EMSDK_VERSION: "6.0.12"
+  FWUP_VERSION: "1.16.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read .tool-versions
+        uses: marocchino/tool-versions-action@v2
+        id: versions
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ steps.versions.outputs.nodejs }}
+
+      - name: Setup Erlang and Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+
+      - name: Install fwup and the tools the firmware and deltas need
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential squashfs-tools xdelta3 zip unzip
+          curl -fsSL -o fwup.deb "https://github.com/fwup-home/fwup/releases/download/v${FWUP_VERSION}/fwup_${FWUP_VERSION}_amd64.deb"
+          sudo dpkg -i fwup.deb
+          rm fwup.deb
+
+      - name: Install Hex, rebar and nerves_bootstrap
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix archive.install hex nerves_bootstrap --force
+
+      - name: Install emscripten
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+          "$RUNNER_TEMP/emsdk/emsdk" install "$EMSDK_VERSION"
+          "$RUNNER_TEMP/emsdk/emsdk" activate "$EMSDK_VERSION"
+          . "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          dirname "$(command -v emcc)" >> "$GITHUB_PATH"
+
+      - name: Build the demo
+        env:
+          DEMO_BROWSER_DEPS: "1"
+        run: tools/pcb-hero/build_demo.sh "$RUNNER_TEMP/demo"
+
+      - name: Keep the result
+        uses: actions/upload-artifact@v7
+        with:
+          name: hero-demo-vm
+          path: static/hero-pcb/vm
+          retention-days: 14
+
+      - name: Open a pull request with the new vm/
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add -A static/hero-pcb/vm
+          if git diff --cached --quiet; then
+            echo "vm/ is unchanged"
+            exit 0
+          fi
+          branch="hero-demo/rebuild-${GITHUB_RUN_NUMBER}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Rebuild the hero demo" -m "$(cat static/hero-pcb/vm/VERSION)"
+          git push origin "$branch"
+          gh pr create --base "$GITHUB_REF_NAME" --head "$branch" \
+            --title "Rebuild the hero demo" \
+            --body "Built by the hero demo workflow (run ${GITHUB_RUN_ID}) from tools/pcb-hero/demo-sources.env:
+
+          $(cat static/hero-pcb/vm/VERSION)"
